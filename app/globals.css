@@ -1,5 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+:root {
+  /* Cores do tema dungeon */
+  --color-bg-dark: #0a0a0f;
+  --color-bg-medium: #1a1a2e;
+  --color-accent-gold: #f59e0b;
+  --color-accent-red: #dc2626;
+  --color-accent-blue: #3b82f6;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--color-bg-dark);
+  color: white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', serif;
+}
+
+/* Estilo de seleção */
+::selection {
+  background: var(--color-accent-gold);
+  color: black;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-medium);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a4a6a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5a5a7a;
+}
+
+/* Animações */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--color-accent-gold);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--color-accent-gold), 0 0 30px var(--color-accent-gold);
+  }
+}
+
+.glow-pulse {
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.3s ease-in-out;
 }
