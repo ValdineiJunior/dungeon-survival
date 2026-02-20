@@ -142,7 +142,7 @@ export function HexGrid({
               }}
               title={
                 isTargetable
-                  ? `🎯 Attack ${content.enemy?.name}`
+                  ? `🎯 Atacar ${content.enemy?.name}`
                   : `(${tile.q}, ${tile.r})`
               }
             >
@@ -154,11 +154,19 @@ export function HexGrid({
 
       {/* Legend */}
       <div className="flex gap-4 text-sm text-slate-400 items-center">
-        <span>{playerEmoji} You</span>
-        <span>👺 Enemy</span>
-        <span className="text-green-400">• Valid move</span>
+        <span className="flex items-center gap-1">
+          <span className="text-blue-500">⬡</span> Você
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="text-red-500">⬡</span> Inimigo
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="text-green-500">⬡</span> Movimento válido
+        </span>
         {targetableEnemyIds.length > 0 && (
-          <span className="text-yellow-400">🎯 Targetable</span>
+          <span className="flex items-center gap-1">
+            <span className="text-yellow-400">🎯</span> Alvo
+          </span>
         )}
         {onViewLog && (
           <button

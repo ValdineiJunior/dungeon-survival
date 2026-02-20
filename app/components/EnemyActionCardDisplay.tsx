@@ -27,7 +27,7 @@ const actionColors: Record<string, string> = {
 const actionDescriptions: Record<string, (value: number) => string> = {
   attack: (value) => `Causa ${value} de dano`,
   defend: (value) => `Ganha ${value} de bloqueio`,
-  move: (value) => `Move ${value} hex`,
+  move: (value) => `Move ${value} casas`,
   buff: (value) => `Aumenta força em ${value}`,
   debuff: (value) => `Reduz força em ${value}`,
 };

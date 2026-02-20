@@ -11,6 +11,7 @@ import { CharacterSelect } from '@/app/components/CharacterSelect';
 import { CardListModal } from '@/app/components/CardListModal';
 import { EnemyActionsModal } from '@/app/components/EnemyActionsModal';
 import { GameLogModal } from '@/app/components/GameLogModal';
+import { HowToPlayModal } from '@/app/components/HowToPlayModal';
 import { Card, HexPosition, CharacterClass, Enemy } from '@/app/types/game';
 import { CHARACTER_CLASSES } from '@/app/lib/cards';
 import { getFloorConfig } from '@/app/lib/enemies';
@@ -21,6 +22,7 @@ export default function GamePage() {
   const [showDeckModal, setShowDeckModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
   const [selectedEnemyForActions, setSelectedEnemyForActions] = useState<Enemy | null>(null);
   
   const {
@@ -146,6 +148,12 @@ export default function GamePage() {
             <span className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}>
               {getPhaseLabel()}
             </span>
+            <button
+              onClick={() => setShowHowToPlayModal(true)}
+              className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white transition-colors"
+            >
+              📖 Como Jogar
+            </button>
             <button
               onClick={() => setShowAbandonModal(true)}
               className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-red-600 text-slate-300 hover:text-white transition-colors"
@@ -398,6 +406,13 @@ export default function GamePage() {
         <GameLogModal
           logs={gameLog}
           onClose={() => setShowLogModal(false)}
+        />
+      )}
+
+      {/* How To Play Modal */}
+      {showHowToPlayModal && (
+        <HowToPlayModal
+          onClose={() => setShowHowToPlayModal(false)}
         />
       )}
     </div>

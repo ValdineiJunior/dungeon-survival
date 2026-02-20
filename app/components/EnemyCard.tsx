@@ -10,12 +10,12 @@ interface EnemyCardProps {
   onViewActions?: () => void;
 }
 
-const actionIcons: Record<EnemyIntent, { icon: string; color: string }> = {
-  attack: { icon: "⚔️", color: "text-red-400" },
-  defend: { icon: "🛡️", color: "text-blue-400" },
-  buff: { icon: "⬆️", color: "text-green-400" },
-  debuff: { icon: "⬇️", color: "text-purple-400" },
-  move: { icon: "👟", color: "text-yellow-400" },
+const actionIcons: Record<EnemyIntent, { icon: string; color: string; label: string }> = {
+  attack: { icon: "⚔️", color: "text-red-400", label: "Ataque" },
+  defend: { icon: "🛡️", color: "text-blue-400", label: "Defesa" },
+  buff: { icon: "⬆️", color: "text-green-400", label: "Buff" },
+  debuff: { icon: "⬇️", color: "text-purple-400", label: "Debuff" },
+  move: { icon: "👟", color: "text-yellow-400", label: "Movimento" },
 };
 
 export function EnemyCard({
@@ -114,11 +114,11 @@ export function EnemyCard({
               {actionCard.actions.map((action, index) => {
                 const info = actionIcons[action.type];
                 return (
-                  <span
-                    key={index}
-                    className={`text-sm ${info.color}`}
-                    title={`${action.type}: ${action.value}`}
-                  >
+<span
+                        key={index}
+                        className={`text-sm ${info.color}`}
+                        title={`${info.label}: ${action.value}`}
+                      >
                     {info.icon}
                     <span className="text-xs font-bold">{action.value}</span>
                   </span>
