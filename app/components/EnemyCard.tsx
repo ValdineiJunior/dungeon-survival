@@ -32,7 +32,7 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
       onClick={isTargetable ? onClick : undefined}
       className={`
         relative p-3 rounded-xl 
-        bg-gradient-to-b from-slate-800 to-slate-900
+        bg-gradient-to-r from-slate-800 to-slate-900
         border-2 
         ${isTargetable 
           ? 'border-yellow-400 shadow-yellow-400/50 hover:bg-slate-700 cursor-pointer animate-pulse ring-2 ring-yellow-400' 
@@ -52,25 +52,28 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
         </div>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {/* Monster avatar */}
-        <div className={`text-3xl ${isTargetable ? 'animate-bounce' : ''}`}>
+        <div className={`text-2xl ${isTargetable ? 'animate-bounce' : ''}`}>
           {enemy.emoji}
         </div>
 
-        <div className="flex-1">
-          {/* Name and hex position */}
-          <div className="flex items-center justify-between">
-            <span className="text-white font-bold text-sm">
+        {/* Center: Enemy info */}
+        <div className="flex-1 min-w-0">
+          {/* Name and position */}
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-white font-bold text-sm truncate">
               {enemy.name}
             </span>
-            <span className="text-slate-500 text-xs font-mono">
-              ⬡ {enemy.position.q},{enemy.position.r}
-            </span>
+            {enemy.block > 0 && (
+              <span className="text-blue-400 text-xs">
+                🛡️{enemy.block}
+              </span>
+            )}
           </div>
 
           {/* HP bar */}
-          <div className="w-full h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600 mt-1">
+          <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden border border-gray-600 mt-1">
             <div
               className={`h-full transition-all duration-300 ${
                 hpPercentage > 50 ? 'bg-green-500' : hpPercentage > 25 ? 'bg-yellow-500' : 'bg-red-500'
@@ -79,55 +82,46 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
             />
           </div>
           
-          {/* HP text, Block and View Actions button */}
-          <div className="flex items-center justify-between text-xs mt-1">
-            <span className="text-gray-300">
-              ❤️ {enemy.hp}/{enemy.maxHp}
-            </span>
-            <div className="flex items-center gap-2">
-              {enemy.block > 0 && (
-                <span className="text-blue-400">
-                  🛡️ {enemy.block}
-                </span>
-              )}
-              <button
-                onClick={handleViewActions}
-                className="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
-                title="Ver todas as ações"
-              >
-                🃏
-              </button>
-            </div>
+          {/* HP text */}
+          <div className="text-xs text-gray-300 mt-0.5">
+            ❤️ {enemy.hp}/{enemy.maxHp}
           </div>
+        </div>
+
+        {/* Right side: Intent icons - fixed width for up to 3 actions */}
+        <div className="flex flex-col items-center gap-0.5 pl-2 border-l border-slate-600 w-24">
+          {/* Label - clickable to view all actions */}
+          <button
+            onClick={handleViewActions}
+            className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            title="Ver todas as ações"
+          >
+            Intenção
+          </button>
+          
+          {/* Action icons */}
+          {actionCard && (
+            <div className="flex items-center gap-1" title={actionCard.name}>
+              {actionCard.actions.map((action, index) => {
+                const info = actionIcons[action.type];
+                return (
+                  <span 
+                    key={index}
+                    className={`text-sm ${info.color}`}
+                    title={`${action.type}: ${action.value}`}
+                  >
+                    {info.icon}<span className="text-xs font-bold">{action.value}</span>
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
       
-      {/* Enemy Action Card */}
-      {actionCard && (
-        <div className="mt-2 p-2 rounded-lg bg-red-950/50 border border-red-800">
-          <div className="text-xs text-red-300 font-bold truncate mb-1">
-            {actionCard.name}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {actionCard.actions.map((action, index) => {
-              const info = actionIcons[action.type];
-              return (
-                <div 
-                  key={index}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800/80 text-xs ${info.color}`}
-                >
-                  <span>{info.icon}</span>
-                  <span className="font-bold">{action.value}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-      
       {/* Click hint when targetable */}
       {isTargetable && (
-        <div className="mt-2 text-center text-yellow-400 text-xs font-bold">
+        <div className="mt-1 text-center text-yellow-400 text-xs font-bold">
           Clique para atacar!
         </div>
       )}

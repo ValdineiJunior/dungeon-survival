@@ -162,7 +162,7 @@ export default function GamePage() {
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
         <div className="flex-1 flex gap-4 py-4">
           {/* Left panel - Player Status */}
-          <div className="w-48">
+          <div className="w-72">
             <PlayerStatus
               player={player}
               deckCount={deck.length}
@@ -189,7 +189,7 @@ export default function GamePage() {
           </div>
           
           {/* Right panel - Enemies */}
-          <div className="w-56 flex flex-col gap-4">
+          <div className="w-72 flex flex-col gap-3">
             <h3 className="text-amber-400 font-bold text-center">⚔️ Inimigos</h3>
             <div className="flex flex-col gap-3">
               {enemies.map((enemy) => (
