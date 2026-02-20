@@ -21,7 +21,7 @@ export default function Home() {
             Dungeon Survival
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-md mx-auto">
-            Um roguelike de cartas inspirado em Slay the Spire e Gloomhaven
+            Construa seu deck, enfrente dungeons e lute pela sobrevivência
           </p>
         </div>
 
