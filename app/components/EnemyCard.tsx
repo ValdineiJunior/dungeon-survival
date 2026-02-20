@@ -79,16 +79,25 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
             />
           </div>
           
-          {/* HP text and Block */}
-          <div className="flex justify-between text-xs mt-1">
+          {/* HP text, Block and View Actions button */}
+          <div className="flex items-center justify-between text-xs mt-1">
             <span className="text-gray-300">
               ❤️ {enemy.hp}/{enemy.maxHp}
             </span>
-            {enemy.block > 0 && (
-              <span className="text-blue-400">
-                🛡️ {enemy.block}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {enemy.block > 0 && (
+                <span className="text-blue-400">
+                  🛡️ {enemy.block}
+                </span>
+              )}
+              <button
+                onClick={handleViewActions}
+                className="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+                title="Ver todas as ações"
+              >
+                🃏
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -96,17 +105,8 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
       {/* Enemy Action Card */}
       {actionCard && (
         <div className="mt-2 p-2 rounded-lg bg-red-950/50 border border-red-800">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-red-300 font-bold truncate flex-1">
-              {actionCard.name}
-            </span>
-            <button
-              onClick={handleViewActions}
-              className="ml-2 p-1 rounded hover:bg-red-800/50 text-red-400 hover:text-red-300 transition-colors"
-              title="Ver todas as ações"
-            >
-              🃏
-            </button>
+          <div className="text-xs text-red-300 font-bold truncate mb-1">
+            {actionCard.name}
           </div>
           <div className="flex flex-wrap gap-2">
             {actionCard.actions.map((action, index) => {
