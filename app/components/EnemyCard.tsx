@@ -4,6 +4,7 @@ import { Enemy, EnemyIntent } from "@/app/types/game";
 
 interface EnemyCardProps {
   enemy: Enemy;
+  orderNumber: number;
   isTargetable?: boolean;
   isTargeted?: boolean;
   onClick?: () => void;
@@ -20,6 +21,7 @@ const actionIcons: Record<EnemyIntent, { icon: string; color: string; label: str
 
 export function EnemyCard({
   enemy,
+  orderNumber,
   isTargetable,
   isTargeted,
   onClick,
@@ -60,9 +62,15 @@ export function EnemyCard({
       )}
 
       <div className="flex items-center gap-2">
-        {/* Monster avatar */}
-        <div className={`text-2xl ${isTargetable ? "animate-bounce" : ""}`}>
+        {/* Monster avatar with order number */}
+        <div className={`relative text-2xl ${isTargetable ? "animate-bounce" : ""}`}>
           {enemy.emoji}
+          <span 
+            className="absolute -bottom-1 -right-1 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[10px] font-bold rounded-full border border-amber-600"
+            title={`Ordem de turno: ${orderNumber}`}
+          >
+            {orderNumber}
+          </span>
         </div>
 
         {/* Center: Enemy info */}

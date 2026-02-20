@@ -200,10 +200,11 @@ export default function GamePage() {
           <div className="w-72 flex flex-col gap-3">
             <h3 className="text-amber-400 font-bold text-center">⚔️ Inimigos</h3>
             <div className="flex flex-col gap-3">
-              {enemies.map((enemy) => (
+              {enemies.map((enemy, index) => (
                 <EnemyCard
                   key={enemy.id}
                   enemy={enemy}
+                  orderNumber={index + 1}
                   isTargetable={targetableEnemyIds.includes(enemy.id)}
                   onClick={() => handleEnemyClick(enemy.id)}
                   onViewActions={() => setSelectedEnemyForActions(enemy)}

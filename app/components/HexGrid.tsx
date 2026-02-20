@@ -53,12 +53,14 @@ export function HexGrid({
       return { emoji: playerEmoji, type: "player" as const };
     }
 
-    const enemy = enemies.find((e) => hexEquals(e.position, pos));
-    if (enemy) {
+    const enemyIndex = enemies.findIndex((e) => hexEquals(e.position, pos));
+    if (enemyIndex !== -1) {
+      const enemy = enemies[enemyIndex];
       return {
         emoji: enemy.emoji,
         type: "enemy" as const,
         enemy,
+        orderNumber: enemyIndex + 1,
         isTargetable: isEnemyTargetable(enemy.id),
       };
     }
@@ -143,10 +145,21 @@ export function HexGrid({
               title={
                 isTargetable
                   ? `🎯 Atacar ${content.enemy?.name}`
-                  : `(${tile.q}, ${tile.r})`
+                  : isEnemy && content.enemy
+                    ? `${content.enemy.name} (#${content.orderNumber})`
+                    : `(${tile.q}, ${tile.r})`
               }
             >
-              {content.emoji || (isValid ? "•" : "")}
+              {isEnemy && content.orderNumber ? (
+                <span className="relative">
+                  {content.emoji}
+                  <span className="absolute -bottom-1 -right-2 w-3.5 h-3.5 flex items-center justify-center bg-amber-400 text-black text-[8px] font-bold rounded-full border border-amber-600">
+                    {content.orderNumber}
+                  </span>
+                </span>
+              ) : (
+                content.emoji || (isValid ? "•" : "")
+              )}
             </button>
           );
         })}
