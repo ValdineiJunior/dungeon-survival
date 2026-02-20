@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility } from '@/app/types/game';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType } from '@/app/types/game';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
 import { 
@@ -17,6 +17,26 @@ function getInnateAbilityValue(characterClass: CharacterClass, abilityType: Inna
   const classDef = CHARACTER_CLASSES[characterClass];
   const ability = classDef.innateAbilities.find(a => a.type === abilityType);
   return ability?.value ?? 0;
+}
+
+// Helper to create log entries
+let logIdCounter = 0;
+function createLogEntry(
+  turn: number,
+  floor: number,
+  type: LogEntryType,
+  message: string,
+  details?: GameLogEntry['details']
+): GameLogEntry {
+  return {
+    id: `log_${++logIdCounter}`,
+    turn,
+    floor,
+    type,
+    message,
+    details,
+    timestamp: Date.now(),
+  };
 }
 
 // Configurações do mapa hexagonal
@@ -124,6 +144,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   selectedCard: null,
   validMovePositions: [],
   targetableEnemyIds: [],
+  gameLog: [],
 
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
@@ -134,6 +155,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     const characterClass = state.player.characterClass;
     const floor = state.floor;
+    const classDef = CHARACTER_CLASSES[characterClass];
     
     const deck = createClassDeck(characterClass);
     const drawPile = shuffleArray([...deck]);
@@ -152,6 +174,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
     player.block = passiveBlock;
     player.energy = player.maxEnergy + energyRegen; // Extra energy on first turn
     
+    // Create initial game log
+    const gameLog: GameLogEntry[] = [];
+    logIdCounter = 0; // Reset counter for new game
+    
+    gameLog.push(createLogEntry(1, floor, 'floorStart',
+      `🏰 Andar ${floor} - ${classDef.emoji} ${classDef.name} entra na masmorra`));
+    gameLog.push(createLogEntry(1, floor, 'turnStart', `=== Turno 1 ===`));
+    
+    if (passiveBlock > 0) {
+      gameLog.push(createLogEntry(1, floor, 'innateAbility',
+        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
+    }
+    if (energyRegen > 0) {
+      gameLog.push(createLogEntry(1, floor, 'innateAbility',
+        `✨ Canalização Arcana: +${energyRegen} energia extra`));
+    }
+    
     const initialState: Partial<GameState> = {
       player,
       deck,
@@ -160,6 +199,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: [],
       enemies,
       hexMap,
+      gameLog,
       phase: 'playerTurn',
       turn: 1,
       floor,
@@ -250,16 +290,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const newHand = [...state.hand];
     const [playedCard] = newHand.splice(cardIndex, 1);
     
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
+    const tilesMovedCount = hexDistance(state.player.position, position);
     const newPlayer = {
       ...state.player,
       position,
       energy: state.player.energy - playedCard.cost,
     };
     
+    // Log the movement
+    const newLog = [...state.gameLog];
+    newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
+      `${classDef.emoji} ${classDef.name} move ${tilesMovedCount} para (${position.q}, ${position.r})`, {
+      position,
+    }));
+    
     set({
       player: newPlayer,
       hand: newHand,
       discardPile: [...state.discardPile, playedCard],
+      gameLog: newLog,
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
@@ -290,6 +340,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   
   playCard: (cardId: string, targetEnemyId?: string) => {
     const state = get();
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
     
     if (state.phase !== 'playerTurn' && state.phase !== 'selectingMovement' && state.phase !== 'selectingTarget' && state.phase !== 'confirmingSkill') return;
     
@@ -308,6 +359,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     };
     
     let newEnemies = [...state.enemies];
+    const newLog = [...state.gameLog];
     
     if (card.type === 'attack' && card.damage) {
       const range = card.range || 1;
@@ -327,15 +379,39 @@ export const useGameStore = create<GameStore>((set, get) => ({
           const distance = hexDistance(state.player.position, target.position);
           
           if (distance >= minRange && distance <= range) {
+            const originalDamage = card.damage;
             let damage = card.damage;
+            let blockedAmount = 0;
             
             if (target.block > 0) {
-              const blockedDamage = Math.min(damage, target.block);
-              target.block -= blockedDamage;
-              damage -= blockedDamage;
+              blockedAmount = Math.min(damage, target.block);
+              target.block -= blockedAmount;
+              damage -= blockedAmount;
             }
             
             target.hp = Math.max(0, target.hp - damage);
+            
+            // Log the attack
+            const logMessage = blockedAmount > 0
+              ? `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+              : `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name}: ${originalDamage} dano`;
+            
+            newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
+              attacker: classDef.name,
+              target: target.name,
+              damage: originalDamage,
+              blocked: blockedAmount,
+              finalDamage: damage,
+            }));
+            
+            // Check if enemy was defeated
+            if (target.hp <= 0) {
+              newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', 
+                `💀 ${target.emoji} ${target.name} foi derrotado!`, {
+                target: target.name,
+              }));
+            }
+            
             newEnemies[targetIndex] = target;
             newEnemies = newEnemies.filter(e => e.hp > 0);
           }
@@ -345,6 +421,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     if (card.block) {
       newPlayer.block += card.block;
+      
+      // Log the block
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerBlock',
+        `${classDef.emoji} ${classDef.name} usa ${card.name}: +${card.block} bloqueio (total: ${newPlayer.block})`, {
+        block: card.block,
+      }));
     }
     
     const newDiscardPile = [...state.discardPile, card];
@@ -361,6 +443,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       player: newPlayer,
       enemies: newEnemies,
       discardPile: newDiscardPile,
+      gameLog: newLog,
       phase,
       selectedCard: null,
       validMovePositions: [],
@@ -372,7 +455,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     if (state.phase !== 'playerTurn') return;
     
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
     const discardPile = [...state.discardPile, ...state.hand];
+    const newLog = [...state.gameLog];
+    
+    // Log turn end
+    newLog.push(createLogEntry(state.turn, state.floor, 'turnEnd',
+      `--- Fim do turno ${state.turn} do jogador ---`));
     
     // === TURNO DOS INIMIGOS ===
     const player = { ...state.player };
@@ -386,26 +475,50 @@ export const useGameStore = create<GameStore>((set, get) => ({
       
       if (action.type === 'attack') {
         if (hexDistance(enemy.position, player.position) <= attackRange) {
+          const originalDamage = action.value;
           let damage = action.value;
+          let blockedAmount = 0;
           
           if (player.block > 0) {
-            const blockedDamage = Math.min(damage, player.block);
-            player.block -= blockedDamage;
-            damage -= blockedDamage;
+            blockedAmount = Math.min(damage, player.block);
+            player.block -= blockedAmount;
+            damage -= blockedAmount;
           }
           
           player.hp = Math.max(0, player.hp - damage);
           
+          // Log enemy attack
+          const logMessage = blockedAmount > 0
+            ? `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+            : `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name}: ${originalDamage} dano`;
+          
+          newLog.push(createLogEntry(state.turn, state.floor, 'enemyAttack', logMessage, {
+            attacker: enemy.name,
+            target: classDef.name,
+            damage: originalDamage,
+            blocked: blockedAmount,
+            finalDamage: damage,
+          }));
+          
           if (player.hp <= 0) {
             return false; // Player defeated
           }
+        } else {
+          // Enemy out of range
+          newLog.push(createLogEntry(state.turn, state.floor, 'enemyAttack',
+            `${enemy.emoji} ${enemy.name} tenta atacar mas está fora de alcance`));
         }
       } else if (action.type === 'defend') {
         enemy.block += action.value;
+        newLog.push(createLogEntry(state.turn, state.floor, 'enemyBlock',
+          `${enemy.emoji} ${enemy.name} se defende: +${action.value} bloqueio`, {
+          block: action.value,
+        }));
       } else if (action.type === 'move') {
         const maxMove = action.value;
         let bestPos = enemy.position;
         let bestDist = hexDistance(enemy.position, player.position);
+        const startPos = { ...enemy.position };
         
         for (let step = 0; step < maxMove; step++) {
           const neighbors = hexNeighbors(bestPos);
@@ -432,6 +545,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
         }
         
         enemy.position = bestPos;
+        
+        if (!hexEquals(startPos, bestPos)) {
+          const tilesMoved = hexDistance(startPos, bestPos);
+          newLog.push(createLogEntry(state.turn, state.floor, 'enemyMove',
+            `${enemy.emoji} ${enemy.name} move ${tilesMoved} para (${bestPos.q}, ${bestPos.r})`, {
+            position: bestPos,
+          }));
+        }
       }
       return true; // Continue
     };
@@ -476,6 +597,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       player.block = passiveBlock; // Passive block replaces 0
       player.energy = player.maxEnergy;
       
+      // Log turn start and innate abilities
+      newLog.push(createLogEntry(newTurn, state.floor, 'turnStart',
+        `=== Turno ${newTurn} ===`));
+      
+      if (passiveBlock > 0) {
+        newLog.push(createLogEntry(newTurn, state.floor, 'innateAbility',
+          `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
+      }
+      
       const cardState = drawCards(
         { ...state, discardPile, hand: [] } as GameState,
         HAND_SIZE + bonusDraw
@@ -487,6 +617,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         hand: cardState.hand,
         drawPile: cardState.drawPile,
         discardPile: cardState.discardPile,
+        gameLog: newLog,
         turn: newTurn,
         phase,
         selectedCard: null,
@@ -494,7 +625,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         targetableEnemyIds: [],
       });
     } else {
-      set({ player, phase });
+      set({ player, phase, gameLog: newLog });
     }
   },
   
@@ -504,11 +635,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     const nextFloor = state.floor + 1;
     const player = { ...state.player };
+    const classDef = CHARACTER_CLASSES[player.characterClass];
+    const newLog = [...state.gameLog];
     
     // Apply room healing innate ability before advancing
     const roomHealing = getInnateAbilityValue(player.characterClass, 'roomHealing');
     if (roomHealing > 0) {
       player.hp = Math.min(player.maxHp, player.hp + roomHealing);
+      newLog.push(createLogEntry(1, nextFloor, 'innateAbility',
+        `❤️‍🩹 Resistência: +${roomHealing} HP recuperado`));
     }
     
     // Reset player position for new floor
@@ -521,6 +656,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     player.block = passiveBlock;
     player.energy = player.maxEnergy + energyRegen; // Extra energy on first turn
+    
+    // Log floor advancement
+    newLog.push(createLogEntry(1, nextFloor, 'floorStart',
+      `🏰 Andar ${nextFloor} - ${classDef.emoji} ${classDef.name} avança`));
+    newLog.push(createLogEntry(1, nextFloor, 'turnStart', `=== Turno 1 ===`));
+    
+    if (passiveBlock > 0) {
+      newLog.push(createLogEntry(1, nextFloor, 'innateAbility',
+        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
+    }
+    if (energyRegen > 0) {
+      newLog.push(createLogEntry(1, nextFloor, 'innateAbility',
+        `✨ Canalização Arcana: +${energyRegen} energia extra`));
+    }
     
     // Create new enemies for the next floor
     const enemies = createFloorEnemies(nextFloor);
@@ -544,6 +693,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hand: cardState.hand,
       drawPile: cardState.drawPile,
       discardPile: cardState.discardPile,
+      gameLog: newLog,
       phase: 'playerTurn',
       turn: 1,
       selectedCard: null,
@@ -553,6 +703,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   resetGame: () => {
+    logIdCounter = 0; // Reset log counter
     set({
       player: { ...INITIAL_PLAYER },
       deck: [],
@@ -561,6 +712,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: [],
       enemies: [],
       hexMap: createHexMap(MAP_RADIUS),
+      gameLog: [],
       phase: 'characterSelect',
       turn: 1,
       floor: 1,

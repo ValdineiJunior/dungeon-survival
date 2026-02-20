@@ -116,6 +116,41 @@ export interface HexMap {
   tiles: Map<string, HexTile>; // key = "q,r"
 }
 
+// === LOG DE AÇÕES ===
+export type LogEntryType = 
+  | 'playerAttack'
+  | 'playerBlock'
+  | 'playerMove'
+  | 'playerDraw'
+  | 'enemyAttack'
+  | 'enemyBlock'
+  | 'enemyMove'
+  | 'enemyDefeated'
+  | 'turnStart'
+  | 'turnEnd'
+  | 'floorStart'
+  | 'innateAbility';
+
+export interface GameLogEntry {
+  id: string;
+  turn: number;
+  floor: number;
+  type: LogEntryType;
+  message: string;
+  details?: {
+    attacker?: string;
+    target?: string;
+    damage?: number;
+    blocked?: number;
+    finalDamage?: number;
+    healing?: number;
+    block?: number;
+    cards?: number;
+    position?: HexPosition;
+  };
+  timestamp: number;
+}
+
 // === ESTADO DO JOGO ===
 export type GamePhase = 
   | 'characterSelect'   // Selecting character class
@@ -142,6 +177,9 @@ export interface GameState {
   
   // Inimigos
   enemies: Enemy[];
+  
+  // Log de ações
+  gameLog: GameLogEntry[];
   
   // Mapa
   hexMap: HexMap;

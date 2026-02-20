@@ -10,6 +10,7 @@ import { HexGrid } from '@/app/components/HexGrid';
 import { CharacterSelect } from '@/app/components/CharacterSelect';
 import { CardListModal } from '@/app/components/CardListModal';
 import { EnemyActionsModal } from '@/app/components/EnemyActionsModal';
+import { GameLogModal } from '@/app/components/GameLogModal';
 import { Card, HexPosition, CharacterClass, Enemy } from '@/app/types/game';
 import { CHARACTER_CLASSES } from '@/app/lib/cards';
 import { getFloorConfig } from '@/app/lib/enemies';
@@ -19,6 +20,7 @@ export default function GamePage() {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showDeckModal, setShowDeckModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
   const [selectedEnemyForActions, setSelectedEnemyForActions] = useState<Enemy | null>(null);
   
   const {
@@ -35,6 +37,7 @@ export default function GamePage() {
     selectedCard,
     validMovePositions,
     targetableEnemyIds,
+    gameLog,
     selectCharacter,
     startCombat,
     selectCard,
@@ -181,6 +184,7 @@ export default function GamePage() {
               targetableEnemyIds={targetableEnemyIds}
               onHexClick={handleHexClick}
               onEnemyClick={handleEnemyClick}
+              onViewLog={() => setShowLogModal(true)}
             />
           </div>
           
@@ -385,6 +389,14 @@ export default function GamePage() {
           drawPile={selectedEnemyForActions.actionDrawPile}
           discardPile={selectedEnemyForActions.actionDiscardPile}
           onClose={() => setSelectedEnemyForActions(null)}
+        />
+      )}
+
+      {/* Game Log Modal */}
+      {showLogModal && (
+        <GameLogModal
+          logs={gameLog}
+          onClose={() => setShowLogModal(false)}
         />
       )}
     </div>
