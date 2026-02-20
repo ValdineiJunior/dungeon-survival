@@ -161,6 +161,7 @@ export default function GamePage() {
             <HexGrid
               map={hexMap}
               player={player}
+              playerEmoji={CHARACTER_CLASSES[player.characterClass].emoji}
               enemies={enemies}
               validMovePositions={validMovePositions}
               targetableEnemyIds={targetableEnemyIds}

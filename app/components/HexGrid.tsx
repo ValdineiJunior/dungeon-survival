@@ -6,6 +6,7 @@ import { hexToPixel, getMapBounds, hexKey, hexEquals } from '@/app/lib/hexUtils'
 interface HexGridProps {
   map: HexMap;
   player: Player;
+  playerEmoji: string;
   enemies: Enemy[];
   validMovePositions: HexPosition[];
   targetableEnemyIds: string[];
@@ -16,6 +17,7 @@ interface HexGridProps {
 export function HexGrid({ 
   map, 
   player, 
+  playerEmoji,
   enemies, 
   validMovePositions,
   targetableEnemyIds,
@@ -42,7 +44,7 @@ export function HexGrid({
   // Get content of a hex
   const getHexContent = (pos: HexPosition) => {
     if (hexEquals(player.position, pos)) {
-      return { emoji: '🧙', type: 'player' as const };
+      return { emoji: playerEmoji, type: 'player' as const };
     }
     
     const enemy = enemies.find(e => hexEquals(e.position, pos));
@@ -144,7 +146,7 @@ export function HexGrid({
       
       {/* Legend */}
       <div className="flex gap-4 text-sm text-slate-400">
-        <span>🧙 You</span>
+        <span>{playerEmoji} You</span>
         <span>👺 Enemy</span>
         <span className="text-green-400">• Valid move</span>
         {targetableEnemyIds.length > 0 && (
