@@ -29,6 +29,7 @@ export function HexGrid({
   targetableEnemyIds,
   onHexClick,
   onEnemyClick,
+  onViewLog,
 }: HexGridProps) {
   const bounds = getMapBounds(map);
   const width = bounds.maxX - bounds.minX + 30;
@@ -152,12 +153,20 @@ export function HexGrid({
       </div>
 
       {/* Legend */}
-      <div className="flex gap-4 text-sm text-slate-400">
+      <div className="flex gap-4 text-sm text-slate-400 items-center">
         <span>{playerEmoji} You</span>
         <span>👺 Enemy</span>
         <span className="text-green-400">• Valid move</span>
         {targetableEnemyIds.length > 0 && (
           <span className="text-yellow-400">🎯 Targetable</span>
+        )}
+        {onViewLog && (
+          <button
+            onClick={onViewLog}
+            className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-300 hover:text-white transition-colors flex items-center gap-1"
+          >
+            📜 Log
+          </button>
         )}
       </div>
     </div>
