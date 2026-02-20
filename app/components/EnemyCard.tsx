@@ -1,6 +1,6 @@
 'use client';
 
-import { Enemy } from '@/app/types/game';
+import { Enemy, EnemyIntent } from '@/app/types/game';
 
 interface EnemyCardProps {
   enemy: Enemy;
@@ -9,18 +9,17 @@ interface EnemyCardProps {
   onClick?: () => void;
 }
 
+const actionIcons: Record<EnemyIntent, { icon: string; color: string }> = {
+  attack: { icon: '⚔️', color: 'text-red-400' },
+  defend: { icon: '🛡️', color: 'text-blue-400' },
+  buff: { icon: '⬆️', color: 'text-green-400' },
+  debuff: { icon: '⬇️', color: 'text-purple-400' },
+  move: { icon: '👟', color: 'text-yellow-400' },
+};
+
 export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCardProps) {
   const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
-  
-  const intentIcons = {
-    attack: { icon: '⚔️', color: 'text-red-400', label: 'Atacar' },
-    defend: { icon: '🛡️', color: 'text-blue-400', label: 'Defender' },
-    buff: { icon: '⬆️', color: 'text-green-400', label: 'Fortalecer' },
-    debuff: { icon: '⬇️', color: 'text-purple-400', label: 'Enfraquecer' },
-    move: { icon: '👟', color: 'text-yellow-400', label: 'Mover' },
-  };
-
-  const intentInfo = intentIcons[enemy.intent];
+  const actionCard = enemy.currentActionCard;
 
   return (
     <button
@@ -44,15 +43,9 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCar
       {/* Target indicator */}
       {isTargetable && (
         <div className="absolute -top-2 -left-2 px-2 py-1 rounded-full bg-yellow-500 text-black text-xs font-bold">
-          🎯 Target
+          🎯 Alvo
         </div>
       )}
-
-      {/* Enemy intent */}
-      <div className={`absolute -top-2 -right-2 px-2 py-1 rounded-full bg-slate-950 border border-slate-600 flex items-center gap-1 text-xs ${intentInfo.color}`}>
-        <span>{intentInfo.icon}</span>
-        <span className="font-bold">{enemy.intentValue}</span>
-      </div>
 
       <div className="flex items-center gap-3">
         {/* Monster avatar */}
@@ -95,10 +88,33 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCar
         </div>
       </div>
       
+      {/* Enemy Action Card */}
+      {actionCard && (
+        <div className="mt-2 p-2 rounded-lg bg-red-950/50 border border-red-800">
+          <div className="text-xs text-red-300 font-bold mb-1 truncate">
+            {actionCard.name}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {actionCard.actions.map((action, index) => {
+              const info = actionIcons[action.type];
+              return (
+                <div 
+                  key={index}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded bg-slate-800/80 text-xs ${info.color}`}
+                >
+                  <span>{info.icon}</span>
+                  <span className="font-bold">{action.value}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      
       {/* Click hint when targetable */}
       {isTargetable && (
         <div className="mt-2 text-center text-yellow-400 text-xs font-bold">
-          Click to attack!
+          Clique para atacar!
         </div>
       )}
     </button>

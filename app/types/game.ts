@@ -48,14 +48,27 @@ export interface CardEffect {
 // === ENTIDADES (Jogador e Inimigos) ===
 export type EnemyIntent = 'attack' | 'defend' | 'buff' | 'debuff' | 'move';
 
+// Ação individual de um inimigo
+export interface EnemyAction {
+  type: EnemyIntent;
+  value: number;
+}
+
+// Carta de ação do inimigo (pode conter múltiplas ações)
+export interface EnemyActionCard {
+  id: string;
+  name: string;
+  actions: EnemyAction[];
+  description?: string;
+}
+
 export interface Enemy {
   id: string;
   name: string;
   hp: number;
   maxHp: number;
   block: number;
-  intent: EnemyIntent;
-  intentValue: number;
+  currentActionCard: EnemyActionCard | null;
   position: HexPosition;
   emoji: string;
 }

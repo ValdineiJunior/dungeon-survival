@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass } from '@/app/types/game';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction } from '@/app/types/game';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
-import { createEnemy, getEnemyAction, getEnemyDefinitionByName, ENEMY_DEFINITIONS } from './enemies';
+import { createEnemy, getEnemyActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS } from './enemies';
 import { 
   createHexMap, 
   hexDistance, 
@@ -360,13 +360,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     let enemies = state.enemies.map(e => ({ ...e }));
     let phase: GamePhase = 'playerTurn';
     
-    for (const enemy of enemies) {
+    // Helper function to execute a single enemy action
+    const executeEnemyAction = (enemy: Enemy, action: EnemyAction): boolean => {
       const def = getEnemyDefinitionByName(enemy.name);
       const attackRange = def?.attackRange || 1;
       
-      if (enemy.intent === 'attack') {
+      if (action.type === 'attack') {
         if (hexDistance(enemy.position, player.position) <= attackRange) {
-          let damage = enemy.intentValue;
+          let damage = action.value;
           
           if (player.block > 0) {
             const blockedDamage = Math.min(damage, player.block);
@@ -377,14 +378,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
           player.hp = Math.max(0, player.hp - damage);
           
           if (player.hp <= 0) {
-            phase = 'defeat';
-            break;
+            return false; // Player defeated
           }
         }
-      } else if (enemy.intent === 'defend') {
-        enemy.block += enemy.intentValue;
-      } else if (enemy.intent === 'move') {
-        const maxMove = enemy.intentValue;
+      } else if (action.type === 'defend') {
+        enemy.block += action.value;
+      } else if (action.type === 'move') {
+        const maxMove = action.value;
         let bestPos = enemy.position;
         let bestDist = hexDistance(enemy.position, player.position);
         
@@ -414,11 +414,29 @@ export const useGameStore = create<GameStore>((set, get) => ({
         
         enemy.position = bestPos;
       }
+      return true; // Continue
+    };
+    
+    // Execute all actions for each enemy
+    for (const enemy of enemies) {
+      if (!enemy.currentActionCard) continue;
+      
+      // Execute each action in the enemy's action card
+      for (const action of enemy.currentActionCard.actions) {
+        const continueGame = executeEnemyAction(enemy, action);
+        if (!continueGame) {
+          phase = 'defeat';
+          break;
+        }
+      }
+      
+      if (phase === 'defeat') break;
     }
     
     if (phase !== 'defeat') {
       const newTurn = state.turn + 1;
       
+      // Update enemies with their next action card
       enemies = enemies.map(enemy => {
         const defEntry = Object.entries(ENEMY_DEFINITIONS).find(
           ([, def]) => def.name === enemy.name
@@ -426,11 +444,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
         
         if (defEntry) {
           const [defId] = defEntry;
-          const nextAction = getEnemyAction(defId, newTurn);
+          const nextActionCard = getEnemyActionCard(defId, newTurn);
           return {
             ...enemy,
-            intent: nextAction.intent,
-            intentValue: nextAction.value,
+            currentActionCard: nextActionCard,
           };
         }
         return enemy;
