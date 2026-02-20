@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useGameStore } from '@/app/lib/gameStore';
 import { Hand } from '@/app/components/Hand';
 import { EnemyCard } from '@/app/components/EnemyCard';
@@ -10,6 +12,9 @@ import { Card, HexPosition, CharacterClass } from '@/app/types/game';
 import { CHARACTER_CLASSES } from '@/app/lib/cards';
 
 export default function GamePage() {
+  const router = useRouter();
+  const [showAbandonModal, setShowAbandonModal] = useState(false);
+  
   const {
     player,
     hand,
@@ -62,6 +67,11 @@ export default function GamePage() {
     startCombat(['slime', 'goblin']);
   };
 
+  const handleAbandonQuest = () => {
+    resetGame();
+    router.push('/');
+  };
+
   // Show character select screen
   if (phase === 'characterSelect') {
     return <CharacterSelect onSelect={handleCharacterSelect} />;
@@ -112,6 +122,12 @@ export default function GamePage() {
             <span className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}>
               {getPhaseLabel()}
             </span>
+            <button
+              onClick={() => setShowAbandonModal(true)}
+              className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-red-600 text-slate-300 hover:text-white transition-colors"
+            >
+              Abandonar
+            </button>
           </div>
         </div>
       </header>
@@ -177,6 +193,35 @@ export default function GamePage() {
               >
                 Play Again
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Abandon Quest Confirmation Modal */}
+        {showAbandonModal && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-30">
+            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
+              <div className="text-5xl mb-4">⚠️</div>
+              <h2 className="text-2xl font-bold text-amber-400 mb-4">
+                Abandonar Missão?
+              </h2>
+              <p className="text-slate-300 mb-6">
+                Tem certeza que deseja abandonar? Todo o progresso desta batalha será perdido.
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={() => setShowAbandonModal(false)}
+                  className="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg transition-colors"
+                >
+                  Continuar Jogando
+                </button>
+                <button
+                  onClick={handleAbandonQuest}
+                  className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors"
+                >
+                  Abandonar
+                </button>
+              </div>
             </div>
           </div>
         )}
