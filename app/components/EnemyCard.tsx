@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Enemy, EnemyIntent } from '@/app/types/game';
+import { Enemy, EnemyIntent } from "@/app/types/game";
 
 interface EnemyCardProps {
   enemy: Enemy;
@@ -11,14 +11,20 @@ interface EnemyCardProps {
 }
 
 const actionIcons: Record<EnemyIntent, { icon: string; color: string }> = {
-  attack: { icon: '⚔️', color: 'text-red-400' },
-  defend: { icon: '🛡️', color: 'text-blue-400' },
-  buff: { icon: '⬆️', color: 'text-green-400' },
-  debuff: { icon: '⬇️', color: 'text-purple-400' },
-  move: { icon: '👟', color: 'text-yellow-400' },
+  attack: { icon: "⚔️", color: "text-red-400" },
+  defend: { icon: "🛡️", color: "text-blue-400" },
+  buff: { icon: "⬆️", color: "text-green-400" },
+  debuff: { icon: "⬇️", color: "text-purple-400" },
+  move: { icon: "👟", color: "text-yellow-400" },
 };
 
-export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActions }: EnemyCardProps) {
+export function EnemyCard({
+  enemy,
+  isTargetable,
+  isTargeted,
+  onClick,
+  onViewActions,
+}: EnemyCardProps) {
   const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
   const actionCard = enemy.currentActionCard;
 
@@ -34,15 +40,16 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
         relative p-3 rounded-xl 
         bg-gradient-to-r from-slate-800 to-slate-900
         border-2 
-        ${isTargetable 
-          ? 'border-yellow-400 shadow-yellow-400/50 hover:bg-slate-700 cursor-pointer animate-pulse ring-2 ring-yellow-400' 
-          : isTargeted 
-            ? 'border-yellow-400 shadow-yellow-400/50' 
-            : 'border-slate-600'
+        ${
+          isTargetable
+            ? "border-yellow-400 shadow-yellow-400/50 hover:bg-slate-700 cursor-pointer animate-pulse ring-2 ring-yellow-400"
+            : isTargeted
+              ? "border-yellow-400 shadow-yellow-400/50"
+              : "border-slate-600"
         }
         shadow-lg transition-all duration-200
         w-full
-        ${isTargetable ? 'hover:scale-105' : ''}
+        ${isTargetable ? "hover:scale-105" : ""}
       `}
     >
       {/* Target indicator */}
@@ -54,7 +61,7 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
 
       <div className="flex items-center gap-2">
         {/* Monster avatar */}
-        <div className={`text-2xl ${isTargetable ? 'animate-bounce' : ''}`}>
+        <div className={`text-2xl ${isTargetable ? "animate-bounce" : ""}`}>
           {enemy.emoji}
         </div>
 
@@ -66,9 +73,7 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
               {enemy.name}
             </span>
             {enemy.block > 0 && (
-              <span className="text-blue-400 text-xs">
-                🛡️{enemy.block}
-              </span>
+              <span className="text-blue-400 text-xs">🛡️{enemy.block}</span>
             )}
           </div>
 
@@ -76,12 +81,16 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
           <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden border border-gray-600 mt-1">
             <div
               className={`h-full transition-all duration-300 ${
-                hpPercentage > 50 ? 'bg-green-500' : hpPercentage > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                hpPercentage > 50
+                  ? "bg-green-500"
+                  : hpPercentage > 25
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
               }`}
               style={{ width: `${hpPercentage}%` }}
             />
           </div>
-          
+
           {/* HP text */}
           <div className="text-xs text-gray-300 mt-0.5">
             ❤️ {enemy.hp}/{enemy.maxHp}
@@ -89,28 +98,29 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
         </div>
 
         {/* Right side: Intent icons - fixed width for up to 3 actions */}
-        <div className="flex flex-col items-center gap-0.5 pl-2 border-l border-slate-600 w-24">
+        <div className="flex flex-col items-center gap-1 pl-2 border-l border-slate-600 w-24">
           {/* Label - clickable to view all actions */}
           <button
             onClick={handleViewActions}
-            className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            className="text-xs text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-700/50 hover:bg-slate-600 transition-colors border border-slate-600 hover:border-slate-500"
             title="Ver todas as ações"
           >
             Intenção
           </button>
-          
+
           {/* Action icons */}
           {actionCard && (
             <div className="flex items-center gap-1" title={actionCard.name}>
               {actionCard.actions.map((action, index) => {
                 const info = actionIcons[action.type];
                 return (
-                  <span 
+                  <span
                     key={index}
                     className={`text-sm ${info.color}`}
                     title={`${action.type}: ${action.value}`}
                   >
-                    {info.icon}<span className="text-xs font-bold">{action.value}</span>
+                    {info.icon}
+                    <span className="text-xs font-bold">{action.value}</span>
                   </span>
                 );
               })}
@@ -118,7 +128,7 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActi
           )}
         </div>
       </div>
-      
+
       {/* Click hint when targetable */}
       {isTargetable && (
         <div className="mt-1 text-center text-yellow-400 text-xs font-bold">
