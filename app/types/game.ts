@@ -3,6 +3,21 @@
 // === CLASSES DE PERSONAGEM ===
 export type CharacterClass = 'warrior' | 'archer' | 'mage';
 
+// Tipos de habilidades inatas
+export type InnateAbilityType = 
+  | 'passiveBlock'    // Ganha bloqueio no início de cada turno
+  | 'roomHealing'     // Cura HP ao completar cada sala
+  | 'bonusDraw'       // Compra cartas extras no início do turno
+  | 'energyRegen';    // Ganha energia extra
+
+export interface InnateAbility {
+  type: InnateAbilityType;
+  value: number;
+  name: string;
+  description: string;
+  emoji: string;
+}
+
 export interface CharacterClassDefinition {
   id: CharacterClass;
   name: string;
@@ -10,6 +25,7 @@ export interface CharacterClassDefinition {
   emoji: string;
   baseHp: number;
   baseEnergy: number;
+  innateAbilities: InnateAbility[];
 }
 
 // === POSIÇÃO HEXAGONAL (Coordenadas Axiais) ===

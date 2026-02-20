@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR } from '@/app/types/game';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility } from '@/app/types/game';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
 import { 
@@ -11,6 +11,13 @@ import {
   isValidHex,
   getTile
 } from './hexUtils';
+
+// Helper to get innate ability value by type
+function getInnateAbilityValue(characterClass: CharacterClass, abilityType: InnateAbility['type']): number {
+  const classDef = CHARACTER_CLASSES[characterClass];
+  const ability = classDef.innateAbilities.find(a => a.type === abilityType);
+  return ability?.value ?? 0;
+}
 
 // Configurações do mapa hexagonal
 const MAP_RADIUS = 4;
@@ -137,6 +144,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     const player = createInitialPlayer(characterClass);
     
+    // Apply innate abilities for turn 1
+    const passiveBlock = getInnateAbilityValue(characterClass, 'passiveBlock');
+    const energyRegen = getInnateAbilityValue(characterClass, 'energyRegen');
+    const bonusDraw = getInnateAbilityValue(characterClass, 'bonusDraw');
+    
+    player.block = passiveBlock;
+    player.energy = player.maxEnergy + energyRegen; // Extra energy on first turn
+    
     const initialState: Partial<GameState> = {
       player,
       deck,
@@ -153,7 +168,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
     };
     
-    const cardState = drawCards(initialState as GameState, HAND_SIZE);
+    // Draw cards including bonus draw from innate ability
+    const cardState = drawCards(initialState as GameState, HAND_SIZE + bonusDraw);
     
     set({
       ...initialState,
@@ -453,12 +469,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
         };
       });
       
-      player.block = 0;
+      // Apply innate abilities at start of player turn
+      const passiveBlock = getInnateAbilityValue(player.characterClass, 'passiveBlock');
+      const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
+      
+      player.block = passiveBlock; // Passive block replaces 0
       player.energy = player.maxEnergy;
       
       const cardState = drawCards(
         { ...state, discardPile, hand: [] } as GameState,
-        HAND_SIZE
+        HAND_SIZE + bonusDraw
       );
       
       set({
@@ -485,12 +505,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const nextFloor = state.floor + 1;
     const player = { ...state.player };
     
+    // Apply room healing innate ability before advancing
+    const roomHealing = getInnateAbilityValue(player.characterClass, 'roomHealing');
+    if (roomHealing > 0) {
+      player.hp = Math.min(player.maxHp, player.hp + roomHealing);
+    }
+    
     // Reset player position for new floor
     player.position = { q: -2, r: 0 };
-    // Keep current HP but reset block
-    player.block = 0;
-    // Restore energy for new floor
-    player.energy = player.maxEnergy;
+    
+    // Apply innate abilities for turn 1 of new floor
+    const passiveBlock = getInnateAbilityValue(player.characterClass, 'passiveBlock');
+    const energyRegen = getInnateAbilityValue(player.characterClass, 'energyRegen');
+    const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
+    
+    player.block = passiveBlock;
+    player.energy = player.maxEnergy + energyRegen; // Extra energy on first turn
     
     // Create new enemies for the next floor
     const enemies = createFloorEnemies(nextFloor);
@@ -499,13 +529,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const allCards = [...state.hand, ...state.drawPile, ...state.discardPile];
     const drawPile = shuffleArray(allCards);
     
-    // Draw new hand
+    // Draw new hand with bonus draw
     const cardState = drawCards({
       ...state,
       hand: [],
       drawPile,
       discardPile: [],
-    } as GameState, HAND_SIZE);
+    } as GameState, HAND_SIZE + bonusDraw);
     
     set({
       floor: nextFloor,

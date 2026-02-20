@@ -94,6 +94,28 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
           <span className="font-bold">{discardCount}</span>
         </button>
       </div>
+
+      {/* Habilidades Inatas */}
+      {classDef.innateAbilities.length > 0 && (
+        <>
+          <div className="border-t border-slate-600" />
+          <div className="space-y-1">
+            <div className="text-xs text-slate-500 uppercase tracking-wide">
+              Habilidades Inatas
+            </div>
+            {classDef.innateAbilities.map((ability, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2 text-xs text-slate-300 bg-slate-700/50 rounded px-2 py-1"
+                title={ability.description}
+              >
+                <span>{ability.emoji}</span>
+                <span className="text-amber-300">{ability.name}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

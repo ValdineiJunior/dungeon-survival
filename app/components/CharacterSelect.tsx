@@ -84,6 +84,26 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 </div>
               </div>
 
+              {/* Innate Abilities */}
+              {classDef.innateAbilities.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-slate-600">
+                  <div className="text-xs text-slate-500 uppercase tracking-wide mb-2">
+                    Habilidades Inatas
+                  </div>
+                  <div className="space-y-1">
+                    {classDef.innateAbilities.map((ability, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs">
+                        <span>{ability.emoji}</span>
+                        <div>
+                          <span className="text-amber-300 font-medium">{ability.name}:</span>
+                          <span className="text-slate-400 ml-1">{ability.description}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Hover effect border */}
               <div className="absolute inset-0 rounded-2xl border-2 border-amber-400/0 group-hover:border-amber-400/50 transition-colors pointer-events-none" />
             </button>

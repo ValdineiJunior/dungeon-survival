@@ -9,6 +9,15 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     emoji: '⚔️',
     baseHp: 90,
     baseEnergy: 3,
+    innateAbilities: [
+      {
+        type: 'passiveBlock',
+        value: 1,
+        name: 'Postura Defensiva',
+        description: 'Ganha 1 de bloqueio no início de cada turno',
+        emoji: '🛡️',
+      },
+    ],
   },
   archer: {
     id: 'archer',
@@ -17,6 +26,15 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     emoji: '🏹',
     baseHp: 70,
     baseEnergy: 3,
+    innateAbilities: [
+      {
+        type: 'bonusDraw',
+        value: 1,
+        name: 'Agilidade',
+        description: 'Compra 1 carta extra no início de cada turno',
+        emoji: '🃏',
+      },
+    ],
   },
   mage: {
     id: 'mage',
@@ -25,6 +43,15 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     emoji: '🔮',
     baseHp: 60,
     baseEnergy: 4,
+    innateAbilities: [
+      {
+        type: 'energyRegen',
+        value: 1,
+        name: 'Canalização Arcana',
+        description: 'Ganha 1 energia extra no primeiro turno de cada sala',
+        emoji: '✨',
+      },
+    ],
   },
 };
 
