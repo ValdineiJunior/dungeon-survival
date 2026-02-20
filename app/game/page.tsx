@@ -135,9 +135,19 @@ export default function GamePage() {
       {/* Combat area */}
       <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-4">
         
-        {/* Main layout: Hex Map + Enemies side by side */}
-        <div className="flex-1 flex gap-6 py-4">
-          {/* Hexagonal Map */}
+        {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
+        <div className="flex-1 flex gap-4 py-4">
+          {/* Left panel - Player Status */}
+          <div className="w-48">
+            <PlayerStatus
+              player={player}
+              deckCount={drawPile.length}
+              discardCount={discardPile.length}
+              classDef={classDef}
+            />
+          </div>
+
+          {/* Center - Hexagonal Map */}
           <div className="flex-1 flex items-center justify-center">
             <HexGrid
               map={hexMap}
@@ -150,9 +160,9 @@ export default function GamePage() {
             />
           </div>
           
-          {/* Side panel with enemies */}
-          <div className="w-72 flex flex-col gap-4">
-            <h3 className="text-amber-400 font-bold text-center">⚔️ Enemies</h3>
+          {/* Right panel - Enemies */}
+          <div className="w-56 flex flex-col gap-4">
+            <h3 className="text-amber-400 font-bold text-center">⚔️ Inimigos</h3>
             <div className="flex flex-col gap-3">
               {enemies.map((enemy) => (
                 <EnemyCard
@@ -165,7 +175,7 @@ export default function GamePage() {
             </div>
             
             {enemies.length === 0 && phase !== 'victory' && phase !== 'defeat' && (
-              <div className="text-slate-500 text-center">Loading...</div>
+              <div className="text-slate-500 text-center">Carregando...</div>
             )}
           </div>
         </div>
@@ -226,16 +236,6 @@ export default function GamePage() {
           </div>
         )}
 
-        {/* Player status */}
-        <div className="mb-4">
-          <PlayerStatus
-            player={player}
-            deckCount={drawPile.length}
-            discardCount={discardPile.length}
-            classDef={classDef}
-          />
-        </div>
-
         {/* Selection instructions */}
         {phase === 'selectingMovement' && (
           <div className="mb-2 text-center">
@@ -272,26 +272,10 @@ export default function GamePage() {
             energy={player.energy}
             selectedCard={selectedCard}
             onSelectCard={handleSelectCard}
+            onEndTurn={endTurn}
+            canEndTurn={phase === 'playerTurn'}
             disabled={phase !== 'playerTurn' && phase !== 'selectingMovement' && phase !== 'selectingTarget'}
           />
-          
-          {/* End turn button */}
-          <div className="flex justify-center pb-4">
-            <button
-              onClick={endTurn}
-              disabled={phase !== 'playerTurn'}
-              className={`
-                px-8 py-3 rounded-lg font-bold text-lg
-                transition-all duration-200
-                ${phase === 'playerTurn'
-                  ? 'bg-amber-500 hover:bg-amber-400 text-black hover:scale-105'
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                }
-              `}
-            >
-              End Turn
-            </button>
-          </div>
         </div>
       </main>
     </div>

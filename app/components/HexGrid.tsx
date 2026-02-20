@@ -24,10 +24,10 @@ export function HexGrid({
 }: HexGridProps) {
   
   const bounds = getMapBounds(map);
-  const width = bounds.maxX - bounds.minX + 40;
-  const height = bounds.maxY - bounds.minY + 40;
-  const offsetX = -bounds.minX + 20;
-  const offsetY = -bounds.minY + 20;
+  const width = bounds.maxX - bounds.minX + 30;
+  const height = bounds.maxY - bounds.minY + 30;
+  const offsetX = -bounds.minX + 15;
+  const offsetY = -bounds.minY + 15;
 
   // Check if position is valid for movement
   const isValidMove = (pos: HexPosition) => {
@@ -125,16 +125,16 @@ export function HexGrid({
               disabled={!isValid && !isTargetable && content.type === 'empty'}
               className={`
                 absolute
-                w-[70px] h-[80px]
+                w-[50px] h-[56px]
                 flex items-center justify-center
                 ${bgColor} ${borderColor} ${hoverClass} ${extraClasses}
                 border-2
                 transition-all duration-150
-                text-2xl
+                text-lg
               `}
               style={{
-                left: pixel.x + offsetX - 35 + 'px',
-                top: pixel.y + offsetY - 40 + 'px',
+                left: pixel.x + offsetX - 25 + 'px',
+                top: pixel.y + offsetY - 28 + 'px',
                 clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
               }}
               title={

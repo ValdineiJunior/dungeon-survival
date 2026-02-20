@@ -117,7 +117,7 @@ export function getTile(map: HexMap, pos: HexPosition): HexTile | undefined {
 // === CONVERSÃO PARA PIXELS (para renderização) ===
 
 // Tamanho do hex (raio do círculo circunscrito)
-const HEX_SIZE = 40;
+const HEX_SIZE = 28;
 
 // Converter coordenadas axiais para pixels (flat-top hexagons)
 export function hexToPixel(pos: HexPosition): { x: number; y: number } {
