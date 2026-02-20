@@ -368,6 +368,7 @@ export default function GamePage() {
           title="📚 Deck Completo"
           cards={deck}
           onClose={() => setShowDeckModal(false)}
+          showColors
         />
       )}
 

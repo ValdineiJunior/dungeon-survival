@@ -6,10 +6,12 @@ interface CardProps {
   card: CardType;
   disabled?: boolean;
   selected?: boolean;
+  grayscale?: boolean;
   onClick?: () => void;
 }
 
-export function Card({ card, disabled, selected, onClick }: CardProps) {
+export function Card({ card, disabled, selected, grayscale, onClick }: CardProps) {
+  const shouldGrayscale = grayscale ?? disabled;
   const typeColors = {
     attack: 'from-red-900 to-red-700 border-red-500',
     skill: 'from-blue-900 to-blue-700 border-blue-500',
@@ -34,9 +36,10 @@ export function Card({ card, disabled, selected, onClick }: CardProps) {
         flex flex-col p-2
         transform transition-all duration-200
         ${disabled 
-          ? 'opacity-50 cursor-not-allowed grayscale' 
+          ? 'opacity-50 cursor-not-allowed' 
           : 'hover:scale-110 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/50 cursor-pointer'
         }
+        ${shouldGrayscale ? 'grayscale' : ''}
         ${selected 
           ? 'ring-4 ring-yellow-400 scale-110 -translate-y-2' 
           : ''

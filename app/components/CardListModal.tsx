@@ -7,9 +7,10 @@ interface CardListModalProps {
   title: string;
   cards: CardType[];
   onClose: () => void;
+  showColors?: boolean;
 }
 
-export function CardListModal({ title, cards, onClose }: CardListModalProps) {
+export function CardListModal({ title, cards, onClose, showColors = false }: CardListModalProps) {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
       <div className="bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl max-w-4xl w-full mx-4 max-h-[85vh] flex flex-col">
@@ -33,7 +34,7 @@ export function CardListModal({ title, cards, onClose }: CardListModalProps) {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-items-center">
               {cards.map((card, index) => (
                 <div key={`${card.id}-${index}`} className="transform scale-90">
-                  <Card card={card} disabled />
+                  <Card card={card} disabled grayscale={!showColors} />
                 </div>
               ))}
             </div>
