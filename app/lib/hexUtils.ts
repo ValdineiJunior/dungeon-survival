@@ -119,10 +119,10 @@ export function getTile(map: HexMap, pos: HexPosition): HexTile | undefined {
 // Tamanho do hex (raio do círculo circunscrito)
 const HEX_SIZE = 28;
 
-// Converter coordenadas axiais para pixels (flat-top hexagons)
+// Converter coordenadas axiais para pixels (pointy-top hexagons)
 export function hexToPixel(pos: HexPosition): { x: number; y: number } {
-  const x = HEX_SIZE * (3/2 * pos.q);
-  const y = HEX_SIZE * (Math.sqrt(3)/2 * pos.q + Math.sqrt(3) * pos.r);
+  const x = HEX_SIZE * (Math.sqrt(3) * pos.q + Math.sqrt(3)/2 * pos.r);
+  const y = HEX_SIZE * (3/2 * pos.r);
   return { x, y };
 }
 

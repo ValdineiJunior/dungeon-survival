@@ -236,34 +236,32 @@ export default function GamePage() {
           </div>
         )}
 
-        {/* Selection instructions */}
-        {phase === 'selectingMovement' && (
-          <div className="mb-2 text-center">
-            <span className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200">
-              ⬡ Click on a green hexagon to move • 
+        {/* Selection instructions - fixed height to prevent layout shift */}
+        <div className="h-10 flex items-center justify-center">
+          {phase === 'selectingMovement' && (
+            <span className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200 text-sm">
+              ⬡ Clique em um hexágono verde para mover • 
               <button 
                 onClick={cancelSelection}
                 className="ml-2 underline hover:text-white"
               >
-                Cancel
+                Cancelar
               </button>
             </span>
-          </div>
-        )}
-        
-        {phase === 'selectingTarget' && (
-          <div className="mb-2 text-center">
-            <span className="px-4 py-2 bg-yellow-600/50 rounded-lg text-yellow-200">
-              🎯 Click on an enemy to attack with <strong>{selectedCard?.name}</strong> ({selectedCard?.damage} damage) • 
+          )}
+          
+          {phase === 'selectingTarget' && (
+            <span className="px-4 py-2 bg-yellow-600/50 rounded-lg text-yellow-200 text-sm">
+              🎯 Clique em um inimigo para atacar com <strong>{selectedCard?.name}</strong> ({selectedCard?.damage} dano) • 
               <button 
                 onClick={cancelSelection}
                 className="ml-2 underline hover:text-white"
               >
-                Cancel
+                Cancelar
               </button>
             </span>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Hand of cards */}
         <div className="bg-slate-900/50 rounded-t-3xl border-t border-x border-slate-700 backdrop-blur-sm">

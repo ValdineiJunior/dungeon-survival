@@ -125,7 +125,7 @@ export function HexGrid({
               disabled={!isValid && !isTargetable && content.type === 'empty'}
               className={`
                 absolute
-                w-[50px] h-[56px]
+                w-[56px] h-[50px]
                 flex items-center justify-center
                 ${bgColor} ${borderColor} ${hoverClass} ${extraClasses}
                 border-2
@@ -133,9 +133,9 @@ export function HexGrid({
                 text-lg
               `}
               style={{
-                left: pixel.x + offsetX - 25 + 'px',
-                top: pixel.y + offsetY - 28 + 'px',
-                clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+                left: pixel.x + offsetX - 28 + 'px',
+                top: pixel.y + offsetY - 25 + 'px',
+                clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
               }}
               title={
                 isTargetable 
