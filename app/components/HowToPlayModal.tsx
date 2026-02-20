@@ -139,6 +139,25 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
             </div>
           </section>
 
+          {/* Alcance de Ataque */}
+          <section>
+            <h3 className="text-lg font-bold text-amber-300 mb-3">📏 Alcance de Ataque</h3>
+            <p className="text-slate-300 text-sm mb-3">
+              Alguns inimigos podem atacar à distância! Fique atento ao indicador de alcance:
+            </p>
+            <div className="bg-orange-900/20 border border-orange-700/50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-orange-400">📏</span>
+                <span className="text-orange-300 font-bold">Alcance</span>
+                <span className="text-slate-400 text-sm">- Número de hexes que o inimigo pode atacar</span>
+              </div>
+              <p className="text-slate-400 text-xs">
+                Inimigos sem indicador de alcance atacam apenas corpo a corpo (1 hex). 
+                Inimigos com 📏2 ou 📏3 podem te acertar de longe - cuidado com o Dragão Ancião!
+              </p>
+            </div>
+          </section>
+
           {/* Mapa Hexagonal */}
           <section>
             <h3 className="text-lg font-bold text-amber-300 mb-3">🗺️ Mapa Hexagonal</h3>

@@ -73,7 +73,9 @@ export function EnemyCard({
               {enemy.name}
             </span>
             {enemy.block > 0 && (
-              <span className="text-blue-400 text-xs">🛡️{enemy.block}</span>
+              <span className="text-blue-400 text-xs" title={`Bloqueio: ${enemy.block} - Reduz o dano recebido`}>
+                🛡️{enemy.block}
+              </span>
             )}
           </div>
 
@@ -91,9 +93,16 @@ export function EnemyCard({
             />
           </div>
 
-          {/* HP text */}
-          <div className="text-xs text-gray-300 mt-0.5">
-            ❤️ {enemy.hp}/{enemy.maxHp}
+          {/* HP text and range */}
+          <div className="flex items-center justify-between text-xs text-gray-300 mt-0.5">
+            <span title={`Vida: ${enemy.hp} de ${enemy.maxHp}`}>
+              ❤️ {enemy.hp}/{enemy.maxHp}
+            </span>
+            {enemy.attackRange > 1 && (
+              <span className="text-orange-400" title={`Alcance: ${enemy.attackRange} hexes - Pode atacar à distância!`}>
+                📏{enemy.attackRange}
+              </span>
+            )}
           </div>
         </div>
 

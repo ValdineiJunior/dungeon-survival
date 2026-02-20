@@ -417,6 +417,7 @@ export function createEnemy(definitionId: string, instanceId: string, position: 
     hp,
     maxHp: hp,
     block: 0,
+    attackRange: def.attackRange,
     currentActionCard: firstCard,
     actionDrawPile: remainingDeck,
     actionDiscardPile: [],

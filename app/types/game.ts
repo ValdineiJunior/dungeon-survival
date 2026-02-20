@@ -84,6 +84,7 @@ export interface Enemy {
   hp: number;
   maxHp: number;
   block: number;
+  attackRange: number;  // Alcance de ataque em hexes
   currentActionCard: EnemyActionCard | null;
   actionDrawPile: EnemyActionCard[];    // Cards to draw from
   actionDiscardPile: EnemyActionCard[]; // Used cards
