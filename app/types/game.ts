@@ -93,7 +93,8 @@ export type GamePhase =
   | 'victory' 
   | 'defeat' 
   | 'selectingMovement'
-  | 'selectingTarget';  // Selecting enemy to attack
+  | 'selectingTarget'   // Selecting enemy to attack
+  | 'confirmingSkill';  // Confirming skill card use
 
 export interface GameState {
   // Estado do jogador

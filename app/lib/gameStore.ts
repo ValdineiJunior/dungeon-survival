@@ -70,6 +70,7 @@ interface GameActions {
   cancelSelection: () => void;
   moveToPosition: (position: HexPosition) => void;
   selectTarget: (enemyId: string) => void;
+  confirmSkill: () => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
   endTurn: () => void;
   resetGame: () => void;
@@ -193,21 +194,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
       if (enemiesInRange.length === 0) {
         // No enemies in range - can't use this card
         return;
-      } else if (enemiesInRange.length === 1) {
-        // Only one enemy in range - attack directly
-        get().playCard(card.id, enemiesInRange[0].id);
-      } else {
-        // Multiple enemies in range - let player choose
-        set({
-          selectedCard: card,
-          validMovePositions: [],
-          targetableEnemyIds: enemiesInRange.map(e => e.id),
-          phase: 'selectingTarget',
-        });
       }
+      
+      // Always let player confirm target selection
+      set({
+        selectedCard: card,
+        validMovePositions: [],
+        targetableEnemyIds: enemiesInRange.map(e => e.id),
+        phase: 'selectingTarget',
+      });
     } else if (card.type === 'skill') {
-      // Skills don't need target selection
-      get().playCard(card.id);
+      // Skill card: show confirmation
+      set({
+        selectedCard: card,
+        validMovePositions: [],
+        targetableEnemyIds: [],
+        phase: 'confirmingSkill',
+      });
     }
   },
   
@@ -251,7 +254,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
   
-  // NEW: Select an enemy to attack
+  // Select an enemy to attack
   selectTarget: (enemyId: string) => {
     const state = get();
     if (state.phase !== 'selectingTarget') return;
@@ -262,10 +265,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
     get().playCard(state.selectedCard.id, enemyId);
   },
   
+  // Confirm skill card use
+  confirmSkill: () => {
+    const state = get();
+    if (state.phase !== 'confirmingSkill') return;
+    if (!state.selectedCard) return;
+    
+    // Execute the skill
+    get().playCard(state.selectedCard.id);
+  },
+  
   playCard: (cardId: string, targetEnemyId?: string) => {
     const state = get();
     
-    if (state.phase !== 'playerTurn' && state.phase !== 'selectingMovement' && state.phase !== 'selectingTarget') return;
+    if (state.phase !== 'playerTurn' && state.phase !== 'selectingMovement' && state.phase !== 'selectingTarget' && state.phase !== 'confirmingSkill') return;
     
     const cardIndex = state.hand.findIndex(c => c.id === cardId);
     if (cardIndex === -1) return;
@@ -340,10 +353,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     if (state.phase !== 'playerTurn') return;
     
-    let discardPile = [...state.discardPile, ...state.hand];
+    const discardPile = [...state.discardPile, ...state.hand];
     
     // === TURNO DOS INIMIGOS ===
-    let player = { ...state.player };
+    const player = { ...state.player };
     let enemies = state.enemies.map(e => ({ ...e }));
     let phase: GamePhase = 'playerTurn';
     

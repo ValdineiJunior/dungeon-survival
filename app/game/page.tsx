@@ -33,6 +33,7 @@ export default function GamePage() {
     cancelSelection,
     moveToPosition,
     selectTarget,
+    confirmSkill,
     endTurn,
     resetGame,
   } = useGameStore();
@@ -261,6 +262,24 @@ export default function GamePage() {
               </button>
             </span>
           )}
+          
+          {phase === 'confirmingSkill' && (
+            <span className="px-4 py-2 bg-cyan-600/50 rounded-lg text-cyan-200 text-sm">
+              🛡️ Usar <strong>{selectedCard?.name}</strong> (+{selectedCard?.block} bloqueio)? 
+              <button 
+                onClick={confirmSkill}
+                className="ml-2 px-2 py-0.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded font-bold"
+              >
+                Confirmar
+              </button>
+              <button 
+                onClick={cancelSelection}
+                className="ml-2 underline hover:text-white"
+              >
+                Cancelar
+              </button>
+            </span>
+          )}
         </div>
 
         {/* Hand of cards */}
@@ -272,7 +291,7 @@ export default function GamePage() {
             onSelectCard={handleSelectCard}
             onEndTurn={endTurn}
             canEndTurn={phase === 'playerTurn'}
-            disabled={phase !== 'playerTurn' && phase !== 'selectingMovement' && phase !== 'selectingTarget'}
+            disabled={phase !== 'playerTurn' && phase !== 'selectingMovement' && phase !== 'selectingTarget' && phase !== 'confirmingSkill'}
           />
         </div>
       </main>
