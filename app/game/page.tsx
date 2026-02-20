@@ -8,16 +8,20 @@ import { EnemyCard } from '@/app/components/EnemyCard';
 import { PlayerStatus } from '@/app/components/PlayerStatus';
 import { HexGrid } from '@/app/components/HexGrid';
 import { CharacterSelect } from '@/app/components/CharacterSelect';
+import { CardListModal } from '@/app/components/CardListModal';
 import { Card, HexPosition, CharacterClass } from '@/app/types/game';
 import { CHARACTER_CLASSES } from '@/app/lib/cards';
 
 export default function GamePage() {
   const router = useRouter();
   const [showAbandonModal, setShowAbandonModal] = useState(false);
+  const [showDeckModal, setShowDeckModal] = useState(false);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
   
   const {
     player,
     hand,
+    deck,
     drawPile,
     discardPile,
     enemies,
@@ -142,9 +146,11 @@ export default function GamePage() {
           <div className="w-48">
             <PlayerStatus
               player={player}
-              deckCount={drawPile.length}
+              deckCount={deck.length}
               discardCount={discardPile.length}
               classDef={classDef}
+              onViewDeck={() => setShowDeckModal(true)}
+              onViewDiscard={() => setShowDiscardModal(true)}
             />
           </div>
 
@@ -295,6 +301,24 @@ export default function GamePage() {
           />
         </div>
       </main>
+
+      {/* Deck View Modal */}
+      {showDeckModal && (
+        <CardListModal
+          title="📚 Deck Completo"
+          cards={deck}
+          onClose={() => setShowDeckModal(false)}
+        />
+      )}
+
+      {/* Discard Pile Modal */}
+      {showDiscardModal && (
+        <CardListModal
+          title="🗑️ Pilha de Descarte"
+          cards={discardPile}
+          onClose={() => setShowDiscardModal(false)}
+        />
+      )}
     </div>
   );
 }

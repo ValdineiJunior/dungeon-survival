@@ -7,9 +7,11 @@ interface PlayerStatusProps {
   deckCount: number;
   discardCount: number;
   classDef: CharacterClassDefinition;
+  onViewDeck: () => void;
+  onViewDiscard: () => void;
 }
 
-export function PlayerStatus({ player, deckCount, discardCount, classDef }: PlayerStatusProps) {
+export function PlayerStatus({ player, deckCount, discardCount, classDef, onViewDeck, onViewDiscard }: PlayerStatusProps) {
   const hpPercentage = (player.hp / player.maxHp) * 100;
 
   return (
@@ -75,16 +77,22 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef }: Play
       {/* Separador */}
       <div className="border-t border-slate-600" />
 
-      {/* Contadores de deck */}
+      {/* Contadores de deck - clicáveis */}
       <div className="space-y-2 text-sm">
-        <div className="flex items-center justify-between text-gray-300">
-          <span>📚 Deck</span>
+        <button
+          onClick={onViewDeck}
+          className="w-full flex items-center justify-between text-gray-300 hover:text-amber-400 hover:bg-slate-700/50 rounded px-2 py-1 transition-colors"
+        >
+          <span>📚 Deck Completo</span>
           <span className="font-bold">{deckCount}</span>
-        </div>
-        <div className="flex items-center justify-between text-gray-300">
+        </button>
+        <button
+          onClick={onViewDiscard}
+          className="w-full flex items-center justify-between text-gray-300 hover:text-amber-400 hover:bg-slate-700/50 rounded px-2 py-1 transition-colors"
+        >
           <span>🗑️ Descarte</span>
           <span className="font-bold">{discardCount}</span>
-        </div>
+        </button>
       </div>
     </div>
   );
