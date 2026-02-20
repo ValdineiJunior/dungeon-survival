@@ -421,6 +421,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     for (const enemy of enemies) {
       if (!enemy.currentActionCard) continue;
       
+      // Reset enemy block at the start of their turn
+      enemy.block = 0;
+      
       // Execute each action in the enemy's action card
       for (const action of enemy.currentActionCard.actions) {
         const continueGame = executeEnemyAction(enemy, action);
