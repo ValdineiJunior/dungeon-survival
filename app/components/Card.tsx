@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Card as CardType } from '@/app/types/game';
+import { Card as CardType } from "@/app/types/game";
 
 interface CardProps {
   card: CardType;
@@ -10,20 +10,26 @@ interface CardProps {
   onClick?: () => void;
 }
 
-export function Card({ card, disabled, selected, grayscale, onClick }: CardProps) {
+export function Card({
+  card,
+  disabled,
+  selected,
+  grayscale,
+  onClick,
+}: CardProps) {
   const shouldGrayscale = grayscale ?? disabled;
   const typeColors = {
-    attack: 'from-red-900 to-red-700 border-red-500',
-    skill: 'from-blue-900 to-blue-700 border-blue-500',
-    power: 'from-yellow-900 to-yellow-700 border-yellow-500',
-    movement: 'from-green-900 to-green-700 border-green-500',
+    attack: "from-red-900 to-red-700 border-red-500",
+    skill: "from-blue-900 to-blue-700 border-blue-500",
+    power: "from-yellow-900 to-yellow-700 border-yellow-500",
+    movement: "from-green-900 to-green-700 border-green-500",
   };
 
   const typeIcons = {
-    attack: '⚔️',
-    skill: '🛡️',
-    power: '✨',
-    movement: '👟',
+    attack: "⚔️",
+    skill: "🛡️",
+    power: "✨",
+    movement: "👟",
   };
 
   return (
@@ -31,19 +37,17 @@ export function Card({ card, disabled, selected, grayscale, onClick }: CardProps
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative w-32 h-44 rounded-lg border-2 
+        relative w-36 h-48 rounded-lg border-2 
         bg-gradient-to-b ${typeColors[card.type]}
-        flex flex-col p-2
+        flex flex-col p-1
         transform transition-all duration-200
-        ${disabled 
-          ? 'opacity-50 cursor-not-allowed' 
-          : 'hover:scale-110 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/50 cursor-pointer'
+        ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:scale-110 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/50 cursor-pointer"
         }
-        ${shouldGrayscale ? 'grayscale' : ''}
-        ${selected 
-          ? 'ring-4 ring-yellow-400 scale-110 -translate-y-2' 
-          : ''
-        }
+        ${shouldGrayscale ? "grayscale" : ""}
+        ${selected ? "ring-4 ring-yellow-400 scale-110 -translate-y-2" : ""}
         shadow-lg
       `}
     >

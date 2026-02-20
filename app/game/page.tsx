@@ -349,7 +349,7 @@ export default function GamePage() {
         </div>
 
         {/* Hand of cards */}
-        <div className="bg-slate-900/50 rounded-t-3xl border-t border-x border-slate-700 backdrop-blur-sm">
+        <div className="bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm">
           <Hand
             cards={hand}
             energy={player.energy}
