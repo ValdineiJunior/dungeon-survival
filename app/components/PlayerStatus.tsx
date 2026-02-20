@@ -1,27 +1,28 @@
 'use client';
 
-import { Player } from '@/app/types/game';
+import { Player, CharacterClassDefinition } from '@/app/types/game';
 
 interface PlayerStatusProps {
   player: Player;
   deckCount: number;
   discardCount: number;
+  classDef: CharacterClassDefinition;
 }
 
-export function PlayerStatus({ player, deckCount, discardCount }: PlayerStatusProps) {
+export function PlayerStatus({ player, deckCount, discardCount, classDef }: PlayerStatusProps) {
   const hpPercentage = (player.hp / player.maxHp) * 100;
 
   return (
     <div className="flex items-center gap-6 p-4 bg-slate-800/80 rounded-xl border border-slate-600 backdrop-blur-sm">
       {/* Avatar do jogador */}
       <div className="text-5xl">
-        🧙
+        {classDef.emoji}
       </div>
 
       <div className="flex-1 space-y-2">
         {/* Nome, Posição e HP */}
         <div className="flex items-center gap-4">
-          <span className="text-white font-bold text-lg">Herói</span>
+          <span className="text-white font-bold text-lg">{classDef.name}</span>
           
           {/* Posição hexagonal */}
           <span className="text-slate-500 text-sm font-mono">

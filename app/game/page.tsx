@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useGameStore } from '@/app/lib/gameStore';
 import { Hand } from '@/app/components/Hand';
 import { EnemyCard } from '@/app/components/EnemyCard';
 import { PlayerStatus } from '@/app/components/PlayerStatus';
 import { HexGrid } from '@/app/components/HexGrid';
-import { Card, HexPosition } from '@/app/types/game';
+import { CharacterSelect } from '@/app/components/CharacterSelect';
+import { Card, HexPosition, CharacterClass } from '@/app/types/game';
+import { CHARACTER_CLASSES } from '@/app/lib/cards';
 
 export default function GamePage() {
   const {
@@ -21,6 +22,7 @@ export default function GamePage() {
     selectedCard,
     validMovePositions,
     targetableEnemyIds,
+    selectCharacter,
     startCombat,
     selectCard,
     cancelSelection,
@@ -30,12 +32,10 @@ export default function GamePage() {
     resetGame,
   } = useGameStore();
 
-  // Start combat when page loads
-  useEffect(() => {
-    if (enemies.length === 0 && phase !== 'victory' && phase !== 'defeat') {
-      startCombat(['slime', 'goblin']);
-    }
-  }, [enemies.length, phase, startCombat]);
+  const handleCharacterSelect = (characterClass: CharacterClass) => {
+    selectCharacter(characterClass);
+    startCombat(['slime', 'goblin']);
+  };
 
   const handleSelectCard = (card: Card) => {
     if (selectedCard?.id === card.id) {
@@ -61,6 +61,13 @@ export default function GamePage() {
     resetGame();
     startCombat(['slime', 'goblin']);
   };
+
+  // Show character select screen
+  if (phase === 'characterSelect') {
+    return <CharacterSelect onSelect={handleCharacterSelect} />;
+  }
+
+  const classDef = CHARACTER_CLASSES[player.characterClass];
 
   const getPhaseLabel = () => {
     switch (phase) {
@@ -180,6 +187,7 @@ export default function GamePage() {
             player={player}
             deckCount={drawPile.length}
             discardCount={discardPile.length}
+            classDef={classDef}
           />
         </div>
 

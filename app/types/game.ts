@@ -1,5 +1,17 @@
 // Tipos base do jogo Dungeon Survival
 
+// === CLASSES DE PERSONAGEM ===
+export type CharacterClass = 'warrior' | 'archer' | 'mage';
+
+export interface CharacterClassDefinition {
+  id: CharacterClass;
+  name: string;
+  description: string;
+  emoji: string;
+  baseHp: number;
+  baseEnergy: number;
+}
+
 // === POSIÇÃO HEXAGONAL (Coordenadas Axiais) ===
 // Usamos sistema axial (q, r) que facilita cálculos
 // q = coluna, r = linha (em offset)
@@ -21,7 +33,8 @@ export interface Card {
   type: CardType;
   damage?: number;
   block?: number;
-  range?: number;      // Alcance do ataque (em hexes)
+  range?: number;      // Alcance máximo do ataque (em hexes)
+  minRange?: number;   // Alcance mínimo do ataque (para ataques à distância)
   movement?: number;   // Quantidade de movimento (em hexes)
   description: string;
   effects?: CardEffect[];
@@ -48,6 +61,7 @@ export interface Enemy {
 }
 
 export interface Player {
+  characterClass: CharacterClass;
   hp: number;
   maxHp: number;
   energy: number;
@@ -73,12 +87,13 @@ export interface HexMap {
 
 // === ESTADO DO JOGO ===
 export type GamePhase = 
+  | 'characterSelect'   // Selecting character class
   | 'playerTurn' 
   | 'enemyTurn' 
   | 'victory' 
   | 'defeat' 
   | 'selectingMovement'
-  | 'selectingTarget';  // NEW: Selecting enemy to attack
+  | 'selectingTarget';  // Selecting enemy to attack
 
 export interface GameState {
   // Estado do jogador

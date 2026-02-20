@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap } from '@/app/types/game';
-import { createStarterDeck, shuffleArray } from './cards';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass } from '@/app/types/game';
+import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
 import { createEnemy, getEnemyAction, getEnemyDefinitionByName, ENEMY_DEFINITIONS } from './enemies';
 import { 
   createHexMap, 
@@ -15,9 +15,25 @@ import {
 // Configurações do mapa hexagonal
 const MAP_RADIUS = 4;
 
+// Create initial player based on character class
+function createInitialPlayer(characterClass: CharacterClass): Player {
+  const classDef = CHARACTER_CLASSES[characterClass];
+  return {
+    characterClass,
+    hp: classDef.baseHp,
+    maxHp: classDef.baseHp,
+    energy: classDef.baseEnergy,
+    maxEnergy: classDef.baseEnergy,
+    block: 0,
+    position: { q: -2, r: 0 },
+  };
+}
+
+// Default player for initial state
 const INITIAL_PLAYER: Player = {
-  hp: 80,
-  maxHp: 80,
+  characterClass: 'warrior',
+  hp: 90,
+  maxHp: 90,
   energy: 3,
   maxEnergy: 3,
   block: 0,
@@ -39,17 +55,21 @@ function getBlockedPositions(player: Player, enemies: Enemy[]): HexPosition[] {
   return [player.position, ...enemies.map(e => e.position)];
 }
 
-// Encontrar inimigos no alcance
-function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: number): Enemy[] {
-  return enemies.filter(e => hexDistance(playerPos, e.position) <= range);
+// Encontrar inimigos no alcance (considerando minRange e maxRange)
+function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: number, minRange: number = 1): Enemy[] {
+  return enemies.filter(e => {
+    const distance = hexDistance(playerPos, e.position);
+    return distance >= minRange && distance <= range;
+  });
 }
 
 interface GameActions {
+  selectCharacter: (characterClass: CharacterClass) => void;
   startCombat: (enemyIds: string[]) => void;
   selectCard: (card: Card) => void;
   cancelSelection: () => void;
   moveToPosition: (position: HexPosition) => void;
-  selectTarget: (enemyId: string) => void;  // NEW: Select enemy target
+  selectTarget: (enemyId: string) => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
   endTurn: () => void;
   resetGame: () => void;
@@ -81,7 +101,7 @@ function drawCards(state: GameState, amount: number): { hand: Card[]; drawPile: 
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
-  // Estado inicial
+  // Estado inicial - começa na seleção de personagem
   player: { ...INITIAL_PLAYER },
   deck: [],
   hand: [],
@@ -89,14 +109,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
   discardPile: [],
   enemies: [],
   hexMap: createHexMap(MAP_RADIUS),
-  phase: 'playerTurn',
+  phase: 'characterSelect',
   turn: 1,
   selectedCard: null,
   validMovePositions: [],
   targetableEnemyIds: [],
   
+  selectCharacter: (characterClass: CharacterClass) => {
+    const player = createInitialPlayer(characterClass);
+    set({ player });
+  },
+  
   startCombat: (enemyIds: string[]) => {
-    const deck = createStarterDeck();
+    const state = get();
+    const characterClass = state.player.characterClass;
+    
+    const deck = createClassDeck(characterClass);
     const drawPile = shuffleArray([...deck]);
     const hexMap = createHexMap(MAP_RADIUS);
     
@@ -110,8 +138,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       createEnemy(id, `${id}_${index}`, enemyPositions[index] || { q: 3, r: index - 1 })
     );
     
+    const player = createInitialPlayer(characterClass);
+    
     const initialState: Partial<GameState> = {
-      player: { ...INITIAL_PLAYER },
+      player,
       deck,
       hand: [],
       drawPile,
@@ -157,7 +187,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     } else if (card.type === 'attack' && card.damage) {
       // Attack card: show targetable enemies
       const range = card.range || 1;
-      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range);
+      const minRange = card.minRange || 1;
+      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range, minRange);
       
       if (enemiesInRange.length === 0) {
         // No enemies in range - can't use this card
@@ -254,10 +285,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     if (card.type === 'attack' && card.damage) {
       const range = card.range || 1;
+      const minRange = card.minRange || 1;
       
       let targetId = targetEnemyId;
       if (!targetId) {
-        const inRange = getEnemiesInRange(state.player.position, newEnemies, range);
+        const inRange = getEnemiesInRange(state.player.position, newEnemies, range, minRange);
         targetId = inRange[0]?.id;
       }
       
@@ -266,8 +298,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         
         if (targetIndex !== -1) {
           const target = { ...newEnemies[targetIndex] };
+          const distance = hexDistance(state.player.position, target.position);
           
-          if (hexDistance(state.player.position, target.position) <= range) {
+          if (distance >= minRange && distance <= range) {
             let damage = card.damage;
             
             if (target.block > 0) {
@@ -424,7 +457,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: [],
       enemies: [],
       hexMap: createHexMap(MAP_RADIUS),
-      phase: 'playerTurn',
+      phase: 'characterSelect',
       turn: 1,
       selectedCard: null,
       validMovePositions: [],
