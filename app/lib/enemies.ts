@@ -11,6 +11,16 @@ export interface EnemyDefinition {
   actionCards: EnemyActionCard[];
 }
 
+// Shuffle array using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
   slime: {
     id: 'slime',
@@ -125,13 +135,18 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
   },
 };
 
-// Cria uma instância de inimigo
+// Cria uma instância de inimigo com deck embaralhado
 export function createEnemy(definitionId: string, instanceId: string, position: HexPosition): Enemy {
   const def = ENEMY_DEFINITIONS[definitionId];
   if (!def) throw new Error(`Enemy definition not found: ${definitionId}`);
   
   const hp = Math.floor(Math.random() * (def.maxHp - def.minHp + 1)) + def.minHp;
-  const firstActionCard = def.actionCards[0];
+  
+  // Shuffle the action cards to create the draw pile
+  const shuffledDeck = shuffleArray(def.actionCards);
+  
+  // Draw the first card
+  const [firstCard, ...remainingDeck] = shuffledDeck;
   
   return {
     id: instanceId,
@@ -140,18 +155,41 @@ export function createEnemy(definitionId: string, instanceId: string, position: 
     hp,
     maxHp: hp,
     block: 0,
-    currentActionCard: firstActionCard,
+    currentActionCard: firstCard,
+    actionDrawPile: remainingDeck,
+    actionDiscardPile: [],
     position,
   };
 }
 
-// Determina a próxima carta de ação do inimigo baseado no turno
-export function getEnemyActionCard(definitionId: string, turn: number): EnemyActionCard {
-  const def = ENEMY_DEFINITIONS[definitionId];
-  if (!def) throw new Error(`Enemy definition not found: ${definitionId}`);
+// Draw the next action card for an enemy
+// Returns updated enemy with new current card, draw pile, and discard pile
+export function drawNextActionCard(enemy: Enemy): {
+  currentActionCard: EnemyActionCard;
+  actionDrawPile: EnemyActionCard[];
+  actionDiscardPile: EnemyActionCard[];
+} {
+  // Move current card to discard pile
+  const newDiscardPile = enemy.currentActionCard 
+    ? [...enemy.actionDiscardPile, enemy.currentActionCard]
+    : [...enemy.actionDiscardPile];
   
-  const patternIndex = turn % def.actionCards.length;
-  return def.actionCards[patternIndex];
+  let newDrawPile = [...enemy.actionDrawPile];
+  
+  // If draw pile is empty, shuffle discard pile into draw pile
+  if (newDrawPile.length === 0) {
+    newDrawPile = shuffleArray(newDiscardPile);
+    newDiscardPile.length = 0; // Clear discard pile
+  }
+  
+  // Draw the next card
+  const [nextCard, ...remainingDeck] = newDrawPile;
+  
+  return {
+    currentActionCard: nextCard,
+    actionDrawPile: remainingDeck,
+    actionDiscardPile: newDiscardPile.length === 0 ? [] : newDiscardPile,
+  };
 }
 
 // Obter definição de inimigo pelo nome

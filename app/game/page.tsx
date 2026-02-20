@@ -9,7 +9,8 @@ import { PlayerStatus } from '@/app/components/PlayerStatus';
 import { HexGrid } from '@/app/components/HexGrid';
 import { CharacterSelect } from '@/app/components/CharacterSelect';
 import { CardListModal } from '@/app/components/CardListModal';
-import { Card, HexPosition, CharacterClass } from '@/app/types/game';
+import { EnemyActionsModal } from '@/app/components/EnemyActionsModal';
+import { Card, HexPosition, CharacterClass, Enemy } from '@/app/types/game';
 import { CHARACTER_CLASSES } from '@/app/lib/cards';
 
 export default function GamePage() {
@@ -17,6 +18,7 @@ export default function GamePage() {
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showDeckModal, setShowDeckModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [selectedEnemyForActions, setSelectedEnemyForActions] = useState<Enemy | null>(null);
   
   const {
     player,
@@ -177,6 +179,7 @@ export default function GamePage() {
                   enemy={enemy}
                   isTargetable={targetableEnemyIds.includes(enemy.id)}
                   onClick={() => handleEnemyClick(enemy.id)}
+                  onViewActions={() => setSelectedEnemyForActions(enemy)}
                 />
               ))}
             </div>
@@ -317,6 +320,18 @@ export default function GamePage() {
           title="🗑️ Pilha de Descarte"
           cards={discardPile}
           onClose={() => setShowDiscardModal(false)}
+        />
+      )}
+
+      {/* Enemy Actions Modal */}
+      {selectedEnemyForActions && (
+        <EnemyActionsModal
+          enemyName={selectedEnemyForActions.name}
+          enemyEmoji={selectedEnemyForActions.emoji}
+          currentActionCard={selectedEnemyForActions.currentActionCard}
+          drawPile={selectedEnemyForActions.actionDrawPile}
+          discardPile={selectedEnemyForActions.actionDiscardPile}
+          onClose={() => setSelectedEnemyForActions(null)}
         />
       )}
     </div>

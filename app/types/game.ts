@@ -69,6 +69,8 @@ export interface Enemy {
   maxHp: number;
   block: number;
   currentActionCard: EnemyActionCard | null;
+  actionDrawPile: EnemyActionCard[];    // Cards to draw from
+  actionDiscardPile: EnemyActionCard[]; // Used cards
   position: HexPosition;
   emoji: string;
 }

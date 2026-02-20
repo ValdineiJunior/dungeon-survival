@@ -7,6 +7,7 @@ interface EnemyCardProps {
   isTargetable?: boolean;
   isTargeted?: boolean;
   onClick?: () => void;
+  onViewActions?: () => void;
 }
 
 const actionIcons: Record<EnemyIntent, { icon: string; color: string }> = {
@@ -17,14 +18,18 @@ const actionIcons: Record<EnemyIntent, { icon: string; color: string }> = {
   move: { icon: '👟', color: 'text-yellow-400' },
 };
 
-export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCardProps) {
+export function EnemyCard({ enemy, isTargetable, isTargeted, onClick, onViewActions }: EnemyCardProps) {
   const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
   const actionCard = enemy.currentActionCard;
 
+  const handleViewActions = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onViewActions?.();
+  };
+
   return (
-    <button
-      onClick={onClick}
-      disabled={!isTargetable}
+    <div
+      onClick={isTargetable ? onClick : undefined}
       className={`
         relative p-3 rounded-xl 
         bg-gradient-to-b from-slate-800 to-slate-900
@@ -33,7 +38,7 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCar
           ? 'border-yellow-400 shadow-yellow-400/50 hover:bg-slate-700 cursor-pointer animate-pulse ring-2 ring-yellow-400' 
           : isTargeted 
             ? 'border-yellow-400 shadow-yellow-400/50' 
-            : 'border-slate-600 cursor-default'
+            : 'border-slate-600'
         }
         shadow-lg transition-all duration-200
         w-full
@@ -91,8 +96,17 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCar
       {/* Enemy Action Card */}
       {actionCard && (
         <div className="mt-2 p-2 rounded-lg bg-red-950/50 border border-red-800">
-          <div className="text-xs text-red-300 font-bold mb-1 truncate">
-            {actionCard.name}
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-red-300 font-bold truncate flex-1">
+              {actionCard.name}
+            </span>
+            <button
+              onClick={handleViewActions}
+              className="ml-2 p-1 rounded hover:bg-red-800/50 text-red-400 hover:text-red-300 transition-colors"
+              title="Ver todas as ações"
+            >
+              🃏
+            </button>
           </div>
           <div className="flex flex-wrap gap-2">
             {actionCard.actions.map((action, index) => {
@@ -117,6 +131,6 @@ export function EnemyCard({ enemy, isTargetable, isTargeted, onClick }: EnemyCar
           Clique para atacar!
         </div>
       )}
-    </button>
+    </div>
   );
 }

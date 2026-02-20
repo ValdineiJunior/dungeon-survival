@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction } from '@/app/types/game';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
-import { createEnemy, getEnemyActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS } from './enemies';
+import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS } from './enemies';
 import { 
   createHexMap, 
   hexDistance, 
@@ -436,21 +436,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (phase !== 'defeat') {
       const newTurn = state.turn + 1;
       
-      // Update enemies with their next action card
+      // Update enemies: draw next action card from their deck
       enemies = enemies.map(enemy => {
-        const defEntry = Object.entries(ENEMY_DEFINITIONS).find(
-          ([, def]) => def.name === enemy.name
-        );
-        
-        if (defEntry) {
-          const [defId] = defEntry;
-          const nextActionCard = getEnemyActionCard(defId, newTurn);
-          return {
-            ...enemy,
-            currentActionCard: nextActionCard,
-          };
-        }
-        return enemy;
+        const nextCardState = drawNextActionCard(enemy);
+        return {
+          ...enemy,
+          currentActionCard: nextCardState.currentActionCard,
+          actionDrawPile: nextCardState.actionDrawPile,
+          actionDiscardPile: nextCardState.actionDiscardPile,
+        };
       });
       
       player.block = 0;
