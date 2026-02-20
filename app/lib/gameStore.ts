@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction } from '@/app/types/game';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR } from '@/app/types/game';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
-import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS } from './enemies';
+import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
 import { 
   createHexMap, 
   hexDistance, 
@@ -65,7 +65,7 @@ function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: numb
 
 interface GameActions {
   selectCharacter: (characterClass: CharacterClass) => void;
-  startCombat: (enemyIds: string[]) => void;
+  startCombat: () => void;
   selectCard: (card: Card) => void;
   cancelSelection: () => void;
   moveToPosition: (position: HexPosition) => void;
@@ -73,6 +73,7 @@ interface GameActions {
   confirmSkill: () => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
   endTurn: () => void;
+  advanceFloor: () => void;
   resetGame: () => void;
 }
 
@@ -112,32 +113,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
   hexMap: createHexMap(MAP_RADIUS),
   phase: 'characterSelect',
   turn: 1,
+  floor: 1,
   selectedCard: null,
   validMovePositions: [],
   targetableEnemyIds: [],
-  
+
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
     set({ player });
   },
-  
-  startCombat: (enemyIds: string[]) => {
+
+  startCombat: () => {
     const state = get();
     const characterClass = state.player.characterClass;
+    const floor = state.floor;
     
     const deck = createClassDeck(characterClass);
     const drawPile = shuffleArray([...deck]);
     const hexMap = createHexMap(MAP_RADIUS);
     
-    const enemyPositions: HexPosition[] = [
-      { q: 2, r: -1 },
-      { q: 2, r: 1 },
-      { q: 3, r: 0 },
-    ];
-    
-    const enemies = enemyIds.map((id, index) => 
-      createEnemy(id, `${id}_${index}`, enemyPositions[index] || { q: 3, r: index - 1 })
-    );
+    // Create enemies based on current floor
+    const enemies = createFloorEnemies(floor);
     
     const player = createInitialPlayer(characterClass);
     
@@ -151,6 +147,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hexMap,
       phase: 'playerTurn',
       turn: 1,
+      floor,
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
@@ -335,7 +332,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     
     const newDiscardPile = [...state.discardPile, card];
-    const phase: GamePhase = newEnemies.length === 0 ? 'victory' : 'playerTurn';
+    
+    // Check if floor is cleared
+    let phase: GamePhase = 'playerTurn';
+    if (newEnemies.length === 0) {
+      // If final floor, victory! Otherwise, floor complete
+      phase = state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
+    }
     
     set({
       hand: newHand,
@@ -475,6 +478,50 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
   },
   
+  advanceFloor: () => {
+    const state = get();
+    if (state.phase !== 'floorComplete') return;
+    
+    const nextFloor = state.floor + 1;
+    const player = { ...state.player };
+    
+    // Reset player position for new floor
+    player.position = { q: -2, r: 0 };
+    // Keep current HP but reset block
+    player.block = 0;
+    // Restore energy for new floor
+    player.energy = player.maxEnergy;
+    
+    // Create new enemies for the next floor
+    const enemies = createFloorEnemies(nextFloor);
+    
+    // Shuffle all cards back into draw pile
+    const allCards = [...state.hand, ...state.drawPile, ...state.discardPile];
+    const drawPile = shuffleArray(allCards);
+    
+    // Draw new hand
+    const cardState = drawCards({
+      ...state,
+      hand: [],
+      drawPile,
+      discardPile: [],
+    } as GameState, HAND_SIZE);
+    
+    set({
+      floor: nextFloor,
+      player,
+      enemies,
+      hand: cardState.hand,
+      drawPile: cardState.drawPile,
+      discardPile: cardState.discardPile,
+      phase: 'playerTurn',
+      turn: 1,
+      selectedCard: null,
+      validMovePositions: [],
+      targetableEnemyIds: [],
+    });
+  },
+
   resetGame: () => {
     set({
       player: { ...INITIAL_PLAYER },
@@ -486,6 +533,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hexMap: createHexMap(MAP_RADIUS),
       phase: 'characterSelect',
       turn: 1,
+      floor: 1,
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],

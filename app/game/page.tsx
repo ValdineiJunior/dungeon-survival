@@ -12,6 +12,7 @@ import { CardListModal } from '@/app/components/CardListModal';
 import { EnemyActionsModal } from '@/app/components/EnemyActionsModal';
 import { Card, HexPosition, CharacterClass, Enemy } from '@/app/types/game';
 import { CHARACTER_CLASSES } from '@/app/lib/cards';
+import { getFloorConfig } from '@/app/lib/enemies';
 
 export default function GamePage() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function GamePage() {
     hexMap,
     phase,
     turn,
+    floor,
     selectedCard,
     validMovePositions,
     targetableEnemyIds,
@@ -41,12 +43,13 @@ export default function GamePage() {
     selectTarget,
     confirmSkill,
     endTurn,
+    advanceFloor,
     resetGame,
   } = useGameStore();
 
   const handleCharacterSelect = (characterClass: CharacterClass) => {
     selectCharacter(characterClass);
-    startCombat(['slime', 'goblin']);
+    startCombat();
   };
 
   const handleSelectCard = (card: Card) => {
@@ -71,7 +74,6 @@ export default function GamePage() {
 
   const handleRestart = () => {
     resetGame();
-    startCombat(['slime', 'goblin']);
   };
 
   const handleAbandonQuest = () => {
@@ -85,15 +87,18 @@ export default function GamePage() {
   }
 
   const classDef = CHARACTER_CLASSES[player.characterClass];
+  const floorConfig = getFloorConfig(floor);
 
   const getPhaseLabel = () => {
     switch (phase) {
-      case 'playerTurn': return 'Your turn';
-      case 'enemyTurn': return 'Enemy turn';
-      case 'selectingMovement': return 'Select destination';
-      case 'selectingTarget': return '🎯 Select target';
-      case 'victory': return '🎉 Victory!';
-      case 'defeat': return '💀 Defeat';
+      case 'playerTurn': return 'Seu Turno';
+      case 'enemyTurn': return 'Turno Inimigo';
+      case 'selectingMovement': return 'Selecione Destino';
+      case 'selectingTarget': return '🎯 Selecione Alvo';
+      case 'confirmingSkill': return 'Confirmar Habilidade';
+      case 'floorComplete': return '🏆 Andar Completo!';
+      case 'victory': return '🎉 Vitória!';
+      case 'defeat': return '💀 Derrota';
       default: return phase;
     }
   };
@@ -103,6 +108,8 @@ export default function GamePage() {
       case 'playerTurn': return 'bg-green-600 text-white';
       case 'selectingMovement': return 'bg-blue-600 text-white';
       case 'selectingTarget': return 'bg-yellow-500 text-black';
+      case 'confirmingSkill': return 'bg-purple-600 text-white';
+      case 'floorComplete': return 'bg-emerald-500 text-white';
       case 'victory': return 'bg-amber-500 text-black';
       case 'defeat': return 'bg-red-600 text-white';
       default: return 'bg-gray-600 text-white';
@@ -121,11 +128,18 @@ export default function GamePage() {
       {/* Header */}
       <header className="relative z-10 p-4 border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-amber-400 tracking-wider">
-            ⬡ Dungeon Survival
-          </h1>
           <div className="flex items-center gap-4">
-            <span className="text-slate-400">Turn {turn}</span>
+            <h1 className="text-2xl font-bold text-amber-400 tracking-wider">
+              ⬡ Dungeon Survival
+            </h1>
+            <div className="px-3 py-1 rounded bg-slate-800 border border-slate-600">
+              <span className="text-slate-400 text-sm">Andar </span>
+              <span className="text-amber-400 font-bold">{floor}/4</span>
+              <span className="text-slate-500 text-xs ml-2">- {floorConfig.name}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-slate-400">Turno {turn}</span>
             <span className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}>
               {getPhaseLabel()}
             </span>
@@ -185,34 +199,72 @@ export default function GamePage() {
               ))}
             </div>
             
-            {enemies.length === 0 && phase !== 'victory' && phase !== 'defeat' && (
+            {enemies.length === 0 && phase !== 'victory' && phase !== 'defeat' && phase !== 'floorComplete' && (
               <div className="text-slate-500 text-center">Carregando...</div>
             )}
           </div>
         </div>
 
+        {/* Floor Complete screen */}
+        {phase === 'floorComplete' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20">
+            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-emerald-600 shadow-2xl max-w-md">
+              <div className="text-6xl mb-4">🏆</div>
+              <h2 className="text-3xl font-bold text-emerald-400 mb-2">
+                Andar {floor} Completo!
+              </h2>
+              <p className="text-slate-400 text-sm mb-4">{floorConfig.name}</p>
+              <p className="text-slate-300 mb-2">
+                Você derrotou todos os inimigos deste andar!
+              </p>
+              <p className="text-amber-400 mb-6">
+                Preparado para o próximo desafio?
+              </p>
+              <div className="bg-slate-900/50 rounded-lg p-4 mb-6">
+                <p className="text-slate-400 text-sm mb-2">Próximo andar:</p>
+                <p className="text-lg font-bold text-amber-300">{getFloorConfig(floor + 1).name}</p>
+                <p className="text-slate-500 text-xs mt-1">{getFloorConfig(floor + 1).description}</p>
+              </div>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={handleRestart}
+                  className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
+                >
+                  Desistir
+                </button>
+                <button
+                  onClick={advanceFloor}
+                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
+                >
+                  Avançar ao Andar {floor + 1} →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* End game screen */}
         {(phase === 'victory' || phase === 'defeat') && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20">
-            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl">
+            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
               <div className="text-6xl mb-4">
-                {phase === 'victory' ? '🏆' : '💀'}
+                {phase === 'victory' ? '🐉' : '💀'}
               </div>
               <h2 className={`text-4xl font-bold mb-4 ${
                 phase === 'victory' ? 'text-amber-400' : 'text-red-400'
               }`}>
-                {phase === 'victory' ? 'Victory!' : 'Defeat'}
+                {phase === 'victory' ? 'Vitória Total!' : 'Derrota'}
               </h2>
               <p className="text-slate-300 mb-6">
-                {phase === 'victory' 
-                  ? 'You defeated all enemies!' 
-                  : 'You were defeated...'}
+                {phase === 'victory'
+                  ? 'Você derrotou o Dragão Ancião e conquistou a masmorra!'
+                  : 'Você foi derrotado... A masmorra cobra seu preço.'}
               </p>
               <button
                 onClick={handleRestart}
                 className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg transition-colors"
               >
-                Play Again
+                Jogar Novamente
               </button>
             </div>
           </div>

@@ -109,7 +109,10 @@ export type GamePhase =
   | 'defeat' 
   | 'selectingMovement'
   | 'selectingTarget'   // Selecting enemy to attack
-  | 'confirmingSkill';  // Confirming skill card use
+  | 'confirmingSkill'   // Confirming skill card use
+  | 'floorComplete';    // Floor cleared, ready for next floor
+
+export const MAX_FLOOR = 4;
 
 export interface GameState {
   // Estado do jogador
@@ -130,6 +133,7 @@ export interface GameState {
   // Fase do jogo
   phase: GamePhase;
   turn: number;
+  floor: number;  // Current dungeon floor (1-4)
   
   // Estado de seleção
   selectedCard: Card | null;

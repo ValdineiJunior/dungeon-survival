@@ -22,6 +22,7 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
+  // === FLOOR 1 ENEMIES ===
   slime: {
     id: 'slime',
     name: 'Gosma',
@@ -50,6 +51,36 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       },
     ],
   },
+  rat: {
+    id: 'rat',
+    name: 'Rato Gigante',
+    emoji: '🐀',
+    minHp: 8,
+    maxHp: 12,
+    attackRange: 1,
+    actionCards: [
+      {
+        id: 'rat_bite',
+        name: 'Mordida',
+        actions: [{ type: 'attack', value: 4 }],
+      },
+      {
+        id: 'rat_scratch',
+        name: 'Arranhão Rápido',
+        actions: [
+          { type: 'attack', value: 2 },
+          { type: 'attack', value: 2 },
+        ],
+      },
+      {
+        id: 'rat_scurry',
+        name: 'Correr',
+        actions: [{ type: 'move', value: 3 }],
+      },
+    ],
+  },
+
+  // === FLOOR 2 ENEMIES ===
   goblin: {
     id: 'goblin',
     name: 'Goblin',
@@ -133,7 +164,238 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       },
     ],
   },
+
+  // === FLOOR 3 ENEMIES ===
+  orc: {
+    id: 'orc',
+    name: 'Orc',
+    emoji: '👹',
+    minHp: 35,
+    maxHp: 45,
+    attackRange: 1,
+    actionCards: [
+      {
+        id: 'orc_smash',
+        name: 'Esmagamento',
+        actions: [{ type: 'attack', value: 12 }],
+      },
+      {
+        id: 'orc_rage',
+        name: 'Fúria',
+        actions: [
+          { type: 'buff', value: 3 },
+          { type: 'attack', value: 8 },
+        ],
+      },
+      {
+        id: 'orc_charge',
+        name: 'Investida Brutal',
+        actions: [
+          { type: 'move', value: 2 },
+          { type: 'attack', value: 10 },
+        ],
+      },
+      {
+        id: 'orc_brace',
+        name: 'Posição de Combate',
+        actions: [
+          { type: 'defend', value: 8 },
+          { type: 'attack', value: 6 },
+        ],
+      },
+    ],
+  },
+  darkMage: {
+    id: 'darkMage',
+    name: 'Mago Negro',
+    emoji: '🧙‍♂️',
+    minHp: 28,
+    maxHp: 35,
+    attackRange: 3,
+    actionCards: [
+      {
+        id: 'dark_bolt',
+        name: 'Raio Sombrio',
+        actions: [{ type: 'attack', value: 10 }],
+      },
+      {
+        id: 'dark_barrage',
+        name: 'Barragem Arcana',
+        actions: [
+          { type: 'attack', value: 5 },
+          { type: 'attack', value: 5 },
+          { type: 'attack', value: 5 },
+        ],
+      },
+      {
+        id: 'dark_shield',
+        name: 'Escudo Mágico',
+        actions: [
+          { type: 'defend', value: 12 },
+        ],
+      },
+      {
+        id: 'dark_teleport',
+        name: 'Teleporte',
+        actions: [
+          { type: 'move', value: 4 },
+          { type: 'defend', value: 5 },
+        ],
+      },
+    ],
+  },
+  ghost: {
+    id: 'ghost',
+    name: 'Fantasma',
+    emoji: '👻',
+    minHp: 22,
+    maxHp: 28,
+    attackRange: 2,
+    actionCards: [
+      {
+        id: 'ghost_drain',
+        name: 'Dreno Vital',
+        actions: [{ type: 'attack', value: 8 }],
+      },
+      {
+        id: 'ghost_haunt',
+        name: 'Assombrar',
+        actions: [
+          { type: 'move', value: 3 },
+          { type: 'attack', value: 6 },
+        ],
+      },
+      {
+        id: 'ghost_phase',
+        name: 'Fase Etérea',
+        actions: [
+          { type: 'defend', value: 15 },
+        ],
+      },
+    ],
+  },
+
+  // === FLOOR 4 BOSS ===
+  dragon: {
+    id: 'dragon',
+    name: 'Dragão Ancião',
+    emoji: '🐉',
+    minHp: 120,
+    maxHp: 150,
+    attackRange: 3,
+    actionCards: [
+      {
+        id: 'dragon_breath',
+        name: 'Sopro de Fogo',
+        actions: [
+          { type: 'attack', value: 15 },
+          { type: 'attack', value: 10 },
+        ],
+      },
+      {
+        id: 'dragon_claw',
+        name: 'Garras Devastadoras',
+        actions: [
+          { type: 'attack', value: 20 },
+        ],
+      },
+      {
+        id: 'dragon_tail',
+        name: 'Chicotada da Cauda',
+        actions: [
+          { type: 'attack', value: 8 },
+          { type: 'attack', value: 8 },
+          { type: 'attack', value: 8 },
+        ],
+      },
+      {
+        id: 'dragon_roar',
+        name: 'Rugido Aterrorizante',
+        actions: [
+          { type: 'defend', value: 20 },
+          { type: 'buff', value: 5 },
+        ],
+      },
+      {
+        id: 'dragon_dive',
+        name: 'Mergulho Aéreo',
+        actions: [
+          { type: 'move', value: 3 },
+          { type: 'attack', value: 18 },
+        ],
+      },
+      {
+        id: 'dragon_inferno',
+        name: 'Inferno Dracônico',
+        actions: [
+          { type: 'attack', value: 12 },
+          { type: 'attack', value: 12 },
+          { type: 'attack', value: 12 },
+        ],
+      },
+    ],
+  },
 };
+
+// Floor configurations - which enemies spawn on each floor
+export interface FloorConfig {
+  floor: number;
+  name: string;
+  description: string;
+  enemies: { definitionId: string; position: HexPosition }[];
+}
+
+export const FLOOR_CONFIGS: FloorConfig[] = [
+  {
+    floor: 1,
+    name: 'Entrada da Masmorra',
+    description: 'Os primeiros habitantes da masmorra te aguardam...',
+    enemies: [
+      { definitionId: 'slime', position: { q: 2, r: 0 } },
+      { definitionId: 'rat', position: { q: 1, r: 2 } },
+      { definitionId: 'slime', position: { q: -1, r: 2 } },
+    ],
+  },
+  {
+    floor: 2,
+    name: 'Salão dos Ossos',
+    description: 'Criaturas mais perigosas espreitam nas sombras...',
+    enemies: [
+      { definitionId: 'goblin', position: { q: 2, r: -1 } },
+      { definitionId: 'skeleton', position: { q: -2, r: 2 } },
+      { definitionId: 'goblin', position: { q: 0, r: 2 } },
+    ],
+  },
+  {
+    floor: 3,
+    name: 'Câmara Sombria',
+    description: 'O ar está pesado com magia negra...',
+    enemies: [
+      { definitionId: 'orc', position: { q: 2, r: 0 } },
+      { definitionId: 'darkMage', position: { q: -2, r: 1 } },
+      { definitionId: 'ghost', position: { q: 0, r: -2 } },
+    ],
+  },
+  {
+    floor: 4,
+    name: 'Covil do Dragão',
+    description: 'O Dragão Ancião protege o tesouro final!',
+    enemies: [
+      { definitionId: 'dragon', position: { q: 0, r: -2 } },
+    ],
+  },
+];
+
+export function getFloorConfig(floor: number): FloorConfig {
+  return FLOOR_CONFIGS[floor - 1] || FLOOR_CONFIGS[0];
+}
+
+export function createFloorEnemies(floor: number): Enemy[] {
+  const config = getFloorConfig(floor);
+  return config.enemies.map((enemyConfig, index) => 
+    createEnemy(enemyConfig.definitionId, `enemy_${floor}_${index}`, enemyConfig.position)
+  );
+}
 
 // Cria uma instância de inimigo com deck embaralhado
 export function createEnemy(definitionId: string, instanceId: string, position: HexPosition): Enemy {
