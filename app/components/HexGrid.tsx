@@ -83,29 +83,23 @@ export function HexGrid({
           
           // Colors based on state
           let bgColor = 'bg-stone-800';
-          let borderColor = 'border-stone-600';
           let hoverClass = 'hover:bg-stone-700';
           let extraClasses = '';
           
           if (isPlayer) {
             bgColor = 'bg-blue-900/70';
-            borderColor = 'border-blue-500';
             hoverClass = '';
           } else if (isEnemy) {
             if (isTargetable) {
-              // Enemy that can be targeted - highlight with yellow/orange
               bgColor = 'bg-orange-700/80';
-              borderColor = 'border-yellow-400';
               hoverClass = 'hover:bg-orange-600 cursor-pointer';
               extraClasses = 'animate-pulse ring-2 ring-yellow-400 ring-offset-2 ring-offset-stone-900';
             } else {
               bgColor = 'bg-red-900/70';
-              borderColor = 'border-red-500';
               hoverClass = '';
             }
           } else if (isValid) {
             bgColor = 'bg-green-700/60';
-            borderColor = 'border-green-400';
             hoverClass = 'hover:bg-green-600/80 cursor-pointer';
             extraClasses = 'animate-pulse';
           }
@@ -125,16 +119,15 @@ export function HexGrid({
               disabled={!isValid && !isTargetable && content.type === 'empty'}
               className={`
                 absolute
-                w-[56px] h-[50px]
+                w-[56px] h-[56px]
                 flex items-center justify-center
-                ${bgColor} ${borderColor} ${hoverClass} ${extraClasses}
-                border-2
+                ${bgColor} ${hoverClass} ${extraClasses}
                 transition-all duration-150
                 text-lg
               `}
               style={{
                 left: pixel.x + offsetX - 28 + 'px',
-                top: pixel.y + offsetY - 25 + 'px',
+                top: pixel.y + offsetY - 28 + 'px',
                 clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
               }}
               title={

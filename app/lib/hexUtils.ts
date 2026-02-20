@@ -116,19 +116,20 @@ export function getTile(map: HexMap, pos: HexPosition): HexTile | undefined {
 
 // === CONVERSÃO PARA PIXELS (para renderização) ===
 
-// Tamanho do hex (raio do círculo circunscrito)
-const HEX_SIZE = 28;
+// Tamanho do hex (espaçamento entre hexágonos)
+const HEX_SPACING_X = 35; // Espaçamento horizontal
+const HEX_SPACING_Y = 30; // Espaçamento vertical
 
 // Converter coordenadas axiais para pixels (pointy-top hexagons)
 export function hexToPixel(pos: HexPosition): { x: number; y: number } {
-  const x = HEX_SIZE * (Math.sqrt(3) * pos.q + Math.sqrt(3)/2 * pos.r);
-  const y = HEX_SIZE * (3/2 * pos.r);
+  const x = HEX_SPACING_X * (Math.sqrt(3) * pos.q + Math.sqrt(3)/2 * pos.r);
+  const y = HEX_SPACING_Y * (3/2 * pos.r);
   return { x, y };
 }
 
 // Obter o tamanho do hex para CSS
-export function getHexSize(): number {
-  return HEX_SIZE;
+export function getHexSpacing(): { x: number; y: number } {
+  return { x: HEX_SPACING_X, y: HEX_SPACING_Y };
 }
 
 // Calcular bounds do mapa para centralização
@@ -140,10 +141,10 @@ export function getMapBounds(map: HexMap): { minX: number; maxX: number; minY: n
     const pos = parseHexKey(key);
     const pixel = hexToPixel(pos);
     
-    minX = Math.min(minX, pixel.x - HEX_SIZE);
-    maxX = Math.max(maxX, pixel.x + HEX_SIZE);
-    minY = Math.min(minY, pixel.y - HEX_SIZE);
-    maxY = Math.max(maxY, pixel.y + HEX_SIZE);
+    minX = Math.min(minX, pixel.x - HEX_SPACING_X);
+    maxX = Math.max(maxX, pixel.x + HEX_SPACING_X);
+    minY = Math.min(minY, pixel.y - HEX_SPACING_Y);
+    maxY = Math.max(maxY, pixel.y + HEX_SPACING_Y);
   }
   
   return { minX, maxX, minY, maxY };
