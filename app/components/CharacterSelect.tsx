@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { CharacterClass } from '@/app/types/game';
 import { CHARACTER_CLASSES, getClassCards } from '@/app/lib/cards';
+import { getRewardPool } from '@/app/lib/cardRewards';
+import { CardListModal } from './CardListModal';
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
@@ -10,6 +13,41 @@ interface CharacterSelectProps {
 const CLASS_ORDER: CharacterClass[] = ['warrior', 'archer', 'mage'];
 
 export function CharacterSelect({ onSelect }: CharacterSelectProps) {
+  const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
+  const [cardType, setCardType] = useState<'initial' | 'normal' | 'rare' | null>(null);
+
+  const closeModal = () => {
+    setSelectedClass(null);
+    setCardType(null);
+  };
+
+  const getModalTitle = () => {
+    if (!selectedClass || !cardType) return '';
+    const className = CHARACTER_CLASSES[selectedClass].name;
+    const titles: Record<string, string> = {
+      initial: `Cartas Iniciais - ${className}`,
+      normal: `Cartas de Recompensa Normais - ${className}`,
+      rare: `Cartas de Recompensa Raras - ${className}`,
+    };
+    return titles[cardType] || '';
+  };
+
+  const getCardsToDisplay = () => {
+    if (!selectedClass || !cardType) return [];
+
+    if (cardType === 'initial') {
+      return getClassCards(selectedClass);
+    }
+
+    const pool = getRewardPool(selectedClass);
+    if (cardType === 'normal') {
+      return pool.normal;
+    } else if (cardType === 'rare') {
+      return pool.rare;
+    }
+
+    return [];
+  };
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-8">
       {/* Background decorativo */}
@@ -39,13 +77,13 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
           const hasMinRange = attackCards.some(c => c.minRange && c.minRange > 1);
 
           return (
-            <button
+            <div
               key={classId}
               onClick={() => onSelect(classId)}
               className="group relative w-72 p-6 bg-slate-800/80 rounded-2xl border-2 border-slate-600 
                          hover:border-amber-500 hover:bg-slate-700/80 
                          transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/20
-                         backdrop-blur-sm text-left"
+                         backdrop-blur-sm text-left cursor-pointer"
             >
               {/* Emoji grande */}
               <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
@@ -104,9 +142,43 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 </div>
               )}
 
+              {/* Card Preview Buttons */}
+              <div className="mt-6 pt-4 border-t border-slate-600 flex flex-col gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedClass(classId);
+                    setCardType('initial');
+                  }}
+                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white rounded transition-colors"
+                >
+                  📋 Cartas Iniciais
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedClass(classId);
+                    setCardType('normal');
+                  }}
+                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white rounded transition-colors"
+                >
+                  💎 Cartas Normais
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedClass(classId);
+                    setCardType('rare');
+                  }}
+                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-purple-600 text-slate-300 hover:text-white rounded transition-colors"
+                >
+                  ✨ Cartas Raras
+                </button>
+              </div>
+
               {/* Hover effect border */}
               <div className="absolute inset-0 rounded-2xl border-2 border-amber-400/0 group-hover:border-amber-400/50 transition-colors pointer-events-none" />
-            </button>
+            </div>
           );
         })}
       </div>
@@ -114,6 +186,16 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
       <div className="relative z-10 mt-12 text-slate-500 text-sm">
         Clique em uma classe para começar a aventura
       </div>
+
+      {/* Card Preview Modal */}
+      {selectedClass && cardType && (
+        <CardListModal
+          title={getModalTitle()}
+          cards={getCardsToDisplay()}
+          onClose={closeModal}
+          showColors
+        />
+      )}
     </div>
   );
 }
