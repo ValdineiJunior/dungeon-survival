@@ -841,7 +841,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (card.cost > state.player.energy) return;
 
     const classDef = CHARACTER_CLASSES[state.player.characterClass];
-    let player = { ...state.player };
+    const player = { ...state.player };
     let enemies = state.enemies.map(e => ({ ...e }));
     const newLog = [...state.gameLog];
 
