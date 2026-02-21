@@ -479,7 +479,6 @@ export default function GamePage() {
         <CardRewardModal
           cards={[rewardCards[0], rewardCards[1]]}
           onSelectCard={selectRewardCard}
-          onCancel={() => {}}
         />
       )}
 

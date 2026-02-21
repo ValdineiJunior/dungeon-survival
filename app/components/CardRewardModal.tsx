@@ -7,13 +7,11 @@ import { Card as CardComponent } from "./Card";
 interface CardRewardModalProps {
   cards: [Card, Card];
   onSelectCard: (card: Card) => void;
-  onCancel: () => void;
 }
 
 export function CardRewardModal({
   cards,
   onSelectCard,
-  onCancel,
 }: CardRewardModalProps) {
   const [selected, setSelected] = useState<Card | null>(null);
 
@@ -51,12 +49,6 @@ export function CardRewardModal({
 
         {/* Buttons */}
         <div className="flex gap-4 justify-center">
-          <button
-            onClick={onCancel}
-            className="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg transition-colors"
-          >
-            Cancelar
-          </button>
           <button
             onClick={() => selected && onSelectCard(selected)}
             disabled={!selected}
