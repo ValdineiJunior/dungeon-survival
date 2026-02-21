@@ -342,7 +342,7 @@ export const WARRIOR_DEFAULT_CARDS: Card[] = [
     type: 'attack',
     damage: 6,
     range: 2,
-    description: 'Causa 6 de dano. Alcance: 2',
+    description: '[Carta Padrão] Causa 6 de dano. Alcance: 2',
   },
   {
     id: 'warrior_default_defend',
@@ -350,7 +350,7 @@ export const WARRIOR_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'skill',
     block: 5,
-    description: 'Ganha 5 de bloqueio.',
+    description: '[Carta Padrão] Ganha 5 de bloqueio.',
   },
   {
     id: 'warrior_default_move',
@@ -358,7 +358,7 @@ export const WARRIOR_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'movement',
     movement: 1,
-    description: 'Mova até 1 espaço.',
+    description: '[Carta Padrão] Mova até 1 espaço.',
   },
 ];
 
@@ -370,7 +370,7 @@ export const ARCHER_DEFAULT_CARDS: Card[] = [
     type: 'attack',
     damage: 5,
     range: 1,
-    description: 'Causa 5 de dano. Alcance: 1',
+    description: '[Carta Padrão] Causa 5 de dano. Alcance: 1',
   },
   {
     id: 'archer_default_defend',
@@ -378,7 +378,7 @@ export const ARCHER_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'skill',
     block: 3,
-    description: 'Ganha 3 de bloqueio.',
+    description: '[Carta Padrão] Ganha 3 de bloqueio.',
   },
   {
     id: 'archer_default_move',
@@ -386,7 +386,7 @@ export const ARCHER_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'movement',
     movement: 2,
-    description: 'Mova até 2 espaços.',
+    description: '[Carta Padrão] Mova até 2 espaços.',
   },
 ];
 
@@ -398,7 +398,7 @@ export const MAGE_DEFAULT_CARDS: Card[] = [
     type: 'attack',
     damage: 5,
     range: 1,
-    description: 'Causa 5 de dano. Alcance: 1',
+    description: '[Carta Padrão] Causa 5 de dano. Alcance: 1',
   },
   {
     id: 'mage_default_defend',
@@ -406,7 +406,7 @@ export const MAGE_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'skill',
     block: 4,
-    description: 'Ganha 4 de bloqueio.',
+    description: '[Carta Padrão] Ganha 4 de bloqueio.',
   },
   {
     id: 'mage_default_move',
@@ -414,7 +414,7 @@ export const MAGE_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'movement',
     movement: 2,
-    description: 'Mova até 2 espaços.',
+    description: '[Carta Padrão] Mova até 2 espaços.',
   },
 ];
 
