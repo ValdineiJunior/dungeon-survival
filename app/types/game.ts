@@ -194,6 +194,10 @@ export interface GameState {
   selectedCard: Card | null;
   validMovePositions: HexPosition[];
   targetableEnemyIds: string[];  // NEW: IDs of enemies that can be targeted
+  
+  // Estado de movimento passo a passo
+  movementPath: HexPosition[];  // Path of hexes selected for current movement
+  remainingMovement: number;    // Remaining movement points for current card
 }
 
 // === UTILIDADES HEXAGONAIS ===

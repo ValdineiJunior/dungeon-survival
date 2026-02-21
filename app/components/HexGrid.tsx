@@ -18,6 +18,7 @@ interface HexGridProps {
   onHexClick: (position: HexPosition) => void;
   onEnemyClick: (enemyId: string) => void;
   onViewLog?: () => void;
+  movementPath?: HexPosition[];  // Path of hexes selected for current movement
 }
 
 export function HexGrid({
@@ -30,12 +31,24 @@ export function HexGrid({
   onHexClick,
   onEnemyClick,
   onViewLog,
+  movementPath = [],
 }: HexGridProps) {
   const bounds = getMapBounds(map);
   const width = bounds.maxX - bounds.minX + 30;
   const height = bounds.maxY - bounds.minY + 30;
   const offsetX = -bounds.minX + 15;
   const offsetY = -bounds.minY + 15;
+
+  // Check if position is in the current movement path
+  const isInMovementPath = (pos: HexPosition, pathIndex: number) => {
+    return movementPath.some((p, index) => hexEquals(p, pos) && index === pathIndex);
+  };
+
+  // Get the position in the movement path (for numbering)
+  const getPathPosition = (pos: HexPosition): number | null => {
+    const index = movementPath.findIndex((p) => hexEquals(p, pos));
+    return index >= 0 ? index + 1 : null;
+  };
 
   // Check if position is valid for movement
   const isValidMove = (pos: HexPosition) => {
@@ -90,6 +103,8 @@ export function HexGrid({
           const isPlayer = content.type === "player";
           const isEnemy = content.type === "enemy";
           const isTargetable = content.type === "enemy" && content.isTargetable;
+          const pathPosition = getPathPosition({ q: tile.q, r: tile.r });
+          const isInPath = pathPosition !== null;
 
           // Colors based on state
           let bgColor = "bg-stone-800";
@@ -109,6 +124,11 @@ export function HexGrid({
               bgColor = "bg-red-900/70";
               hoverClass = "";
             }
+          } else if (isInPath) {
+            // Hex is in the movement path
+            bgColor = "bg-cyan-600/70";
+            hoverClass = "";
+            extraClasses = "ring-2 ring-cyan-400";
           } else if (isValid) {
             bgColor = "bg-green-700/60";
             hoverClass = "hover:bg-green-600/80 cursor-pointer";
@@ -147,7 +167,9 @@ export function HexGrid({
                   ? `🎯 Atacar ${content.enemy?.name}`
                   : isEnemy && content.enemy
                     ? `${content.enemy.name} (#${content.orderNumber})`
-                    : `(${tile.q}, ${tile.r})`
+                    : isInPath
+                      ? `Passo ${pathPosition}`
+                      : `(${tile.q}, ${tile.r})`
               }
             >
               {isEnemy && content.orderNumber ? (
@@ -156,6 +178,10 @@ export function HexGrid({
                   <span className="absolute -bottom-1 -right-2 w-3.5 h-3.5 flex items-center justify-center bg-amber-400 text-black text-[8px] font-bold rounded-full border border-amber-600">
                     {content.orderNumber}
                   </span>
+                </span>
+              ) : isInPath ? (
+                <span className="text-cyan-300 font-bold text-sm">
+                  {pathPosition}
                 </span>
               ) : (
                 content.emoji || (isValid ? "•" : "")

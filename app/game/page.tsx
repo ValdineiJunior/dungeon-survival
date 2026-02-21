@@ -40,12 +40,17 @@ export default function GamePage() {
     selectedCard,
     validMovePositions,
     targetableEnemyIds,
+    movementPath,
+    remainingMovement,
     gameLog,
     selectCharacter,
     startCombat,
     selectCard,
     cancelSelection,
     moveToPosition,
+    addHexToMovementPath,
+    undoMovementStep,
+    completeMovement,
     selectTarget,
     confirmSkill,
     endTurn,
@@ -68,7 +73,7 @@ export default function GamePage() {
 
   const handleHexClick = (position: HexPosition) => {
     if (phase === "selectingMovement" && selectedCard?.type === "movement") {
-      moveToPosition(position);
+      addHexToMovementPath(position);
     }
   };
 
@@ -211,6 +216,7 @@ export default function GamePage() {
               enemies={enemies}
               validMovePositions={validMovePositions}
               targetableEnemyIds={targetableEnemyIds}
+              movementPath={movementPath}
               onHexClick={handleHexClick}
               onEnemyClick={handleEnemyClick}
               onViewLog={() => setShowLogModal(true)}
@@ -348,15 +354,39 @@ export default function GamePage() {
         {/* Selection instructions - fixed height to prevent layout shift */}
         <div className="h-10 flex items-center justify-center">
           {phase === "selectingMovement" && (
-            <span className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200 text-sm">
-              ⬡ Clique em um hexágono verde para mover •
+            <div className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200 text-sm flex items-center gap-3">
+              {remainingMovement > 0 ? (
+                <span>
+                  ⬡ Passo {movementPath.length + 1}/{selectedCard?.movement} • Clique em um hexágono verde
+                </span>
+              ) : (
+                <span>
+                  ⬡ Movimento completo! Clique em &quot;Confirmar&quot; para aplicar
+                </span>
+              )}
+              {movementPath.length > 0 && (
+                <>
+                  <button
+                    onClick={undoMovementStep}
+                    className="px-2 py-0.5 bg-orange-600 hover:bg-orange-500 text-white rounded font-bold text-xs"
+                  >
+                    ↶ Desfazer
+                  </button>
+                  <button
+                    onClick={completeMovement}
+                    className="px-2 py-0.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs"
+                  >
+                    ✓ Confirmar
+                  </button>
+                </>
+              )}
               <button
                 onClick={cancelSelection}
-                className="ml-2 underline hover:text-white"
+                className="ml-auto underline hover:text-white text-xs"
               >
                 Cancelar
               </button>
-            </span>
+            </div>
           )}
 
           {phase === "selectingTarget" && (

@@ -82,6 +82,16 @@ function getBlockedPositions(player: Player, enemies: Enemy[]): HexPosition[] {
   return [player.position, ...enemies.map(e => e.position)];
 }
 
+// Obter vizinhos válidos (não bloqueados, dentro do mapa)
+function getValidNeighbors(pos: HexPosition, hexMap: HexMap, blocked: HexPosition[]): HexPosition[] {
+  const neighbors = hexNeighbors(pos);
+  return neighbors.filter(neighbor => {
+    const tile = getTile(hexMap, neighbor);
+    if (!tile || tile.type === 'wall' || tile.type === 'pit') return false;
+    return !blocked.some(p => hexEquals(p, neighbor));
+  });
+}
+
 // Encontrar inimigos no alcance (considerando minRange e maxRange)
 function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: number, minRange: number = 1): Enemy[] {
   return enemies.filter(e => {
@@ -96,6 +106,9 @@ interface GameActions {
   selectCard: (card: Card) => void;
   cancelSelection: () => void;
   moveToPosition: (position: HexPosition) => void;
+  addHexToMovementPath: (position: HexPosition) => void;
+  undoMovementStep: () => void;
+  completeMovement: () => void;
   selectTarget: (enemyId: string) => void;
   confirmSkill: () => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
@@ -145,6 +158,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   validMovePositions: [],
   targetableEnemyIds: [],
   gameLog: [],
+  movementPath: [],
+  remainingMovement: 0,
 
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
@@ -206,6 +221,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
     };
     
     // Draw cards including bonus draw from innate ability
@@ -223,20 +240,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (card.cost > state.player.energy) return;
     
     if (card.type === 'movement' && card.movement) {
-      // Movement card: show valid move positions
+      // Movement card: start step-by-step movement
+      // Show valid adjacent hexes for the first step
       const blocked = getBlockedPositions(state.player, state.enemies);
-      const validPositions = getReachableHexes(
-        state.player.position,
-        card.movement,
-        state.hexMap,
-        blocked
-      );
+      const validNextPositions = getValidNeighbors(state.player.position, state.hexMap, blocked);
       
       set({
         selectedCard: card,
-        validMovePositions: validPositions,
+        validMovePositions: validNextPositions,
         targetableEnemyIds: [],
         phase: 'selectingMovement',
+        movementPath: [],  // Start with empty path
+        remainingMovement: card.movement,
       });
     } else if (card.type === 'attack' && card.damage) {
       // Attack card: show targetable enemies
@@ -273,6 +288,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       validMovePositions: [],
       targetableEnemyIds: [],
       phase: 'playerTurn',
+      movementPath: [],
+      remainingMovement: 0,
     });
   },
   
@@ -314,6 +331,116 @@ export const useGameStore = create<GameStore>((set, get) => ({
       validMovePositions: [],
       targetableEnemyIds: [],
       phase: 'playerTurn',
+    });
+  },
+  
+  // Add a hex to the movement path (step-by-step movement)
+  addHexToMovementPath: (position: HexPosition) => {
+    const state = get();
+    if (state.phase !== 'selectingMovement') return;
+    if (!state.selectedCard || state.selectedCard.type !== 'movement') return;
+    if (state.remainingMovement <= 0) return;
+    
+    // Check if position is valid (adjacent to current position or last position in path)
+    const blocked = getBlockedPositions(state.player, state.enemies);
+    const currentPos = state.movementPath.length > 0 
+      ? state.movementPath[state.movementPath.length - 1]
+      : state.player.position;
+    
+    const validNeighbors = getValidNeighbors(currentPos, state.hexMap, blocked);
+    const isValid = validNeighbors.some(p => hexEquals(p, position));
+    if (!isValid) return;
+    
+    // Check if position is already in path
+    if (state.movementPath.some(p => hexEquals(p, position))) return;
+    
+    // Add position to path
+    const newPath = [...state.movementPath, position];
+    const newRemaining = state.remainingMovement - 1;
+    
+    // Get next valid positions (adjacent to the new position)
+    const nextBlocked = [...blocked, ...newPath]; // Block positions in our path
+    let nextValidPositions: HexPosition[] = [];
+    
+    // Only show next valid positions if there are remaining movement points
+    if (newRemaining > 0) {
+      nextValidPositions = getValidNeighbors(position, state.hexMap, nextBlocked);
+    }
+    
+    set({
+      movementPath: newPath,
+      remainingMovement: newRemaining,
+      validMovePositions: nextValidPositions,
+    });
+  },
+  
+  // Undo the last step in movement
+  undoMovementStep: () => {
+    const state = get();
+    if (state.phase !== 'selectingMovement') return;
+    if (state.movementPath.length === 0) return;
+    
+    // Remove last position from path
+    const newPath = state.movementPath.slice(0, -1);
+    const newRemaining = state.remainingMovement + 1;
+    
+    // Get valid neighbors from the new current position
+    const blocked = getBlockedPositions(state.player, state.enemies);
+    const currentPos = newPath.length > 0
+      ? newPath[newPath.length - 1]
+      : state.player.position;
+    
+    const nextBlocked = [...blocked, ...newPath]; // Block positions in our path
+    const validPositions = getValidNeighbors(currentPos, state.hexMap, nextBlocked);
+    
+    set({
+      movementPath: newPath,
+      remainingMovement: newRemaining,
+      validMovePositions: validPositions,
+    });
+  },
+  
+  // Complete the movement and apply it
+  completeMovement: () => {
+    const state = get();
+    if (state.phase !== 'selectingMovement') return;
+    if (!state.selectedCard || state.selectedCard.type !== 'movement') return;
+    if (state.movementPath.length === 0) return;
+    
+    const cardIndex = state.hand.findIndex(c => c.id === state.selectedCard!.id);
+    if (cardIndex === -1) return;
+    
+    const newHand = [...state.hand];
+    const [playedCard] = newHand.splice(cardIndex, 1);
+    
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
+    const finalPosition = state.movementPath[state.movementPath.length - 1];
+    const tilesMovedCount = state.movementPath.length;
+    
+    const newPlayer = {
+      ...state.player,
+      position: finalPosition,
+      energy: state.player.energy - playedCard.cost,
+    };
+    
+    // Log the movement
+    const newLog = [...state.gameLog];
+    newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
+      `${classDef.emoji} ${classDef.name} se move ${tilesMovedCount} hex para (${finalPosition.q}, ${finalPosition.r})`, {
+      position: finalPosition,
+    }));
+    
+    set({
+      player: newPlayer,
+      hand: newHand,
+      discardPile: [...state.discardPile, playedCard],
+      gameLog: newLog,
+      selectedCard: null,
+      validMovePositions: [],
+      targetableEnemyIds: [],
+      phase: 'playerTurn',
+      movementPath: [],
+      remainingMovement: 0,
     });
   },
   
@@ -448,6 +575,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
     });
   },
   
@@ -623,6 +752,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
         selectedCard: null,
         validMovePositions: [],
         targetableEnemyIds: [],
+        movementPath: [],
+        remainingMovement: 0,
       });
     } else {
       set({ player, phase, gameLog: newLog });
@@ -699,6 +830,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
     });
   },
 
@@ -719,6 +852,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
     });
   },
 }));
