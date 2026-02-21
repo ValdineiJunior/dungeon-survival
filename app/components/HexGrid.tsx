@@ -130,7 +130,7 @@ export function HexGrid({
               disabled={!isValid && !isTargetable && content.type === "empty"}
               className={`
                 absolute
-                w-[52px] h-[52px]
+                w-12 h-12
                 flex items-center justify-center
                 ${bgColor} ${hoverClass} ${extraClasses}
                 transition-all duration-150

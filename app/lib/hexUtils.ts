@@ -117,8 +117,8 @@ export function getTile(map: HexMap, pos: HexPosition): HexTile | undefined {
 // === CONVERSÃO PARA PIXELS (para renderização) ===
 
 // Tamanho do hex (espaçamento entre hexágonos)
-const HEX_SPACING_X = 32; // Espaçamento horizontal
-const HEX_SPACING_Y = 28; // Espaçamento vertical
+const HEX_SPACING_X = 30 // Espaçamento horizontal
+const HEX_SPACING_Y = 26; // Espaçamento vertical
 
 // Converter coordenadas axiais para pixels (pointy-top hexagons)
 export function hexToPixel(pos: HexPosition): { x: number; y: number } {

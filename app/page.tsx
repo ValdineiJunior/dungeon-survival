@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -9,7 +9,7 @@ export default function Home() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/30 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-900/30 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-900/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-xl h-xl bg-amber-900/10 rounded-full blur-3xl" />
       </div>
 
       {/* Conteúdo principal */}
@@ -42,7 +42,7 @@ export default function Home() {
           >
             Iniciar Jogo
           </Link>
-          
+
           <button
             disabled
             className="
@@ -61,20 +61,24 @@ export default function Home() {
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
           <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
             <div className="text-4xl mb-3">🃏</div>
-            <h3 className="text-lg font-bold text-amber-400 mb-2">Deck Building</h3>
+            <h3 className="text-lg font-bold text-amber-400 mb-2">
+              Deck Building
+            </h3>
             <p className="text-slate-400 text-sm">
               Construa seu deck com cartas de ataque, defesa e poderes especiais
             </p>
           </div>
-          
+
           <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
             <div className="text-4xl mb-3">⚔️</div>
-            <h3 className="text-lg font-bold text-amber-400 mb-2">Combate Tático</h3>
+            <h3 className="text-lg font-bold text-amber-400 mb-2">
+              Combate Tático
+            </h3>
             <p className="text-slate-400 text-sm">
               Gerencie sua energia e preveja os ataques dos inimigos
             </p>
           </div>
-          
+
           <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
             <div className="text-4xl mb-3">💀</div>
             <h3 className="text-lg font-bold text-amber-400 mb-2">Roguelike</h3>

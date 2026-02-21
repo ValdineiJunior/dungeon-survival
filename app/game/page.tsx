@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useGameStore } from '@/app/lib/gameStore';
-import { Hand } from '@/app/components/Hand';
-import { EnemyCard } from '@/app/components/EnemyCard';
-import { PlayerStatus } from '@/app/components/PlayerStatus';
-import { HexGrid } from '@/app/components/HexGrid';
-import { CharacterSelect } from '@/app/components/CharacterSelect';
-import { CardListModal } from '@/app/components/CardListModal';
-import { EnemyActionsModal } from '@/app/components/EnemyActionsModal';
-import { GameLogModal } from '@/app/components/GameLogModal';
-import { HowToPlayModal } from '@/app/components/HowToPlayModal';
-import { Card, HexPosition, CharacterClass, Enemy } from '@/app/types/game';
-import { CHARACTER_CLASSES } from '@/app/lib/cards';
-import { getFloorConfig } from '@/app/lib/enemies';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useGameStore } from "@/app/lib/gameStore";
+import { Hand } from "@/app/components/Hand";
+import { EnemyCard } from "@/app/components/EnemyCard";
+import { PlayerStatus } from "@/app/components/PlayerStatus";
+import { HexGrid } from "@/app/components/HexGrid";
+import { CharacterSelect } from "@/app/components/CharacterSelect";
+import { CardListModal } from "@/app/components/CardListModal";
+import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
+import { GameLogModal } from "@/app/components/GameLogModal";
+import { HowToPlayModal } from "@/app/components/HowToPlayModal";
+import { Card, HexPosition, CharacterClass, Enemy } from "@/app/types/game";
+import { CHARACTER_CLASSES } from "@/app/lib/cards";
+import { getFloorConfig } from "@/app/lib/enemies";
 
 export default function GamePage() {
   const router = useRouter();
@@ -23,8 +23,9 @@ export default function GamePage() {
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
-  const [selectedEnemyForActions, setSelectedEnemyForActions] = useState<Enemy | null>(null);
-  
+  const [selectedEnemyForActions, setSelectedEnemyForActions] =
+    useState<Enemy | null>(null);
+
   const {
     player,
     hand,
@@ -66,13 +67,13 @@ export default function GamePage() {
   };
 
   const handleHexClick = (position: HexPosition) => {
-    if (phase === 'selectingMovement' && selectedCard?.type === 'movement') {
+    if (phase === "selectingMovement" && selectedCard?.type === "movement") {
       moveToPosition(position);
     }
   };
 
   const handleEnemyClick = (enemyId: string) => {
-    if (phase === 'selectingTarget') {
+    if (phase === "selectingTarget") {
       selectTarget(enemyId);
     }
   };
@@ -83,11 +84,11 @@ export default function GamePage() {
 
   const handleAbandonQuest = () => {
     resetGame();
-    router.push('/');
+    router.push("/");
   };
 
   // Show character select screen
-  if (phase === 'characterSelect') {
+  if (phase === "characterSelect") {
     return <CharacterSelect onSelect={handleCharacterSelect} />;
   }
 
@@ -96,28 +97,45 @@ export default function GamePage() {
 
   const getPhaseLabel = () => {
     switch (phase) {
-      case 'playerTurn': return 'Seu Turno';
-      case 'enemyTurn': return 'Turno Inimigo';
-      case 'selectingMovement': return 'Selecione Destino';
-      case 'selectingTarget': return '🎯 Selecione Alvo';
-      case 'confirmingSkill': return 'Confirmar Habilidade';
-      case 'floorComplete': return '🏆 Andar Completo!';
-      case 'victory': return '🎉 Vitória!';
-      case 'defeat': return '💀 Derrota';
-      default: return phase;
+      case "playerTurn":
+        return "Seu Turno";
+      case "enemyTurn":
+        return "Turno Inimigo";
+      case "selectingMovement":
+        return "Selecione Destino";
+      case "selectingTarget":
+        return "🎯 Selecione Alvo";
+      case "confirmingSkill":
+        return "Confirmar Habilidade";
+      case "floorComplete":
+        return "🏆 Andar Completo!";
+      case "victory":
+        return "🎉 Vitória!";
+      case "defeat":
+        return "💀 Derrota";
+      default:
+        return phase;
     }
   };
 
   const getPhaseColor = () => {
     switch (phase) {
-      case 'playerTurn': return 'bg-green-600 text-white';
-      case 'selectingMovement': return 'bg-blue-600 text-white';
-      case 'selectingTarget': return 'bg-yellow-500 text-black';
-      case 'confirmingSkill': return 'bg-purple-600 text-white';
-      case 'floorComplete': return 'bg-emerald-500 text-white';
-      case 'victory': return 'bg-amber-500 text-black';
-      case 'defeat': return 'bg-red-600 text-white';
-      default: return 'bg-gray-600 text-white';
+      case "playerTurn":
+        return "bg-green-600 text-white";
+      case "selectingMovement":
+        return "bg-blue-600 text-white";
+      case "selectingTarget":
+        return "bg-yellow-500 text-black";
+      case "confirmingSkill":
+        return "bg-purple-600 text-white";
+      case "floorComplete":
+        return "bg-emerald-500 text-white";
+      case "victory":
+        return "bg-amber-500 text-black";
+      case "defeat":
+        return "bg-red-600 text-white";
+      default:
+        return "bg-gray-600 text-white";
     }
   };
 
@@ -127,7 +145,7 @@ export default function GamePage() {
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-900/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-900/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-lg h-lg bg-amber-900/10 rounded-full blur-3xl" />
       </div>
 
       {/* Header */}
@@ -140,12 +158,16 @@ export default function GamePage() {
             <div className="px-3 py-1 rounded bg-slate-800 border border-slate-600">
               <span className="text-slate-400 text-sm">Andar </span>
               <span className="text-amber-400 font-bold">{floor}/4</span>
-              <span className="text-slate-500 text-xs ml-2">- {floorConfig.name}</span>
+              <span className="text-slate-500 text-xs ml-2">
+                - {floorConfig.name}
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-slate-400">Turno {turn}</span>
-            <span className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}>
+            <span
+              className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}
+            >
               {getPhaseLabel()}
             </span>
             <button
@@ -166,7 +188,6 @@ export default function GamePage() {
 
       {/* Combat area */}
       <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-4">
-        
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
         <div className="flex-1 flex gap-4 py-4">
           {/* Left panel - Player Status */}
@@ -195,10 +216,12 @@ export default function GamePage() {
               onViewLog={() => setShowLogModal(true)}
             />
           </div>
-          
+
           {/* Right panel - Enemies */}
           <div className="w-72 flex flex-col gap-3">
-            <h3 className="text-amber-400 font-bold text-center">⚔️ Inimigos</h3>
+            <h3 className="text-amber-400 font-bold text-center">
+              ⚔️ Inimigos
+            </h3>
             <div className="flex flex-col gap-3">
               {enemies.map((enemy, index) => (
                 <EnemyCard
@@ -211,15 +234,18 @@ export default function GamePage() {
                 />
               ))}
             </div>
-            
-            {enemies.length === 0 && phase !== 'victory' && phase !== 'defeat' && phase !== 'floorComplete' && (
-              <div className="text-slate-500 text-center">Carregando...</div>
-            )}
+
+            {enemies.length === 0 &&
+              phase !== "victory" &&
+              phase !== "defeat" &&
+              phase !== "floorComplete" && (
+                <div className="text-slate-500 text-center">Carregando...</div>
+              )}
           </div>
         </div>
 
         {/* Floor Complete screen */}
-        {phase === 'floorComplete' && (
+        {phase === "floorComplete" && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20">
             <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-emerald-600 shadow-2xl max-w-md">
               <div className="text-6xl mb-4">🏆</div>
@@ -235,8 +261,12 @@ export default function GamePage() {
               </p>
               <div className="bg-slate-900/50 rounded-lg p-4 mb-6">
                 <p className="text-slate-400 text-sm mb-2">Próximo andar:</p>
-                <p className="text-lg font-bold text-amber-300">{getFloorConfig(floor + 1).name}</p>
-                <p className="text-slate-500 text-xs mt-1">{getFloorConfig(floor + 1).description}</p>
+                <p className="text-lg font-bold text-amber-300">
+                  {getFloorConfig(floor + 1).name}
+                </p>
+                <p className="text-slate-500 text-xs mt-1">
+                  {getFloorConfig(floor + 1).description}
+                </p>
               </div>
               <div className="flex gap-4 justify-center">
                 <button
@@ -257,21 +287,23 @@ export default function GamePage() {
         )}
 
         {/* End game screen */}
-        {(phase === 'victory' || phase === 'defeat') && (
+        {(phase === "victory" || phase === "defeat") && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20">
             <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
               <div className="text-6xl mb-4">
-                {phase === 'victory' ? '🐉' : '💀'}
+                {phase === "victory" ? "🐉" : "💀"}
               </div>
-              <h2 className={`text-4xl font-bold mb-4 ${
-                phase === 'victory' ? 'text-amber-400' : 'text-red-400'
-              }`}>
-                {phase === 'victory' ? 'Vitória Total!' : 'Derrota'}
+              <h2
+                className={`text-4xl font-bold mb-4 ${
+                  phase === "victory" ? "text-amber-400" : "text-red-400"
+                }`}
+              >
+                {phase === "victory" ? "Vitória Total!" : "Derrota"}
               </h2>
               <p className="text-slate-300 mb-6">
-                {phase === 'victory'
-                  ? 'Você derrotou o Dragão Ancião e conquistou a masmorra!'
-                  : 'Você foi derrotado... A masmorra cobra seu preço.'}
+                {phase === "victory"
+                  ? "Você derrotou o Dragão Ancião e conquistou a masmorra!"
+                  : "Você foi derrotado... A masmorra cobra seu preço."}
               </p>
               <button
                 onClick={handleRestart}
@@ -292,7 +324,8 @@ export default function GamePage() {
                 Abandonar Missão?
               </h2>
               <p className="text-slate-300 mb-6">
-                Tem certeza que deseja abandonar? Todo o progresso desta batalha será perdido.
+                Tem certeza que deseja abandonar? Todo o progresso desta batalha
+                será perdido.
               </p>
               <div className="flex gap-4 justify-center">
                 <button
@@ -314,10 +347,10 @@ export default function GamePage() {
 
         {/* Selection instructions - fixed height to prevent layout shift */}
         <div className="h-10 flex items-center justify-center">
-          {phase === 'selectingMovement' && (
+          {phase === "selectingMovement" && (
             <span className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200 text-sm">
-              ⬡ Clique em um hexágono verde para mover • 
-              <button 
+              ⬡ Clique em um hexágono verde para mover •
+              <button
                 onClick={cancelSelection}
                 className="ml-2 underline hover:text-white"
               >
@@ -325,11 +358,13 @@ export default function GamePage() {
               </button>
             </span>
           )}
-          
-          {phase === 'selectingTarget' && (
+
+          {phase === "selectingTarget" && (
             <span className="px-4 py-2 bg-yellow-600/50 rounded-lg text-yellow-200 text-sm">
-              🎯 Clique em um inimigo para atacar com <strong>{selectedCard?.name}</strong> ({selectedCard?.damage} dano) • 
-              <button 
+              🎯 Clique em um inimigo para atacar com{" "}
+              <strong>{selectedCard?.name}</strong> ({selectedCard?.damage}{" "}
+              dano) •
+              <button
                 onClick={cancelSelection}
                 className="ml-2 underline hover:text-white"
               >
@@ -337,17 +372,18 @@ export default function GamePage() {
               </button>
             </span>
           )}
-          
-          {phase === 'confirmingSkill' && (
+
+          {phase === "confirmingSkill" && (
             <span className="px-4 py-2 bg-cyan-600/50 rounded-lg text-cyan-200 text-sm">
-              🛡️ Usar <strong>{selectedCard?.name}</strong> (+{selectedCard?.block} bloqueio)? 
-              <button 
+              🛡️ Usar <strong>{selectedCard?.name}</strong> (+
+              {selectedCard?.block} bloqueio)?
+              <button
                 onClick={confirmSkill}
                 className="ml-2 px-2 py-0.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded font-bold"
               >
                 Confirmar
               </button>
-              <button 
+              <button
                 onClick={cancelSelection}
                 className="ml-2 underline hover:text-white"
               >
@@ -365,8 +401,13 @@ export default function GamePage() {
             selectedCard={selectedCard}
             onSelectCard={handleSelectCard}
             onEndTurn={endTurn}
-            canEndTurn={phase === 'playerTurn'}
-            disabled={phase !== 'playerTurn' && phase !== 'selectingMovement' && phase !== 'selectingTarget' && phase !== 'confirmingSkill'}
+            canEndTurn={phase === "playerTurn"}
+            disabled={
+              phase !== "playerTurn" &&
+              phase !== "selectingMovement" &&
+              phase !== "selectingTarget" &&
+              phase !== "confirmingSkill"
+            }
           />
         </div>
       </main>
@@ -404,17 +445,12 @@ export default function GamePage() {
 
       {/* Game Log Modal */}
       {showLogModal && (
-        <GameLogModal
-          logs={gameLog}
-          onClose={() => setShowLogModal(false)}
-        />
+        <GameLogModal logs={gameLog} onClose={() => setShowLogModal(false)} />
       )}
 
       {/* How To Play Modal */}
       {showHowToPlayModal && (
-        <HowToPlayModal
-          onClose={() => setShowHowToPlayModal(false)}
-        />
+        <HowToPlayModal onClose={() => setShowHowToPlayModal(false)} />
       )}
     </div>
   );
