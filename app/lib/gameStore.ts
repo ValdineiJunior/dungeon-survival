@@ -112,7 +112,7 @@ interface GameActions {
   selectTarget: (enemyId: string) => void;
   confirmSkill: () => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
-  endTurn: () => void;
+  endTurn: () => Promise<void>;
   advanceFloor: () => void;
   resetGame: () => void;
 }
@@ -580,7 +580,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
   
-  endTurn: () => {
+  endTurn: async () => {
     const state = get();
     if (state.phase !== 'playerTurn') return;
     
@@ -597,8 +597,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     let enemies = state.enemies.map(e => ({ ...e }));
     let phase: GamePhase = 'playerTurn';
     
+    // Helper sleep for animation
+    const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
     // Helper function to execute a single enemy action
-    const executeEnemyAction = (enemy: Enemy, action: EnemyAction): boolean => {
+    const executeEnemyAction = async (enemy: Enemy, action: EnemyAction): Promise<boolean> => {
       const def = getEnemyDefinitionByName(enemy.name);
       const attackRange = def?.attackRange || 1;
       
@@ -648,11 +651,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
         let bestPos = enemy.position;
         let bestDist = hexDistance(enemy.position, player.position);
         const startPos = { ...enemy.position };
-        
+
+        // Build step-by-step path using same greedy approach
+        const steps: HexPosition[] = [];
         for (let step = 0; step < maxMove; step++) {
           const neighbors = hexNeighbors(bestPos);
           let moved = false;
-          
+
           for (const neighbor of neighbors) {
             if (
               isValidHex(state.hexMap, neighbor) &&
@@ -669,14 +674,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
               }
             }
           }
-          
+
           if (!moved) break;
+          // record this intermediate step
+          steps.push(bestPos);
         }
-        
-        enemy.position = bestPos;
-        
-        if (!hexEquals(startPos, bestPos)) {
-          const tilesMoved = hexDistance(startPos, bestPos);
+
+        // If we have steps, animate them one by one so user can see movement
+        if (steps.length > 0) {
+          const ANIM_DELAY = 250; // ms between steps
+
+          for (const stepPos of steps) {
+            // update store so UI shows movement
+            enemies = enemies.map(e => e.id === enemy.id ? { ...e, position: stepPos } : e);
+            set({ enemies });
+            // also keep local enemy updated for subsequent logic
+            enemy.position = stepPos;
+            // small delay to visualize
+            // eslint-disable-next-line no-await-in-loop
+            await sleep(ANIM_DELAY);
+          }
+
+          const tilesMoved = steps.length;
           newLog.push(createLogEntry(state.turn, state.floor, 'enemyMove',
             `${enemy.emoji} ${enemy.name} move ${tilesMoved} para (${bestPos.q}, ${bestPos.r})`, {
             position: bestPos,
@@ -686,22 +705,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
       return true; // Continue
     };
     
-    // Execute all actions for each enemy
+    // Execute all actions for each enemy (awaiting animations when needed)
     for (const enemy of enemies) {
       if (!enemy.currentActionCard) continue;
-      
+
       // Reset enemy block at the start of their turn
       enemy.block = 0;
-      
+
       // Execute each action in the enemy's action card
       for (const action of enemy.currentActionCard.actions) {
-        const continueGame = executeEnemyAction(enemy, action);
+        // eslint-disable-next-line no-await-in-loop
+        const continueGame = await executeEnemyAction(enemy, action);
         if (!continueGame) {
           phase = 'defeat';
           break;
         }
       }
-      
+
       if (phase === 'defeat') break;
     }
     
