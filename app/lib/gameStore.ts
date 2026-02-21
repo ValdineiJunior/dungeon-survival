@@ -92,6 +92,56 @@ function getValidNeighbors(pos: HexPosition, hexMap: HexMap, blocked: HexPositio
   });
 }
 
+// Find shortest path from start to any of the target positions using BFS
+function findPathToClosestTarget(
+  hexMap: HexMap,
+  start: HexPosition,
+  targets: HexPosition[],
+  blocked: HexPosition[]
+): HexPosition[] | null {
+  const targetKeys = new Set(targets.map(t => `${t.q},${t.r}`));
+  const visited = new Set<string>();
+  const parent = new Map<string, string | null>();
+  const q: HexPosition[] = [start];
+  const startKey = `${start.q},${start.r}`;
+  visited.add(startKey);
+  parent.set(startKey, null);
+
+  while (q.length > 0) {
+    const current = q.shift()!;
+    const currentKey = `${current.q},${current.r}`;
+
+    if (targetKeys.has(currentKey)) {
+      // reconstruct path
+      const path: HexPosition[] = [];
+      let k: string | null = currentKey;
+      while (k) {
+        const [qv, rv] = k.split(',').map(Number);
+        path.unshift({ q: qv, r: rv });
+        k = parent.get(k) ?? null;
+      }
+      return path;
+    }
+
+    const neighbors = hexNeighbors(current);
+    for (const n of neighbors) {
+      const key = `${n.q},${n.r}`;
+      if (visited.has(key)) continue;
+      // skip blocked, non-floor, or out-of-map
+      if (blocked.some(b => hexEquals(b, n))) continue;
+      if (!isValidHex(hexMap, n)) continue;
+      const tile = getTile(hexMap, n);
+      if (!tile || tile.type === 'wall' || tile.type === 'pit') continue;
+
+      visited.add(key);
+      parent.set(key, currentKey);
+      q.push(n);
+    }
+  }
+
+  return null;
+}
+
 // Encontrar inimigos no alcance (considerando minRange e maxRange)
 function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: number, minRange: number = 1): Enemy[] {
   return enemies.filter(e => {
@@ -652,54 +702,87 @@ export const useGameStore = create<GameStore>((set, get) => ({
         let bestDist = hexDistance(enemy.position, player.position);
         const startPos = { ...enemy.position };
 
-        // Build step-by-step path using same greedy approach
-        const steps: HexPosition[] = [];
-        for (let step = 0; step < maxMove; step++) {
-          const neighbors = hexNeighbors(bestPos);
-          let moved = false;
+        // Try to find a shortest path to any tile adjacent to the player
+        const targetTiles = hexNeighbors(player.position).filter(t => {
+          // must be floor and not occupied (can't path into occupied tiles)
+          const tile = getTile(state.hexMap, t);
+          if (!tile || tile.type === 'wall' || tile.type === 'pit') return false;
+          // allow stepping into a tile currently occupied by this enemy (no)
+          const otherEnemies = enemies.filter(e => e.id !== enemy.id);
+          if (otherEnemies.some(e => hexEquals(e.position, t))) return false;
+          // don't allow player's tile
+          if (hexEquals(t, player.position)) return false;
+          return true;
+        });
 
-          for (const neighbor of neighbors) {
-            if (
-              isValidHex(state.hexMap, neighbor) &&
-              !isPositionOccupied(neighbor, player, enemies.filter(e => e.id !== enemy.id))
-            ) {
-              const tile = getTile(state.hexMap, neighbor);
-              if (tile && tile.type === 'floor') {
-                const dist = hexDistance(neighbor, player.position);
-                if (dist < bestDist) {
-                  bestDist = dist;
-                  bestPos = neighbor;
-                  moved = true;
-                }
-              }
-            }
-          }
-
-          if (!moved) break;
-          // record this intermediate step
-          steps.push(bestPos);
+        let path: HexPosition[] | null = null;
+        if (targetTiles.length > 0) {
+          const blocked = getBlockedPositions(player, enemies.filter(e => e.id !== enemy.id));
+          path = findPathToClosestTarget(state.hexMap, enemy.position, targetTiles, blocked);
         }
 
-        // If we have steps, animate them one by one so user can see movement
-        if (steps.length > 0) {
-          const ANIM_DELAY = 250; // ms between steps
-
+        // If we found a path to an adjacent tile, follow it (up to maxMove)
+        if (path && path.length > 1) {
+          // path includes start; get next steps
+          const steps = path.slice(1, 1 + maxMove);
+          const ANIM_DELAY = 250;
           for (const stepPos of steps) {
-            // update store so UI shows movement
             enemies = enemies.map(e => e.id === enemy.id ? { ...e, position: stepPos } : e);
             set({ enemies });
-            // also keep local enemy updated for subsequent logic
             enemy.position = stepPos;
-            // small delay to visualize
             // eslint-disable-next-line no-await-in-loop
             await sleep(ANIM_DELAY);
           }
 
-          const tilesMoved = steps.length;
+          const finalPos = steps[steps.length - 1];
           newLog.push(createLogEntry(state.turn, state.floor, 'enemyMove',
-            `${enemy.emoji} ${enemy.name} move ${tilesMoved} para (${bestPos.q}, ${bestPos.r})`, {
-            position: bestPos,
+            `${enemy.emoji} ${enemy.name} move ${steps.length} para (${finalPos.q}, ${finalPos.r})`, {
+            position: finalPos,
           }));
+        } else {
+          // Fallback: greedy single-step moves as before
+          const greedySteps: HexPosition[] = [];
+          for (let step = 0; step < maxMove; step++) {
+            const neighbors = hexNeighbors(bestPos);
+            let moved = false;
+
+            for (const neighbor of neighbors) {
+              if (
+                isValidHex(state.hexMap, neighbor) &&
+                !isPositionOccupied(neighbor, player, enemies.filter(e => e.id !== enemy.id))
+              ) {
+                const tile = getTile(state.hexMap, neighbor);
+                if (tile && tile.type === 'floor') {
+                  const dist = hexDistance(neighbor, player.position);
+                  if (dist < bestDist) {
+                    bestDist = dist;
+                    bestPos = neighbor;
+                    moved = true;
+                  }
+                }
+              }
+            }
+
+            if (!moved) break;
+            greedySteps.push(bestPos);
+          }
+
+          if (greedySteps.length > 0) {
+            const ANIM_DELAY = 250;
+            for (const stepPos of greedySteps) {
+              enemies = enemies.map(e => e.id === enemy.id ? { ...e, position: stepPos } : e);
+              set({ enemies });
+              enemy.position = stepPos;
+              // eslint-disable-next-line no-await-in-loop
+              await sleep(ANIM_DELAY);
+            }
+
+            const finalPos = greedySteps[greedySteps.length - 1];
+            newLog.push(createLogEntry(state.turn, state.floor, 'enemyMove',
+              `${enemy.emoji} ${enemy.name} move ${greedySteps.length} para (${finalPos.q}, ${finalPos.r})`, {
+              position: finalPos,
+            }));
+          }
         }
       }
       return true; // Continue
