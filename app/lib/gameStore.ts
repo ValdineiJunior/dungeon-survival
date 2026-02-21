@@ -8,6 +8,7 @@ import {
   hexEquals, 
   getReachableHexes,
   hexNeighbors,
+  hexesInRange,
   isValidHex,
   getTile
 } from './hexUtils';
@@ -702,18 +703,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
         let bestDist = hexDistance(enemy.position, player.position);
         const startPos = { ...enemy.position };
 
-        // Try to find a shortest path to any tile adjacent to the player
-        const targetTiles = hexNeighbors(player.position).filter(t => {
-          // must be floor and not occupied (can't path into occupied tiles)
+        // Try to find a shortest path to any tile within the enemy's attack range
+        // Prefer tiles at exact distance == attackRange so ranged enemies keep distance
+        const allCandidateTiles = hexesInRange(player.position, attackRange).filter(t => {
+          // skip player's tile
+          if (hexEquals(t, player.position)) return false;
           const tile = getTile(state.hexMap, t);
           if (!tile || tile.type === 'wall' || tile.type === 'pit') return false;
-          // allow stepping into a tile currently occupied by this enemy (no)
           const otherEnemies = enemies.filter(e => e.id !== enemy.id);
           if (otherEnemies.some(e => hexEquals(e.position, t))) return false;
-          // don't allow player's tile
-          if (hexEquals(t, player.position)) return false;
           return true;
         });
+
+        // prefer tiles at exact distance == attackRange (keep optimal firing distance)
+        const preferred = allCandidateTiles.filter(t => hexDistance(t, player.position) === attackRange);
+        const targetTiles = preferred.length > 0 ? preferred : allCandidateTiles;
 
         let path: HexPosition[] | null = null;
         if (targetTiles.length > 0) {
