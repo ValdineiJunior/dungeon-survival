@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType } from '@/app/types/game';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
+import { pickRewardCards } from './cardRewards';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
 import { 
   createHexMap, 
@@ -164,6 +165,7 @@ interface GameActions {
   confirmSkill: () => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
   endTurn: () => Promise<void>;
+  selectRewardCard: (card: Card) => void;
   advanceFloor: () => void;
   resetGame: () => void;
 }
@@ -211,6 +213,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   gameLog: [],
   movementPath: [],
   remainingMovement: 0,
+  rewardCards: [],
 
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
@@ -274,6 +277,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
+      rewardCards: [],
     };
     
     // Draw cards including bonus draw from innate ability
@@ -924,6 +928,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: [],
     } as GameState, HAND_SIZE + bonusDraw);
     
+    // Generate reward cards if not on final floor
+    let rewardCards: Card[] = [];
+    if (nextFloor < MAX_FLOOR) {
+      const [card1, card2] = pickRewardCards(player.characterClass);
+      rewardCards = [card1, card2];
+      newLog.push(createLogEntry(1, nextFloor, 'rewardStart',
+        '🎁 Selecione uma carta para sua mão'));
+    }
+    
     set({
       floor: nextFloor,
       player,
@@ -932,13 +945,38 @@ export const useGameStore = create<GameStore>((set, get) => ({
       drawPile: cardState.drawPile,
       discardPile: cardState.discardPile,
       gameLog: newLog,
-      phase: 'playerTurn',
+      rewardCards,
+      phase: rewardCards.length > 0 ? 'selectingReward' : 'playerTurn',
       turn: 1,
       selectedCard: null,
       validMovePositions: [],
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
+    });
+  },
+
+  selectRewardCard: (card: Card) => {
+    const state = get();
+    if (state.phase !== 'selectingReward' || state.rewardCards.length === 0) return;
+    
+    const newLog = [...state.gameLog];
+    
+    // Add card to deck with unique ID
+    const newCard = {
+      ...card,
+      id: `${card.id}_${Date.now()}`,
+    };
+    const deck = [...state.deck, newCard];
+    
+    newLog.push(createLogEntry(state.turn, state.floor, 'cardReward',
+      `✨ ${card.name} adicionado ao baralho`));
+    
+    set({
+      deck,
+      rewardCards: [],
+      gameLog: newLog,
+      phase: 'playerTurn',
     });
   },
 
@@ -961,6 +999,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
+      rewardCards: [],
     });
   },
 }));

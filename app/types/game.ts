@@ -130,7 +130,9 @@ export type LogEntryType =
   | 'turnStart'
   | 'turnEnd'
   | 'floorStart'
-  | 'innateAbility';
+  | 'innateAbility'
+  | 'rewardStart'
+  | 'cardReward';
 
 export interface GameLogEntry {
   id: string;
@@ -162,7 +164,8 @@ export type GamePhase =
   | 'selectingMovement'
   | 'selectingTarget'   // Selecting enemy to attack
   | 'confirmingSkill'   // Confirming skill card use
-  | 'floorComplete';    // Floor cleared, ready for next floor
+  | 'floorComplete'     // Floor cleared, ready for next floor
+  | 'selectingReward';  // Selecting reward card
 
 export const MAX_FLOOR = 4;
 
@@ -198,6 +201,9 @@ export interface GameState {
   // Estado de movimento passo a passo
   movementPath: HexPosition[];  // Path of hexes selected for current movement
   remainingMovement: number;    // Remaining movement points for current card
+
+  // Recompensa de cartas após andar
+  rewardCards: Card[];  // Two cards to choose from after floor completion
 }
 
 // === UTILIDADES HEXAGONAIS ===

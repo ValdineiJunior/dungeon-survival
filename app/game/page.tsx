@@ -9,6 +9,7 @@ import { PlayerStatus } from "@/app/components/PlayerStatus";
 import { HexGrid } from "@/app/components/HexGrid";
 import { CharacterSelect } from "@/app/components/CharacterSelect";
 import { CardListModal } from "@/app/components/CardListModal";
+import { CardRewardModal } from "@/app/components/CardRewardModal";
 import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
 import { GameLogModal } from "@/app/components/GameLogModal";
 import { HowToPlayModal } from "@/app/components/HowToPlayModal";
@@ -43,6 +44,7 @@ export default function GamePage() {
     movementPath,
     remainingMovement,
     gameLog,
+    rewardCards,
     selectCharacter,
     startCombat,
     selectCard,
@@ -54,6 +56,7 @@ export default function GamePage() {
     selectTarget,
     confirmSkill,
     endTurn,
+    selectRewardCard,
     advanceFloor,
     resetGame,
   } = useGameStore();
@@ -112,6 +115,8 @@ export default function GamePage() {
         return "🎯 Selecione Alvo";
       case "confirmingSkill":
         return "Confirmar Habilidade";
+      case "selectingReward":
+        return "🎁 Selecione Recompensa";
       case "floorComplete":
         return "🏆 Andar Completo!";
       case "victory":
@@ -133,6 +138,8 @@ export default function GamePage() {
         return "bg-yellow-500 text-black";
       case "confirmingSkill":
         return "bg-purple-600 text-white";
+      case "selectingReward":
+        return "bg-indigo-600 text-white";
       case "floorComplete":
         return "bg-emerald-500 text-white";
       case "victory":
@@ -458,6 +465,15 @@ export default function GamePage() {
           title="🗑️ Pilha de Descarte"
           cards={discardPile}
           onClose={() => setShowDiscardModal(false)}
+        />
+      )}
+
+      {/* Card Reward Modal */}
+      {phase === "selectingReward" && rewardCards.length === 2 && (
+        <CardRewardModal
+          cards={[rewardCards[0], rewardCards[1]]}
+          onSelectCard={selectRewardCard}
+          onCancel={() => {}}
         />
       )}
 
