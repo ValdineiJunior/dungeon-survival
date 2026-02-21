@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CharacterClass } from '@/app/types/game';
-import { CHARACTER_CLASSES, getClassCards } from '@/app/lib/cards';
+import { CHARACTER_CLASSES, getClassCards, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from '@/app/lib/cards';
 import { getRewardPool } from '@/app/lib/cardRewards';
 import { CardListModal } from './CardListModal';
 
@@ -14,7 +14,7 @@ const CLASS_ORDER: CharacterClass[] = ['warrior', 'archer', 'mage'];
 
 export function CharacterSelect({ onSelect }: CharacterSelectProps) {
   const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
-  const [cardType, setCardType] = useState<'initial' | 'normal' | 'rare' | null>(null);
+  const [cardType, setCardType] = useState<'initial' | 'normal' | 'rare' | 'default' | null>(null);
 
   const closeModal = () => {
     setSelectedClass(null);
@@ -28,6 +28,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
       initial: `Cartas Iniciais - ${className}`,
       normal: `Cartas de Recompensa Normais - ${className}`,
       rare: `Cartas de Recompensa Raras - ${className}`,
+      default: `Cartas Padrão - ${className}`,
     };
     return titles[cardType] || '';
   };
@@ -37,6 +38,19 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
 
     if (cardType === 'initial') {
       return getClassCards(selectedClass);
+    }
+
+    if (cardType === 'default') {
+      switch (selectedClass) {
+        case 'warrior':
+          return WARRIOR_DEFAULT_CARDS;
+        case 'archer':
+          return ARCHER_DEFAULT_CARDS;
+        case 'mage':
+          return MAGE_DEFAULT_CARDS;
+        default:
+          return [];
+      }
     }
 
     const pool = getRewardPool(selectedClass);
@@ -148,11 +162,21 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedClass(classId);
-                    setCardType('initial');
+                      setCardType('initial');
                   }}
                   className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white rounded transition-colors"
                 >
                   📋 Cartas Iniciais
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedClass(classId);
+                    setCardType('default');
+                  }}
+                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-emerald-600 text-slate-300 hover:text-white rounded transition-colors"
+                >
+                  🔰 Cartas Padrão
                 </button>
                 <button
                   onClick={(e) => {

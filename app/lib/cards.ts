@@ -332,6 +332,92 @@ export const MAGE_CARDS: Card[] = [
   },
 ];
 
+// === DEFAULT (Starter) CARDS (one set of 3 cards per class) ===
+// These are simple default cards: Attack, Defense, Move - all cost 1
+export const WARRIOR_DEFAULT_CARDS: Card[] = [
+  {
+    id: 'warrior_default_attack',
+    name: 'Punhal Arremessado',
+    cost: 1,
+    type: 'attack',
+    damage: 6,
+    range: 2,
+    description: 'Causa 6 de dano. Alcance: 2',
+  },
+  {
+    id: 'warrior_default_defend',
+    name: 'Traje de Couro',
+    cost: 1,
+    type: 'skill',
+    block: 5,
+    description: 'Ganha 5 de bloqueio.',
+  },
+  {
+    id: 'warrior_default_move',
+    name: 'Passo Lento',
+    cost: 1,
+    type: 'movement',
+    movement: 1,
+    description: 'Mova até 1 espaço.',
+  },
+];
+
+export const ARCHER_DEFAULT_CARDS: Card[] = [
+  {
+    id: 'archer_default_attack',
+    name: 'Risco da adaga',
+    cost: 1,
+    type: 'attack',
+    damage: 5,
+    range: 1,
+    description: 'Causa 5 de dano. Alcance: 1',
+  },
+  {
+    id: 'archer_default_defend',
+    name: 'Traje de Couro',
+    cost: 1,
+    type: 'skill',
+    block: 3,
+    description: 'Ganha 3 de bloqueio.',
+  },
+  {
+    id: 'archer_default_move',
+    name: 'Passo Silencioso',
+    cost: 1,
+    type: 'movement',
+    movement: 2,
+    description: 'Mova até 2 espaços.',
+  },
+];
+
+export const MAGE_DEFAULT_CARDS: Card[] = [
+  {
+    id: 'mage_default_attack',
+    name: 'Toque Arcano',
+    cost: 1,
+    type: 'attack',
+    damage: 5,
+    range: 1,
+    description: 'Causa 5 de dano. Alcance: 1',
+  },
+  {
+    id: 'mage_default_defend',
+    name: 'Escudo Arcano',
+    cost: 1,
+    type: 'skill',
+    block: 4,
+    description: 'Ganha 4 de bloqueio.',
+  },
+  {
+    id: 'mage_default_move',
+    name: 'Deslocamento Arcano',
+    cost: 1,
+    type: 'movement',
+    movement: 2,
+    description: 'Mova até 2 espaços.',
+  },
+];
+
 // Get cards for a specific class
 export function getClassCards(characterClass: CharacterClass): Card[] {
   switch (characterClass) {
