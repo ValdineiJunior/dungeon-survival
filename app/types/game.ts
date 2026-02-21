@@ -195,6 +195,8 @@ export interface GameState {
   
   // Estado de seleção
   selectedCard: Card | null;
+  // Whether the currently selected card (selectedCard) is from the default hand
+  selectedCardIsDefault?: boolean;
   validMovePositions: HexPosition[];
   targetableEnemyIds: string[];  // NEW: IDs of enemies that can be targeted
   
@@ -204,6 +206,14 @@ export interface GameState {
 
   // Recompensa de cartas após andar
   rewardCards: Card[];  // Two cards to choose from after floor completion
+  // Secondary persistent default hand (3 simple cards, usable once per round)
+  defaultHand: DefaultHandCard[];
+}
+
+export interface DefaultHandCard {
+  id: string; // unique id for instance in the default hand
+  card: Card; // the card data
+  usedThisTurn: boolean; // whether it was used this turn (resets each turn)
 }
 
 // === UTILIDADES HEXAGONAIS ===

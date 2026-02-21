@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType } from '@/app/types/game';
-import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType, DefaultHandCard } from '@/app/types/game';
+import { createClassDeck, shuffleArray, CHARACTER_CLASSES, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from './cards';
 import { pickRewardCards } from './cardRewards';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
 import { 
@@ -164,6 +164,9 @@ interface GameActions {
   selectTarget: (enemyId: string) => void;
   confirmSkill: () => void;
   playCard: (cardId: string, targetEnemyId?: string) => void;
+  playDefaultCard: (cardId: string) => void;
+  selectDefaultCard: (defaultId: string) => void;
+  playSelectedDefaultCard: (targetEnemyId?: string) => void;
   endTurn: () => Promise<void>;
   selectRewardCard: (card: Card) => void;
   advanceFloor: () => void;
@@ -202,12 +205,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   hand: [],
   drawPile: [],
   discardPile: [],
+  defaultHand: [],
   enemies: [],
   hexMap: createHexMap(MAP_RADIUS),
   phase: 'characterSelect',
   turn: 1,
   floor: 1,
   selectedCard: null,
+  selectedCardIsDefault: false,
   validMovePositions: [],
   targetableEnemyIds: [],
   gameLog: [],
@@ -278,6 +283,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       movementPath: [],
       remainingMovement: 0,
       rewardCards: [],
+      defaultHand: [],
     };
     
     // Draw cards including bonus draw from innate ability
@@ -286,6 +292,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       ...initialState,
       ...cardState,
+      // initialize default hand for the selected class
+      defaultHand: (characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
+        id: `default_${c.id}`,
+        card: { ...c },
+        usedThisTurn: false,
+      })),
     });
   },
   
@@ -302,6 +314,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       
       set({
         selectedCard: card,
+        selectedCardIsDefault: false,
         validMovePositions: validNextPositions,
         targetableEnemyIds: [],
         phase: 'selectingMovement',
@@ -322,6 +335,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       // Always let player confirm target selection
       set({
         selectedCard: card,
+        selectedCardIsDefault: false,
         validMovePositions: [],
         targetableEnemyIds: enemiesInRange.map(e => e.id),
         phase: 'selectingTarget',
@@ -330,6 +344,52 @@ export const useGameStore = create<GameStore>((set, get) => ({
       // Skill card: show confirmation
       set({
         selectedCard: card,
+        selectedCardIsDefault: false,
+        validMovePositions: [],
+        targetableEnemyIds: [],
+        phase: 'confirmingSkill',
+      });
+    }
+  },
+
+  selectDefaultCard: (defaultId: string) => {
+    const state = get();
+    if (state.phase !== 'playerTurn') return;
+    const entry = state.defaultHand.find(d => d.id === defaultId);
+    if (!entry) return;
+    const card = entry.card;
+    if (card.cost > state.player.energy) return;
+
+    if (card.type === 'movement' && card.movement) {
+      const blocked = getBlockedPositions(state.player, state.enemies);
+      const validNextPositions = getValidNeighbors(state.player.position, state.hexMap, blocked);
+
+      set({
+        selectedCard: card,
+        selectedCardIsDefault: true,
+        validMovePositions: validNextPositions,
+        targetableEnemyIds: [],
+        phase: 'selectingMovement',
+        movementPath: [],
+        remainingMovement: card.movement,
+      });
+    } else if (card.type === 'attack' && card.damage) {
+      const range = card.range || 1;
+      const minRange = card.minRange || 1;
+      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range, minRange);
+      if (enemiesInRange.length === 0) return;
+
+      set({
+        selectedCard: card,
+        selectedCardIsDefault: true,
+        validMovePositions: [],
+        targetableEnemyIds: enemiesInRange.map(e => e.id),
+        phase: 'selectingTarget',
+      });
+    } else if (card.type === 'skill') {
+      set({
+        selectedCard: card,
+        selectedCardIsDefault: true,
         validMovePositions: [],
         targetableEnemyIds: [],
         phase: 'confirmingSkill',
@@ -340,6 +400,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   cancelSelection: () => {
     set({
       selectedCard: null,
+      selectedCardIsDefault: false,
       validMovePositions: [],
       targetableEnemyIds: [],
       phase: 'playerTurn',
@@ -461,42 +522,73 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.phase !== 'selectingMovement') return;
     if (!state.selectedCard || state.selectedCard.type !== 'movement') return;
     if (state.movementPath.length === 0) return;
-    
-    const cardIndex = state.hand.findIndex(c => c.id === state.selectedCard!.id);
-    if (cardIndex === -1) return;
-    
-    const newHand = [...state.hand];
-    const [playedCard] = newHand.splice(cardIndex, 1);
-    
-    const classDef = CHARACTER_CLASSES[state.player.characterClass];
     const finalPosition = state.movementPath[state.movementPath.length - 1];
     const tilesMovedCount = state.movementPath.length;
-    
-    const newPlayer = {
-      ...state.player,
-      position: finalPosition,
-      energy: state.player.energy - playedCard.cost,
-    };
-    
-    // Log the movement
+
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
     const newLog = [...state.gameLog];
-    newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
-      `${classDef.emoji} ${classDef.name} se move ${tilesMovedCount} hex para (${finalPosition.q}, ${finalPosition.r})`, {
-      position: finalPosition,
-    }));
-    
-    set({
-      player: newPlayer,
-      hand: newHand,
-      discardPile: [...state.discardPile, playedCard],
-      gameLog: newLog,
-      selectedCard: null,
-      validMovePositions: [],
-      targetableEnemyIds: [],
-      phase: 'playerTurn',
-      movementPath: [],
-      remainingMovement: 0,
-    });
+
+    if (state.selectedCardIsDefault) {
+      // Apply movement for default card (do not remove from deck/discard)
+      const card = state.selectedCard!;
+      const newPlayer = {
+        ...state.player,
+        position: finalPosition,
+        energy: state.player.energy - card.cost,
+      };
+
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
+        `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} e se move ${tilesMovedCount} hex para (${finalPosition.q}, ${finalPosition.r})`, {
+        position: finalPosition,
+      }));
+
+      // mark default card used
+      const newDefaultHand = state.defaultHand.map(d => d.card.id === card.id ? { ...d, usedThisTurn: true } : d);
+
+      set({
+        player: newPlayer,
+        gameLog: newLog,
+        defaultHand: newDefaultHand,
+        selectedCard: null,
+        selectedCardIsDefault: false,
+        validMovePositions: [],
+        targetableEnemyIds: [],
+        phase: 'playerTurn',
+        movementPath: [],
+        remainingMovement: 0,
+      });
+    } else {
+      const cardIndex = state.hand.findIndex(c => c.id === state.selectedCard!.id);
+      if (cardIndex === -1) return;
+
+      const newHand = [...state.hand];
+      const [playedCard] = newHand.splice(cardIndex, 1);
+
+      const newPlayer = {
+        ...state.player,
+        position: finalPosition,
+        energy: state.player.energy - playedCard.cost,
+      };
+
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
+        `${classDef.emoji} ${classDef.name} se move ${tilesMovedCount} hex para (${finalPosition.q}, ${finalPosition.r})`, {
+        position: finalPosition,
+      }));
+
+      set({
+        player: newPlayer,
+        hand: newHand,
+        discardPile: [...state.discardPile, playedCard],
+        gameLog: newLog,
+        selectedCard: null,
+        selectedCardIsDefault: false,
+        validMovePositions: [],
+        targetableEnemyIds: [],
+        phase: 'playerTurn',
+        movementPath: [],
+        remainingMovement: 0,
+      });
+    }
   },
   
   // Select an enemy to attack
@@ -505,8 +597,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.phase !== 'selectingTarget') return;
     if (!state.selectedCard) return;
     if (!state.targetableEnemyIds.includes(enemyId)) return;
-    
-    // Execute the attack on the selected target
+    // If selected card is from default hand, play via default flow
+    if (state.selectedCardIsDefault) {
+      get().playSelectedDefaultCard(enemyId);
+      return;
+    }
+
+    // Execute the attack on the selected target for regular hand
     get().playCard(state.selectedCard.id, enemyId);
   },
   
@@ -515,8 +612,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     if (state.phase !== 'confirmingSkill') return;
     if (!state.selectedCard) return;
-    
-    // Execute the skill
+    // If it's a default card, route to default play
+    if (state.selectedCardIsDefault) {
+      get().playSelectedDefaultCard();
+      return;
+    }
+
+    // Execute the skill for regular hand
     get().playCard(state.selectedCard.id);
   },
   
@@ -628,6 +730,213 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameLog: newLog,
       phase,
       selectedCard: null,
+      validMovePositions: [],
+      targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
+    });
+  },
+
+  playDefaultCard: (cardId: string) => {
+    const state = get();
+    if (state.phase !== 'playerTurn') return;
+
+    const defIndex = state.defaultHand.findIndex(d => d.id === cardId);
+    if (defIndex === -1) return;
+    const defEntry = state.defaultHand[defIndex];
+    if (defEntry.usedThisTurn) return;
+    const card = defEntry.card;
+    if (card.cost > state.player.energy) return;
+
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
+    const player = { ...state.player };
+    let enemies = state.enemies.map(e => ({ ...e }));
+    const newLog = [...state.gameLog];
+
+    // Apply effects (attack/skill/movement)
+    if (card.type === 'attack' && card.damage) {
+      const range = card.range || 1;
+      const minRange = card.minRange || 1;
+
+      // find a target in range (first match)
+      const inRange = getEnemiesInRange(player.position, enemies, range, minRange);
+      const target = inRange[0];
+      if (target) {
+        const targetIndex = enemies.findIndex(e => e.id === target.id);
+        if (targetIndex !== -1) {
+          const tgt = { ...enemies[targetIndex] };
+          const originalDamage = card.damage!;
+          let damage = card.damage!;
+          let blockedAmount = 0;
+          if (tgt.block > 0) {
+            blockedAmount = Math.min(damage, tgt.block);
+            tgt.block -= blockedAmount;
+            damage -= blockedAmount;
+          }
+          tgt.hp = Math.max(0, tgt.hp - damage);
+
+          const logMessage = blockedAmount > 0
+            ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+            : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano`;
+
+          newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
+            attacker: classDef.name,
+            target: tgt.name,
+            damage: originalDamage,
+            blocked: blockedAmount,
+            finalDamage: damage,
+          }));
+
+          if (tgt.hp <= 0) {
+            newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', `💀 ${tgt.emoji} ${tgt.name} foi derrotado!`, { target: tgt.name }));
+          }
+
+          enemies[targetIndex] = tgt;
+          enemies = enemies.filter(e => e.hp > 0);
+        }
+      }
+    }
+
+    if (card.block) {
+      player.block += card.block;
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerBlock',
+        `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: +${card.block} bloqueio (total: ${player.block})`, {
+        block: card.block,
+      }));
+    }
+
+    if (card.type === 'movement' && card.movement) {
+      // try to move towards nearest enemy up to movement value
+      if (enemies.length > 0) {
+        const targets = enemies.map(e => e.position);
+        const path = findPathToClosestTarget(state.hexMap, player.position, targets, getBlockedPositions(player, enemies));
+        if (path && path.length > 1) {
+          const steps = path.slice(1, 1 + card.movement);
+          const finalPos = steps[steps.length - 1];
+          player.position = finalPos;
+          newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
+            `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} e se move ${steps.length} para (${finalPos.q}, ${finalPos.r})`, {
+              position: finalPos,
+            }));
+        }
+      }
+    }
+
+    // Consume energy and mark used
+    player.energy = player.energy - card.cost;
+    const newDefaultHand = state.defaultHand.map((d, i) => i === defIndex ? { ...d, usedThisTurn: true } : d);
+
+    set({
+      player,
+      enemies,
+      gameLog: newLog,
+      defaultHand: newDefaultHand,
+    });
+  },
+
+  playSelectedDefaultCard: (targetEnemyId?: string) => {
+    const state = get();
+    if (!state.selectedCard || !state.selectedCardIsDefault) return;
+    const card = state.selectedCard;
+    if (card.cost > state.player.energy) return;
+
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
+    let player = { ...state.player };
+    let enemies = state.enemies.map(e => ({ ...e }));
+    const newLog = [...state.gameLog];
+
+    if (card.type === 'attack' && card.damage) {
+      const range = card.range || 1;
+      const minRange = card.minRange || 1;
+
+      let targetId = targetEnemyId;
+      if (!targetId) {
+        const inRange = getEnemiesInRange(player.position, enemies, range, minRange);
+        targetId = inRange[0]?.id;
+      }
+
+      if (targetId) {
+        const targetIndex = enemies.findIndex(e => e.id === targetId);
+        if (targetIndex !== -1) {
+          const target = { ...enemies[targetIndex] };
+          const distance = hexDistance(player.position, target.position);
+          if (distance >= minRange && distance <= range) {
+            const originalDamage = card.damage!;
+            let damage = card.damage!;
+            let blockedAmount = 0;
+            if (target.block > 0) {
+              blockedAmount = Math.min(damage, target.block);
+              target.block -= blockedAmount;
+              damage -= blockedAmount;
+            }
+            target.hp = Math.max(0, target.hp - damage);
+
+            const logMessage = blockedAmount > 0
+              ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+              : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano`;
+
+            newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
+              attacker: classDef.name,
+              target: target.name,
+              damage: originalDamage,
+              blocked: blockedAmount,
+              finalDamage: damage,
+            }));
+
+            if (target.hp <= 0) {
+              newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', `💀 ${target.emoji} ${target.name} foi derrotado!`, { target: target.name }));
+            }
+
+            enemies[targetIndex] = target;
+            enemies = enemies.filter(e => e.hp > 0);
+          }
+        }
+      }
+    }
+
+    if (card.block) {
+      player.block += card.block;
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerBlock',
+        `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: +${card.block} bloqueio (total: ${player.block})`, {
+          block: card.block,
+        }));
+    }
+
+    // Movement handled via completeMovement path; if here and movement card without path, try simple path
+    if (card.type === 'movement' && card.movement && state.movementPath.length === 0) {
+      if (enemies.length > 0) {
+        const targets = enemies.map(e => e.position);
+        const path = findPathToClosestTarget(state.hexMap, player.position, targets, getBlockedPositions(player, enemies));
+        if (path && path.length > 1) {
+          const steps = path.slice(1, 1 + card.movement);
+          const finalPos = steps[steps.length - 1];
+          player.position = finalPos;
+          newLog.push(createLogEntry(state.turn, state.floor, 'playerMove',
+            `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} e se move ${steps.length} para (${finalPos.q}, ${finalPos.r})`, {
+              position: finalPos,
+            }));
+        }
+      }
+    }
+
+    // Consume energy and mark used
+    player.energy = player.energy - card.cost;
+    const newDefaultHand = state.defaultHand.map(d => d.card.id === card.id ? { ...d, usedThisTurn: true } : d);
+
+    // Check floor cleared after attacks
+    let phase: GamePhase = 'playerTurn';
+    if (enemies.length === 0) {
+      phase = state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
+    }
+
+    set({
+      player,
+      enemies,
+      gameLog: newLog,
+      defaultHand: newDefaultHand,
+      selectedCard: null,
+      selectedCardIsDefault: false,
+      phase,
       validMovePositions: [],
       targetableEnemyIds: [],
       movementPath: [],
@@ -865,6 +1174,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
         targetableEnemyIds: [],
         movementPath: [],
         remainingMovement: 0,
+        // reset default hand usage for new player turn
+        defaultHand: state.defaultHand.map(d => ({ ...d, usedThisTurn: false })),
       });
     } else {
       set({ player, phase, gameLog: newLog });
@@ -953,6 +1264,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
+      // reset or initialize default hand for the new floor
+      defaultHand: (player.characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : player.characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
+        id: `default_${c.id}`,
+        card: { ...c },
+        usedThisTurn: false,
+      })),
     });
   },
 
@@ -988,6 +1305,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hand: [],
       drawPile: [],
       discardPile: [],
+      defaultHand: [],
       enemies: [],
       hexMap: createHexMap(MAP_RADIUS),
       gameLog: [],

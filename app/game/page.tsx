@@ -45,6 +45,8 @@ export default function GamePage() {
     remainingMovement,
     gameLog,
     rewardCards,
+    defaultHand,
+    selectDefaultCard,
     selectCharacter,
     startCombat,
     selectCard,
@@ -436,6 +438,8 @@ export default function GamePage() {
             cards={hand}
             energy={player.energy}
             selectedCard={selectedCard}
+            defaultHand={defaultHand}
+            onPlayDefaultCard={selectDefaultCard}
             onSelectCard={handleSelectCard}
             onEndTurn={endTurn}
             canEndTurn={phase === "playerTurn"}
