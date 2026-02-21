@@ -11,7 +11,7 @@ const CLASS_ORDER: CharacterClass[] = ['warrior', 'archer', 'mage'];
 
 export function CharacterSelect({ onSelect }: CharacterSelectProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-8">
       {/* Background decorativo */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/30 rounded-full blur-3xl" />
@@ -20,7 +20,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
       </div>
 
       <div className="relative z-10 text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-linear-to-r from-amber-400 via-amber-300 to-amber-500 mb-4">
           Escolha seu Personagem
         </h1>
         <p className="text-slate-400 text-lg">

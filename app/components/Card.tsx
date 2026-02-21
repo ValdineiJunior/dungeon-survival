@@ -38,7 +38,7 @@ export function Card({
       disabled={disabled}
       className={`
         relative w-36 h-48 rounded-lg border-2 
-        bg-gradient-to-b ${typeColors[card.type]}
+        bg-linear-to-b ${typeColors[card.type]}
         flex flex-col p-1
         transform transition-all duration-200
         ${

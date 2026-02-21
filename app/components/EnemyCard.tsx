@@ -40,7 +40,7 @@ export function EnemyCard({
       onClick={isTargetable ? onClick : undefined}
       className={`
         relative p-3 rounded-xl 
-        bg-gradient-to-r from-slate-800 to-slate-900
+        bg-linear-to-r from-slate-800 to-slate-900
         border-2 
         ${
           isTargetable

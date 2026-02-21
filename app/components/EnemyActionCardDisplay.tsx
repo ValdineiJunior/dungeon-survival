@@ -62,7 +62,7 @@ export function EnemyActionCardDisplay({ actionCard, isCurrentAction, compact }:
   }
 
   return (
-    <div className="w-48 rounded-lg border-2 overflow-hidden border-slate-600 bg-gradient-to-b from-slate-800 to-slate-900">
+    <div className="w-48 rounded-lg border-2 overflow-hidden border-slate-600 bg-linear-to-b from-slate-800 to-slate-900">
       {/* Card Header */}
       <div className="px-2 py-1.5 text-center text-sm font-bold truncate bg-slate-700 text-slate-300">
         {actionCard.name}

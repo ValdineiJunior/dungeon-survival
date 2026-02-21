@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background decorativo */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/30 rounded-full blur-3xl" />
@@ -17,7 +17,7 @@ export default function Home() {
         {/* Logo / Título */}
         <div className="mb-8">
           <div className="text-7xl mb-4">⚔️</div>
-          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wider mb-2">
+          <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-linear-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wider mb-2">
             Dungeon Survival
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-md mx-auto">
@@ -31,7 +31,7 @@ export default function Home() {
             href="/game"
             className="
               px-12 py-4 
-              bg-gradient-to-r from-amber-500 to-amber-600 
+              bg-linear-to-r from-amber-500 to-amber-600 
               hover:from-amber-400 hover:to-amber-500
               text-black font-bold text-xl
               rounded-lg
