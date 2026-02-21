@@ -928,9 +928,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: [],
     } as GameState, HAND_SIZE + bonusDraw);
     
-    // Generate reward cards if not on final floor
+    // Generate reward cards for all floors except after the final floor
     let rewardCards: Card[] = [];
-    if (nextFloor < MAX_FLOOR) {
+    if (nextFloor <= MAX_FLOOR) {
       const [card1, card2] = pickRewardCards(player.characterClass);
       rewardCards = [card1, card2];
       newLog.push(createLogEntry(1, nextFloor, 'rewardStart',
