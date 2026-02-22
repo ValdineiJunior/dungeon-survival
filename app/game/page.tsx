@@ -434,24 +434,45 @@ export default function GamePage() {
         </div>
 
         {/* Hand of cards */}
-        <div className="bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm">
-          <Hand
-            cards={hand}
-            energy={player.energy}
-            selectedCard={selectedCard}
-            defaultHand={defaultHand}
-            selectedCardIsDefault={selectedCardIsDefault}
-            onPlayDefaultCard={selectDefaultCard}
-            onSelectCard={handleSelectCard}
-            onEndTurn={endTurn}
-            canEndTurn={phase === "playerTurn"}
-            disabled={
-              phase !== "playerTurn" &&
-              phase !== "selectingMovement" &&
-              phase !== "selectingTarget" &&
-              phase !== "confirmingSkill"
-            }
-          />
+        <div className="flex items-center gap-4">
+          <div className="flex-1 bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm">
+            <Hand
+              cards={hand}
+              energy={player.energy}
+              selectedCard={selectedCard}
+              defaultHand={defaultHand}
+              selectedCardIsDefault={selectedCardIsDefault}
+              onPlayDefaultCard={selectDefaultCard}
+              onSelectCard={handleSelectCard}
+              disabled={
+                phase !== "playerTurn" &&
+                phase !== "selectingMovement" &&
+                phase !== "selectingTarget" &&
+                phase !== "confirmingSkill"
+              }
+            />
+          </div>
+
+          {/* End Turn Button */}
+          <div className="shrink-0">
+            <button
+              onClick={endTurn}
+              disabled={phase !== "playerTurn"}
+              className={`
+                px-6 py-4 rounded-lg font-bold text-lg
+                transition-all duration-200
+                ${
+                  phase === "playerTurn"
+                    ? "bg-amber-500 hover:bg-amber-400 text-black hover:scale-105"
+                    : "bg-gray-600 text-gray-400 cursor-not-allowed"
+                }
+              `}
+            >
+              Finalizar
+              <br />
+              Turno
+            </button>
+          </div>
         </div>
       </main>
 

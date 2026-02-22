@@ -10,8 +10,6 @@ interface HandProps {
   selectedCard: CardType | null;
   selectedCardIsDefault?: boolean;
   onSelectCard: (card: CardType) => void;
-  onEndTurn: () => void;
-  canEndTurn: boolean;
   disabled?: boolean;
   defaultHand?: DefaultHandCard[];
   onPlayDefaultCard?: (id: string) => void;
@@ -23,8 +21,6 @@ export function Hand({
   selectedCard,
   selectedCardIsDefault,
   onSelectCard,
-  onEndTurn,
-  canEndTurn,
   disabled,
   defaultHand,
   onPlayDefaultCard,
@@ -35,7 +31,7 @@ export function Hand({
   // More cards = more overlap to fit them
   const totalCards = (defaultHand?.length ?? 0) + cards.length;
   const cardWidth = 144; // w-36 = 144px
-  const maxHandWidth = typeof window !== 'undefined' ? window.innerWidth * 0.6 : 800;
+  const maxHandWidth = typeof window !== 'undefined' ? window.innerWidth * 0.7 : 800;
   
   // Calculate negative margin to create overlap
   // Cards need to overlap when we have many cards
@@ -45,9 +41,9 @@ export function Hand({
   }
 
   return (
-    <div className="flex items-center gap-4 p-4 min-h-52">
+    <div className="flex justify-center p-4 min-h-52">
       {/* Main Cards (center) with default cards prepended visually */}
-      <div className="flex-1 flex flex-col items-center">
+      <div className="flex flex-col items-center">
         <div className="flex justify-center items-end gap-0">
           {(() => {
             const defaults = (defaultHand ?? []).map((d) => ({ kind: 'default' as const, entry: d }));
@@ -114,27 +110,6 @@ export function Hand({
             <div className="text-gray-500 italic">Sua mão está vazia</div>
           )}
         </div>
-      </div>
-
-      {/* End Turn Button (shared) */}
-      <div className="shrink-0">
-        <button
-          onClick={onEndTurn}
-          disabled={!canEndTurn}
-          className={`
-            px-6 py-4 rounded-lg font-bold text-lg
-            transition-all duration-200
-            ${
-              canEndTurn
-                ? "bg-amber-500 hover:bg-amber-400 text-black hover:scale-105"
-                : "bg-gray-600 text-gray-400 cursor-not-allowed"
-            }
-          `}
-        >
-          Finalizar
-          <br />
-          Turno
-        </button>
       </div>
     </div>
   );
