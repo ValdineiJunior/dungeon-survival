@@ -204,17 +204,49 @@ export default function GamePage() {
       {/* Combat area */}
       <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-4">
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
-        <div className="flex-1 flex gap-4 py-4">
-          {/* Left panel - Player Status */}
-          <div className="w-72">
-            <PlayerStatus
-              player={player}
-              deckCount={deck.length}
-              discardCount={discardPile.length}
-              classDef={classDef}
-              onViewDeck={() => setShowDeckModal(true)}
-              onViewDiscard={() => setShowDiscardModal(true)}
-            />
+        <div className="flex-1 flex flex-col lg:flex-row gap-4 py-4">
+          <div className="flex flex-row lg:flex-col gap-4">
+            {/* Left panel - Player Status */}
+            <div className="w-1/2 lg:w-72">
+              <PlayerStatus
+                player={player}
+                deckCount={deck.length}
+                discardCount={discardPile.length}
+                classDef={classDef}
+                onViewDeck={() => setShowDeckModal(true)}
+                onViewDiscard={() => setShowDiscardModal(true)}
+              />
+            </div>
+
+            {/* Right panel - Enemies (for small screens) */}
+            <div className="w-1/2 lg:hidden">
+              <div className="flex flex-col gap-3 h-full">
+                <h3 className="text-amber-400 font-bold text-center">
+                  ⚔️ Inimigos
+                </h3>
+                <div className="flex flex-col gap-3">
+                  {enemies.map((enemy, index) => (
+                    <EnemyCard
+                      key={enemy.id}
+                      enemy={enemy}
+                      orderNumber={index + 1}
+                      isTargetable={targetableEnemyIds.includes(enemy.id)}
+                      onClick={() => handleEnemyClick(enemy.id)}
+                      onViewActions={() => setSelectedEnemyForActions(enemy)}
+                    />
+                  ))}
+                </div>
+
+                {enemies.length === 0 &&
+                  phase !== "victory" &&
+                  phase !== "defeat" &&
+                  phase !== "floorComplete" && (
+                    <div className="text-slate-500 text-center">
+                      Carregando...
+                    </div>
+                  )}
+              </div>
+            </div>
           </div>
 
           {/* Center - Hexagonal Map */}
@@ -233,8 +265,8 @@ export default function GamePage() {
             />
           </div>
 
-          {/* Right panel - Enemies */}
-          <div className="w-72 flex flex-col gap-3">
+          {/* Right panel - Enemies (for large screens) */}
+          <div className="w-72 hidden lg:flex flex-col gap-3">
             <h3 className="text-amber-400 font-bold text-center">
               ⚔️ Inimigos
             </h3>
