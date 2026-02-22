@@ -99,9 +99,13 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                          transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/20
                          backdrop-blur-sm text-left cursor-pointer"
             >
-              {/* Emoji grande */}
-              <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
-                {classDef.emoji}
+              {/* Imagem do herói */}
+              <div className="mb-4 overflow-hidden rounded-lg border-2 border-slate-600 group-hover:border-amber-500 transition-colors h-56 bg-slate-700/50">
+                <img
+                  src={classDef.imageUrl}
+                  alt={classDef.name}
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-300"
+                />
               </div>
 
               {/* Nome da classe */}

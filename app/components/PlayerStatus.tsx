@@ -18,7 +18,13 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
     <div className="flex flex-col gap-4 p-4 bg-slate-800/80 rounded-xl border border-slate-600 backdrop-blur-sm h-full">
       {/* Avatar e Nome */}
       <div className="text-center">
-        <div className="text-5xl mb-2">{classDef.emoji}</div>
+        <div className="w-32 h-32 mx-auto mb-3 rounded-lg overflow-hidden border-2 border-amber-500/50 bg-slate-700">
+          <img
+            src={classDef.imageUrl}
+            alt={classDef.name}
+            className="w-full h-full object-cover object-top"
+          />
+        </div>
         <h3 className="text-amber-400 font-bold">{classDef.name}</h3>
         <span className="text-slate-500 text-xs font-mono">
           ⬡ {player.position.q},{player.position.r}

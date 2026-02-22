@@ -4,9 +4,10 @@ import { Card, CharacterClass, CharacterClassDefinition } from '@/app/types/game
 export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition> = {
   warrior: {
     id: 'warrior',
-    name: 'Guerreiro',
+    name: 'Guerreira',
     description: 'Especialista em combate corpo a corpo. Usa espadas e escudos para atacar inimigos adjacentes.',
     emoji: '⚔️',
+    imageUrl: '/heroes/warrior.png',
     baseHp: 90,
     baseEnergy: 3,
     innateAbilities: [
@@ -21,9 +22,10 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
   },
   archer: {
     id: 'archer',
-    name: 'Arqueiro',
+    name: 'Arqueira',
     description: 'Atacante à distância. Usa arco e flechas para atingir inimigos de longe.',
     emoji: '🏹',
+    imageUrl: '/heroes/archer.png',
     baseHp: 70,
     baseEnergy: 3,
     innateAbilities: [
@@ -41,6 +43,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     name: 'Mago',
     description: 'Conjurador de magias. Lança feitiços poderosos à distância.',
     emoji: '🔮',
+    imageUrl: '/heroes/mage.png',
     baseHp: 60,
     baseEnergy: 4,
     innateAbilities: [

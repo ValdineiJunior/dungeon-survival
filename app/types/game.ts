@@ -23,6 +23,7 @@ export interface CharacterClassDefinition {
   name: string;
   description: string;
   emoji: string;
+  imageUrl: string;
   baseHp: number;
   baseEnergy: number;
   innateAbilities: InnateAbility[];

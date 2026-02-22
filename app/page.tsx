@@ -90,8 +90,9 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="absolute bottom-4 text-slate-600 text-sm">
-        Versão 0.1.0 - Em desenvolvimento
+      <footer className="absolute bottom-4 text-center text-slate-600 text-xs space-y-1">
+        <div>Versão 0.1.0 - Em desenvolvimento</div>
+        <div className="text-slate-500">🤖 Artes do jogo geradas com IA</div>
       </footer>
     </div>
   );
