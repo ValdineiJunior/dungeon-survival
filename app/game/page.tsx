@@ -165,21 +165,21 @@ export default function GamePage() {
 
       {/* Header */}
       <header className="relative z-10 p-4 border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-amber-400 tracking-wider">
+            <h1 className="text-xl md:text-2xl font-bold text-amber-400 tracking-wider">
               ⬡ Dungeon Survival
             </h1>
             <div className="px-3 py-1 rounded bg-slate-800 border border-slate-600">
               <span className="text-slate-400 text-sm">Andar </span>
               <span className="text-amber-400 font-bold">{floor}/4</span>
-              <span className="text-slate-500 text-xs ml-2">
+              <span className="text-slate-500 text-xs ml-2 hidden sm:inline">
                 - {floorConfig.name}
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-slate-400">Turno {turn}</span>
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="text-slate-400 text-sm md:text-base">Turno {turn}</span>
             <span
               className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}
             >
@@ -189,13 +189,15 @@ export default function GamePage() {
               onClick={() => setShowHowToPlayModal(true)}
               className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white transition-colors"
             >
-              📖 Como Jogar
+              <span className="hidden sm:inline">📖 Como Jogar</span>
+              <span className="sm:hidden">📖</span>
             </button>
             <button
               onClick={() => setShowAbandonModal(true)}
               className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-red-600 text-slate-300 hover:text-white transition-colors"
             >
-              Abandonar
+              <span className="hidden sm:inline">Abandonar</span>
+              <span className="sm:hidden">❌</span>
             </button>
           </div>
         </div>
