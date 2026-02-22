@@ -1,20 +1,30 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { CharacterClass } from '@/app/types/game';
-import { CHARACTER_CLASSES, getClassCards, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from '@/app/lib/cards';
-import { getRewardPool } from '@/app/lib/cardRewards';
-import { CardListModal } from './CardListModal';
+import { useState } from "react";
+import { CharacterClass } from "@/app/types/game";
+import {
+  CHARACTER_CLASSES,
+  getClassCards,
+  WARRIOR_DEFAULT_CARDS,
+  ARCHER_DEFAULT_CARDS,
+  MAGE_DEFAULT_CARDS,
+} from "@/app/lib/cards";
+import { getRewardPool } from "@/app/lib/cardRewards";
+import { CardListModal } from "./CardListModal";
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
 }
 
-const CLASS_ORDER: CharacterClass[] = ['warrior', 'archer', 'mage'];
+const CLASS_ORDER: CharacterClass[] = ["warrior", "archer", "mage"];
 
 export function CharacterSelect({ onSelect }: CharacterSelectProps) {
-  const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
-  const [cardType, setCardType] = useState<'initial' | 'normal' | 'rare' | 'default' | null>(null);
+  const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(
+    null,
+  );
+  const [cardType, setCardType] = useState<
+    "initial" | "normal" | "rare" | "default" | null
+  >(null);
 
   const closeModal = () => {
     setSelectedClass(null);
@@ -22,7 +32,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
   };
 
   const getModalTitle = () => {
-    if (!selectedClass || !cardType) return '';
+    if (!selectedClass || !cardType) return "";
     const className = CHARACTER_CLASSES[selectedClass].name;
     const titles: Record<string, string> = {
       initial: `Cartas Iniciais - ${className}`,
@@ -30,23 +40,23 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
       rare: `Cartas de Recompensa Raras - ${className}`,
       default: `Cartas Padrão - ${className}`,
     };
-    return titles[cardType] || '';
+    return titles[cardType] || "";
   };
 
   const getCardsToDisplay = () => {
     if (!selectedClass || !cardType) return [];
 
-    if (cardType === 'initial') {
+    if (cardType === "initial") {
       return getClassCards(selectedClass);
     }
 
-    if (cardType === 'default') {
+    if (cardType === "default") {
       switch (selectedClass) {
-        case 'warrior':
+        case "warrior":
           return WARRIOR_DEFAULT_CARDS;
-        case 'archer':
+        case "archer":
           return ARCHER_DEFAULT_CARDS;
-        case 'mage':
+        case "mage":
           return MAGE_DEFAULT_CARDS;
         default:
           return [];
@@ -54,9 +64,9 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
     }
 
     const pool = getRewardPool(selectedClass);
-    if (cardType === 'normal') {
+    if (cardType === "normal") {
       return pool.normal;
-    } else if (cardType === 'rare') {
+    } else if (cardType === "rare") {
       return pool.rare;
     }
 
@@ -84,14 +94,16 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
         {CLASS_ORDER.map((classId) => {
           const classDef = CHARACTER_CLASSES[classId];
           const cards = getClassCards(classId);
-          const attackCards = cards.filter(c => c.type === 'attack');
-          const hasMinRange = attackCards.some(c => c.minRange && c.minRange > 1);
+          const attackCards = cards.filter((c) => c.type === "attack");
+          const hasMinRange = attackCards.some(
+            (c) => c.minRange && c.minRange > 1,
+          );
 
           return (
             <div
               key={classId}
               onClick={() => onSelect(classId)}
-              className="group relative w-72 p-6 bg-slate-800/80 rounded-2xl border-2 border-slate-600 
+              className="group relative w-80 p-6 bg-slate-800/80 rounded-2xl border-2 border-slate-600 
                          hover:border-amber-500 hover:bg-slate-700/80 
                          transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/20
                          backdrop-blur-sm text-left cursor-pointer"
@@ -119,16 +131,20 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">❤️ Vida</span>
-                  <span className="text-white font-bold">{classDef.baseHp}</span>
+                  <span className="text-white font-bold">
+                    {classDef.baseHp}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">⚡ Energia</span>
-                  <span className="text-white font-bold">{classDef.baseEnergy}</span>
+                  <span className="text-white font-bold">
+                    {classDef.baseEnergy}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">📏 Alcance</span>
                   <span className="text-white font-bold">
-                    {hasMinRange ? 'Distância' : 'Corpo a corpo'}
+                    {hasMinRange ? "Distância" : "Corpo a corpo"}
                   </span>
                 </div>
               </div>
@@ -144,8 +160,12 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                       <div key={idx} className="flex items-start gap-2 text-xs">
                         <span>{ability.emoji}</span>
                         <div>
-                          <span className="text-amber-300 font-medium">{ability.name}:</span>
-                          <span className="text-slate-400 ml-1">{ability.description}</span>
+                          <span className="text-amber-300 font-medium">
+                            {ability.name}:
+                          </span>
+                          <span className="text-slate-400 ml-1">
+                            {ability.description}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -159,7 +179,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedClass(classId);
-                      setCardType('initial');
+                    setCardType("initial");
                   }}
                   className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white rounded transition-colors"
                 >
@@ -169,7 +189,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedClass(classId);
-                    setCardType('default');
+                    setCardType("default");
                   }}
                   className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-emerald-600 text-slate-300 hover:text-white rounded transition-colors"
                 >
@@ -179,7 +199,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedClass(classId);
-                    setCardType('normal');
+                    setCardType("normal");
                   }}
                   className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white rounded transition-colors"
                 >
@@ -189,7 +209,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedClass(classId);
-                    setCardType('rare');
+                    setCardType("rare");
                   }}
                   className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-purple-600 text-slate-300 hover:text-white rounded transition-colors"
                 >
