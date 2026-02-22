@@ -453,8 +453,8 @@ export default function GamePage() {
             />
           </div>
 
-          {/* End Turn Button */}
-          <div className="shrink-0">
+          {/* End Turn Button and Deck Buttons */}
+          <div className="shrink-0 flex flex-col gap-2">
             <button
               onClick={endTurn}
               disabled={phase !== "playerTurn"}
@@ -471,6 +471,24 @@ export default function GamePage() {
               Finalizar
               <br />
               Turno
+            </button>
+
+            <button
+              onClick={() => setShowDeckModal(true)}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors"
+            >
+              <span>📚 Deck</span>
+              <br />
+              <span className="text-xs font-bold">{deck.length}</span>
+            </button>
+
+            <button
+              onClick={() => setShowDiscardModal(true)}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors"
+            >
+              <span>🗑️ Descarte</span>
+              <br />
+              <span className="text-xs font-bold">{discardPile.length}</span>
             </button>
           </div>
         </div>

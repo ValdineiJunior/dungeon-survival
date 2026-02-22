@@ -83,28 +83,9 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
       {/* Separador */}
       <div className="border-t border-slate-600" />
 
-      {/* Contadores de deck - clicáveis */}
-      <div className="space-y-2 text-sm">
-        <button
-          onClick={onViewDeck}
-          className="w-full flex items-center justify-between text-gray-300 hover:text-amber-400 hover:bg-slate-700/50 rounded px-2 py-1 transition-colors"
-        >
-          <span>📚 Deck Completo</span>
-          <span className="font-bold">{deckCount}</span>
-        </button>
-        <button
-          onClick={onViewDiscard}
-          className="w-full flex items-center justify-between text-gray-300 hover:text-amber-400 hover:bg-slate-700/50 rounded px-2 py-1 transition-colors"
-        >
-          <span>🗑️ Descarte</span>
-          <span className="font-bold">{discardCount}</span>
-        </button>
-      </div>
-
       {/* Habilidades Inatas */}
       {classDef.innateAbilities.length > 0 && (
         <>
-          <div className="border-t border-slate-600" />
           <div className="space-y-2">
             <div className="text-xs text-slate-500 uppercase tracking-wide">
               Habilidades Inatas
