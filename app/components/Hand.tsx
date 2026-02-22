@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card as CardType, DefaultHandCard } from "@/app/types/game";
 import { Card } from "./Card";
 
@@ -28,6 +29,8 @@ export function Hand({
   defaultHand,
   onPlayDefaultCard,
 }: HandProps) {
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
+
   // Calculate card overlap based on total cards
   // More cards = more overlap to fit them
   const totalCards = (defaultHand?.length ?? 0) + cards.length;
@@ -61,10 +64,12 @@ export function Hand({
                   <div 
                     key={entry.id} 
                     className="transition-all duration-200"
+                    onMouseEnter={() => setHoveredCardId(entry.id)}
+                    onMouseLeave={() => setHoveredCardId(null)}
                     style={{ 
                       transform: `rotate(${(index - (combined.length - 1) / 2) * 3}deg)`,
                       marginRight: index < combined.length - 1 ? `-${overlapMargin}px` : 0,
-                      zIndex: index,
+                      zIndex: hoveredCardId === entry.id ? 1000 : index,
                     }}
                   >
                     <Card
@@ -86,10 +91,12 @@ export function Hand({
                 <div
                   key={card.id}
                   className="transition-all duration-200"
+                  onMouseEnter={() => setHoveredCardId(card.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
                   style={{ 
                     transform: `rotate(${(index - (combined.length - 1) / 2) * 3}deg)`,
                     marginRight: index < combined.length - 1 ? `-${overlapMargin}px` : 0,
-                    zIndex: index,
+                    zIndex: hoveredCardId === card.id ? 1000 : index,
                   }}
                 >
                   <Card
