@@ -85,9 +85,6 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
           const classDef = CHARACTER_CLASSES[classId];
           const cards = getClassCards(classId);
           const attackCards = cards.filter(c => c.type === 'attack');
-          const avgDamage = Math.round(
-            attackCards.reduce((sum, c) => sum + (c.damage || 0), 0) / attackCards.length
-          );
           const hasMinRange = attackCards.some(c => c.minRange && c.minRange > 1);
 
           return (
@@ -127,10 +124,6 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">⚡ Energia</span>
                   <span className="text-white font-bold">{classDef.baseEnergy}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-400">⚔️ Dano médio</span>
-                  <span className="text-white font-bold">{avgDamage}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">📏 Alcance</span>
