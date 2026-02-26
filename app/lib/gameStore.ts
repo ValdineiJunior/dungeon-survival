@@ -1368,11 +1368,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
     };
     const deck = [...state.deck, newCard];
 
+    // Collect all cards, shuffle them, and distribute again to form the starting hand
+    const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, newCard];
+    const shuffledDrawPile = shuffleArray(allCards);
+
+    const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
+    const cardState = drawCards({
+      ...state,
+      hand: [],
+      drawPile: shuffledDrawPile,
+      discardPile: [],
+    } as GameState, HAND_SIZE + bonusDraw);
+
     newLog.push(createLogEntry(state.turn, state.floor, 'cardReward',
       `✨ ${card.name} adicionado ao baralho`));
 
     set({
       deck,
+      hand: cardState.hand,
+      drawPile: cardState.drawPile,
+      discardPile: cardState.discardPile,
       rewardCards: [],
       gameLog: newLog,
       phase: 'playerTurn',
