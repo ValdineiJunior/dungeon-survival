@@ -21,6 +21,7 @@ export default function GamePage() {
   const router = useRouter();
   const [showAbandonModal, setShowAbandonModal] = useState(false);
   const [showDeckModal, setShowDeckModal] = useState(false);
+  const [showDrawPileModal, setShowDrawPileModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
@@ -469,6 +470,27 @@ export default function GamePage() {
 
         {/* Hand of cards */}
         <div className="flex items-center gap-4">
+          {/* Deck and Draw Pile Buttons (Left) */}
+          <div className="shrink-0 flex flex-col gap-2">
+            <button
+              onClick={() => setShowDeckModal(true)}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors"
+            >
+              <span>📚 Deck</span>
+              <br />
+              <span className="text-xs font-bold">{deck.length}</span>
+            </button>
+
+            <button
+              onClick={() => setShowDrawPileModal(true)}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors"
+            >
+              <span>🗂️ Pilha de Compra</span>
+              <br />
+              <span className="text-xs font-bold">{drawPile.length}</span>
+            </button>
+          </div>
+
           <div className="flex-1 bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm">
             <Hand
               cards={hand}
@@ -487,13 +509,13 @@ export default function GamePage() {
             />
           </div>
 
-          {/* End Turn Button and Deck Buttons */}
-          <div className="shrink-0 flex flex-col gap-2">
+          {/* End Turn Button and Discard Button */}
+          <div className="shrink-0 flex flex-col justify-between gap-2">
             <button
               onClick={endTurn}
               disabled={phase !== "playerTurn"}
               className={`
-                px-6 py-4 rounded-lg font-bold text-lg
+                px-6 py-4 rounded-lg font-bold text-lg h-full
                 transition-all duration-200
                 ${
                   phase === "playerTurn"
@@ -505,15 +527,6 @@ export default function GamePage() {
               Finalizar
               <br />
               Turno
-            </button>
-
-            <button
-              onClick={() => setShowDeckModal(true)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors"
-            >
-              <span>📚 Deck</span>
-              <br />
-              <span className="text-xs font-bold">{deck.length}</span>
             </button>
 
             <button
@@ -535,6 +548,15 @@ export default function GamePage() {
           cards={deck}
           onClose={() => setShowDeckModal(false)}
           showColors
+        />
+      )}
+
+      {/* Draw Pile Modal */}
+      {showDrawPileModal && (
+        <CardListModal
+          title="🗂️ Pilha de Compra"
+          cards={drawPile}
+          onClose={() => setShowDrawPileModal(false)}
         />
       )}
 
