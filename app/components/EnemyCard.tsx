@@ -11,6 +11,17 @@ interface EnemyCardProps {
   onViewActions?: () => void;
 }
 
+const enemyImages: Record<string, string> = {
+  'Gosma': 'slime.png',
+  'Rato Gigante': 'rat.png',
+  'Goblin': 'goblin.png',
+  'Esqueleto': 'skeleton.png',
+  'Orc': 'orc.png',
+  'Mago Negro': 'dark_Mage.png',
+  'Fantasma': 'ghost.png',
+  'Dragão Ancião': 'dragon.png',
+};
+
 const actionIcons: Record<EnemyIntent, { icon: string; color: string; label: string }> = {
   attack: { icon: "⚔️", color: "text-red-400", label: "Ataque" },
   defend: { icon: "🛡️", color: "text-blue-400", label: "Defesa" },
@@ -63,14 +74,23 @@ export function EnemyCard({
 
       <div className="flex items-center gap-2">
         {/* Monster avatar with order number */}
-        <div className={`relative text-2xl ${isTargetable ? "animate-bounce" : ""}`}>
-          {enemy.emoji}
-          <span 
-            className="absolute -bottom-1 -right-1 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[10px] font-bold rounded-full border border-amber-600"
-            title={`Ordem de turno: ${orderNumber}`}
-          >
-            {orderNumber}
-          </span>
+        <div className={`flex items-center gap-1 ${isTargetable ? "animate-bounce" : ""}`}>
+          <div className="relative text-2xl">
+            {enemy.emoji}
+            <span 
+              className="absolute -bottom-1 -right-1 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[10px] font-bold rounded-full border border-amber-600 z-10"
+              title={`Ordem de turno: ${orderNumber}`}
+            >
+              {orderNumber}
+            </span>
+          </div>
+          {enemyImages[enemy.name] && (
+            <img 
+              src={`/enemies/${enemyImages[enemy.name]}`}
+              alt={enemy.name}
+              className="w-8 h-8 object-contain drop-shadow"
+            />
+          )}
         </div>
 
         {/* Center: Enemy info */}
