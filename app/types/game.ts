@@ -54,6 +54,7 @@ export interface Card {
   minRange?: number;   // Alcance mínimo do ataque (para ataques à distância)
   movement?: number;   // Quantidade de movimento (em hexes)
   burnsCards?: number; // Quantidade de cartas para descartar definitivamente
+  drawCards?: number;  // Quantidade de cartas para comprar
   description: string;
   effects?: CardEffect[];
 }

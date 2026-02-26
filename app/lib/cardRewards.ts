@@ -25,6 +25,14 @@ const CROSS_CLASS_RARES: Card[] = [
     burnsCards: 1,
     description: 'Queime 1 carta de sua mão.',
   },
+  {
+    id: 'prepared',
+    name: 'Preparado',
+    cost: 0,
+    type: 'skill',
+    drawCards: 2,
+    description: 'Compre duas cartas.',
+  },
 ];
 
 const WARRIOR_NORMAL_REWARDS: Card[] = [

@@ -697,7 +697,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const card = state.hand[cardIndex];
     if (card.cost > state.player.energy) return;
 
-    const newHand = [...state.hand];
+    let newHand = [...state.hand];
     newHand.splice(cardIndex, 1);
 
     const newPlayer = {
@@ -776,7 +776,25 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }));
     }
 
-    const newDiscardPile = [...state.discardPile, card];
+    let newDrawPile = [...state.drawPile];
+    let newDiscardPile = [...state.discardPile];
+
+    if (card.drawCards) {
+      // Create temporary state state to use drawCards helper function
+      const tempState = { ...state, hand: newHand, drawPile: newDrawPile, discardPile: newDiscardPile };
+      const drawn = drawCards(tempState as GameState, card.drawCards);
+
+      newHand = drawn.hand;
+      newDrawPile = drawn.drawPile;
+      newDiscardPile = drawn.discardPile;
+
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerDraw',
+        `${classDef.emoji} ${classDef.name} usa ${card.name} e compra ${card.drawCards} carta(s).`, {
+        cards: card.drawCards,
+      }));
+    }
+
+    newDiscardPile.push(card);
 
     // Check if floor is cleared
     let phase: GamePhase = 'playerTurn';
@@ -789,6 +807,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hand: newHand,
       player: newPlayer,
       enemies: newEnemies,
+      drawPile: newDrawPile,
       discardPile: newDiscardPile,
       gameLog: newLog,
       phase,
