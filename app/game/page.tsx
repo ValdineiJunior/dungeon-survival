@@ -14,6 +14,7 @@ import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
 import { GameLogModal } from "@/app/components/GameLogModal";
 import { HowToPlayModal } from "@/app/components/HowToPlayModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
+import { BurnCardModal } from "@/app/components/BurnCardModal";
 import { Card, HexPosition, CharacterClass, Enemy } from "@/app/types/game";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { getFloorConfig } from "@/app/lib/enemies";
@@ -24,6 +25,7 @@ export default function GamePage() {
   const [showDeckModal, setShowDeckModal] = useState(false);
   const [showDrawPileModal, setShowDrawPileModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [showBurnedModal, setShowBurnedModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
   const [selectedEnemyForActions, setSelectedEnemyForActions] =
@@ -35,6 +37,8 @@ export default function GamePage() {
     deck,
     drawPile,
     discardPile,
+    burnedPile,
+    cardsToBurn,
     enemies,
     hexMap,
     phase,
@@ -60,6 +64,7 @@ export default function GamePage() {
     completeMovement,
     selectTarget,
     confirmSkill,
+    confirmBurnCard,
     endTurn,
     selectRewardCard,
     advanceFloor,
@@ -550,6 +555,13 @@ export default function GamePage() {
               <span>🗑️ Descarte</span>
               <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{discardPile.length}</span>
             </button>
+            <button
+              onClick={() => setShowBurnedModal(true)}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-orange-500 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
+            >
+              <span>🔥 Queimadas</span>
+              <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{burnedPile.length}</span>
+            </button>
           </div>
         </div>
       </main>
@@ -579,6 +591,25 @@ export default function GamePage() {
           title="🗑️ Pilha de Descarte"
           cards={discardPile}
           onClose={() => setShowDiscardModal(false)}
+        />
+      )}
+
+      {/* Burned Pile Modal */}
+      {showBurnedModal && (
+        <CardListModal
+          title="🔥 Cartas Queimadas"
+          cards={burnedPile}
+          onClose={() => setShowBurnedModal(false)}
+        />
+      )}
+
+      {/* Burn Selection Modal */}
+      {phase === "selectingBurn" && (
+        <BurnCardModal
+          hand={hand.filter(c => c.id !== selectedCard?.id)}
+          cardsToBurn={cardsToBurn}
+          onConfirm={confirmBurnCard}
+          onCancel={cancelSelection}
         />
       )}
 

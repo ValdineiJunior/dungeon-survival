@@ -4,7 +4,7 @@
 export type CharacterClass = 'warrior' | 'archer' | 'mage';
 
 // Tipos de habilidades inatas
-export type InnateAbilityType = 
+export type InnateAbilityType =
   | 'passiveBlock'    // Ganha bloqueio no início de cada turno
   | 'roomHealing'     // Cura HP ao completar cada sala
   | 'bonusDraw'       // Compra cartas extras no início do turno
@@ -53,6 +53,7 @@ export interface Card {
   range?: number;      // Alcance máximo do ataque (em hexes)
   minRange?: number;   // Alcance mínimo do ataque (para ataques à distância)
   movement?: number;   // Quantidade de movimento (em hexes)
+  burnsCards?: number; // Quantidade de cartas para descartar definitivamente
   description: string;
   effects?: CardEffect[];
 }
@@ -119,7 +120,7 @@ export interface HexMap {
 }
 
 // === LOG DE AÇÕES ===
-export type LogEntryType = 
+export type LogEntryType =
   | 'playerAttack'
   | 'playerBlock'
   | 'playerMove'
@@ -156,15 +157,16 @@ export interface GameLogEntry {
 }
 
 // === ESTADO DO JOGO ===
-export type GamePhase = 
+export type GamePhase =
   | 'characterSelect'   // Selecting character class
-  | 'playerTurn' 
-  | 'enemyTurn' 
-  | 'victory' 
-  | 'defeat' 
+  | 'playerTurn'
+  | 'enemyTurn'
+  | 'victory'
+  | 'defeat'
   | 'selectingMovement'
   | 'selectingTarget'   // Selecting enemy to attack
   | 'confirmingSkill'   // Confirming skill card use
+  | 'selectingBurn'     // Selecting a card to burn from hand
   | 'floorComplete'     // Floor cleared, ready for next floor
   | 'selectingReward';  // Selecting reward card
 
@@ -173,34 +175,36 @@ export const MAX_FLOOR = 4;
 export interface GameState {
   // Estado do jogador
   player: Player;
-  
+
   // Cartas
   deck: Card[];
   hand: Card[];
   drawPile: Card[];
   discardPile: Card[];
-  
+  burnedPile: Card[];
+
   // Inimigos
   enemies: Enemy[];
-  
+
   // Log de ações
   gameLog: GameLogEntry[];
-  
+
   // Mapa
   hexMap: HexMap;
-  
+
   // Fase do jogo
   phase: GamePhase;
   turn: number;
   floor: number;  // Current dungeon floor (1-4)
-  
+
   // Estado de seleção
   selectedCard: Card | null;
   // Whether the currently selected card (selectedCard) is from the default hand
   selectedCardIsDefault?: boolean;
+  cardsToBurn: number;
   validMovePositions: HexPosition[];
   targetableEnemyIds: string[];  // NEW: IDs of enemies that can be targeted
-  
+
   // Estado de movimento passo a passo
   movementPath: HexPosition[];  // Path of hexes selected for current movement
   remainingMovement: number;    // Remaining movement points for current card

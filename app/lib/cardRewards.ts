@@ -17,6 +17,14 @@ const CROSS_CLASS_RARES: Card[] = [
     block: 8,
     description: 'Causa 15 de dano e ganha 8 de bloqueio.',
   },
+  {
+    id: 'burning_pact',
+    name: 'Pacto ardente',
+    cost: 1,
+    type: 'skill',
+    burnsCards: 1,
+    description: 'Queime 1 carta de sua mão.',
+  },
 ];
 
 const WARRIOR_NORMAL_REWARDS: Card[] = [
@@ -287,7 +295,7 @@ export function getRewardPool(characterClass: CharacterClass): CardRewardPool {
 // Pick two random reward cards (with probability weighting: 70% normal, 30% rare)
 export function pickRewardCards(characterClass: CharacterClass): [Card, Card] {
   const pool = getRewardPool(characterClass);
-  
+
   // Create a combined list of cards with their types for weighting
   const weightedPool = [
     ...pool.normal.map(card => ({ card, type: 'normal' })),
@@ -295,7 +303,7 @@ export function pickRewardCards(characterClass: CharacterClass): [Card, Card] {
   ];
 
   const pickCard = (excludedId: string | null = null): { card: Card, type: string } => {
-    const availablePicks = excludedId 
+    const availablePicks = excludedId
       ? weightedPool.filter(item => item.card.id !== excludedId)
       : weightedPool;
 
@@ -307,7 +315,7 @@ export function pickRewardCards(characterClass: CharacterClass): [Card, Card] {
     if (candidates.length === 0) {
       candidates = availablePicks.filter(item => item.type === (isNormal ? 'rare' : 'normal'));
     }
-    
+
     // If there are still no candidates, something is wrong, but we'll fallback to any available card.
     if (candidates.length === 0) {
       if (availablePicks.length === 0) {
@@ -317,7 +325,7 @@ export function pickRewardCards(characterClass: CharacterClass): [Card, Card] {
       }
       candidates = availablePicks;
     }
-    
+
     const randomIndex = Math.floor(Math.random() * candidates.length);
     return candidates[randomIndex];
   }

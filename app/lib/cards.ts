@@ -87,7 +87,7 @@ export const WARRIOR_CARDS: Card[] = [
     range: 1,
     description: 'Causa 8 de dano. Alcance: 1',
   },
-    {
+  {
     id: 'sword_slash_4',
     name: 'Corte de Espada',
     cost: 1,
@@ -179,7 +179,7 @@ export const ARCHER_CARDS: Card[] = [
     minRange: 2,
     description: 'Causa 6 de dano. Alcance: 2-3',
   },
-    {
+  {
     id: 'arrow_shot_4',
     name: 'Tiro de Flecha',
     cost: 1,
@@ -273,7 +273,7 @@ export const MAGE_CARDS: Card[] = [
     minRange: 2,
     description: 'Causa 7 de dano. Alcance: 2-3',
   },
-    {
+  {
     id: 'fireball_4',
     name: 'Bola de Fogo',
     cost: 1,
