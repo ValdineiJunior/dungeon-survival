@@ -51,13 +51,24 @@ function CardRow({ title, icon, cards, emptyMessage, bgColor, borderColor, textC
   );
 }
 
-export function EnemyActionsModal({ 
-  enemyName, 
-  enemyEmoji, 
+const enemyImages: Record<string, string> = {
+  'Gosma': 'slime.png',
+  'Rato Gigante': 'rat.png',
+  'Goblin': 'goblin.png',
+  'Esqueleto': 'skeleton.png',
+  'Orc': 'orc.png',
+  'Mago Negro': 'dark_Mage.png',
+  'Fantasma': 'ghost.png',
+  'Dragão Ancião': 'dragon.png',
+};
+
+export function EnemyActionsModal({
+  enemyName,
+  enemyEmoji,
   currentActionCard,
   drawPile,
   discardPile,
-  onClose 
+  onClose
 }: EnemyActionsModalProps) {
   // Sort cards by name to hide the draw order
   const sortedDrawPile = [...drawPile].sort((a, b) => a.name.localeCompare(b.name));
@@ -65,19 +76,32 @@ export function EnemyActionsModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
-      <div className="bg-slate-800 rounded-2xl border-2 border-red-800 shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col">
+      <div className="bg-slate-800 rounded-2xl border-2 border-red-800 shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col pt-2 relative">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-red-800 bg-red-950/30">
-          <div className="flex items-center gap-3">
-            <span className="text-4xl">{enemyEmoji}</span>
-            <div>
-              <h2 className="text-xl font-bold text-red-400">{enemyName}</h2>
-              <p className="text-sm text-slate-400">Deck de ações</p>
-            </div>
+        <div className="flex items-center gap-4 p-4 border-b border-red-800 bg-red-950/30">
+          {/* Square Enemy Avatar */}
+          <div className="shrink-0 w-24 h-24 relative rounded-lg border-2 border-red-900 bg-slate-900 overflow-hidden shadow-lg">
+            {enemyImages[enemyName] ? (
+              <img
+                src={`/enemies/${enemyImages[enemyName]}`}
+                alt={enemyName}
+                className="w-full h-full object-cover object-top"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-5xl">
+                {enemyEmoji}
+              </div>
+            )}
           </div>
+
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-red-400 drop-shadow-sm">{enemyName}</h2>
+            <p className="text-sm text-slate-400 mt-1">Deck de ações e intenções</p>
+          </div>
+
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-700 hover:bg-red-600 text-slate-300 hover:text-white transition-colors text-lg font-bold"
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-slate-800/80 border border-slate-600 hover:bg-red-600 hover:border-red-500 text-slate-300 hover:text-white transition-colors text-xl font-bold z-10"
           >
             ✕
           </button>
