@@ -478,97 +478,101 @@ export default function GamePage() {
           )}
         </div>
 
-        {/* Hand of cards */}
-        <div className="flex items-center gap-4">
-          {/* Deck and Draw Pile Buttons (Left) */}
-          <div className="shrink-0 flex flex-col gap-2 w-36">
+        {/* Hand of cards / Initiative panels */}
+        {phase === "rollingInitiative" ? (
+          <InitiativeRollModal turn={turn} onRoll={rollInitiative} />
+        ) : phase === "viewingInitiative" ? (
+          <InitiativeOrderModal turnOrder={turnOrder} turn={turn} onConfirm={confirmInitiativeModal} />
+        ) : (
+          <div className="flex items-center gap-4">
+            {/* Deck and Draw Pile Buttons (Left) */}
+            <div className="shrink-0 flex flex-col gap-2 w-36">
+              <button
+                onClick={() => setShowDrawPileModal(true)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
+              >
+                <span>🗂️ Compra</span>
+                <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{drawPile.length}</span>
+              </button>
 
+              {/* Default Cards */}
+              <div className="flex flex-col gap-1 mt-2">
+                <div className="text-slate-400 text-xs text-center font-bold mb-1 uppercase tracking-wider">Ações Padrão</div>
+                {defaultHand.map((entry) => (
+                  <SmallDefaultCard
+                    key={entry.id}
+                    entry={entry}
+                    disabled={
+                      phase !== "playerTurn" &&
+                      phase !== "selectingMovement" &&
+                      phase !== "selectingTarget" &&
+                      phase !== "confirmingSkill"
+                    }
+                    selected={selectedCard?.id === entry.card.id && !!selectedCardIsDefault}
+                    onClick={() => selectDefaultCard(entry.id)}
+                  />
+                ))}
+              </div>
+            </div>
 
-            <button
-              onClick={() => setShowDrawPileModal(true)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
-            >
-              <span>🗂️ Compra</span>
-              <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{drawPile.length}</span>
-            </button>
+            <div className="flex-1 bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm min-h-52 flex items-center justify-center">
+              <Hand
+                cards={hand}
+                energy={player.energy}
+                selectedCard={selectedCard}
+                onSelectCard={handleSelectCard}
+                disabled={
+                  phase !== "playerTurn" &&
+                  phase !== "selectingMovement" &&
+                  phase !== "selectingTarget" &&
+                  phase !== "confirmingSkill"
+                }
+              />
+            </div>
 
-            {/* Default Cards */}
-            <div className="flex flex-col gap-1 mt-2">
-              <div className="text-slate-400 text-xs text-center font-bold mb-1 uppercase tracking-wider">Ações Padrão</div>
-              {defaultHand.map((entry) => (
-                <SmallDefaultCard
-                  key={entry.id}
-                  entry={entry}
-                  disabled={
-                    phase !== "playerTurn" &&
-                    phase !== "selectingMovement" &&
-                    phase !== "selectingTarget" &&
-                    phase !== "confirmingSkill"
+            {/* End Turn Button and Discard Button */}
+            <div className="shrink-0 flex flex-col justify-end gap-2">
+              <button
+                onClick={() => setShowDeckModal(true)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
+              >
+                <span>📚 Deck</span>
+                <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{deck.length}</span>
+              </button>
+              <button
+                onClick={endTurn}
+                disabled={phase !== "playerTurn"}
+                className={`
+                  px-6 py-4 rounded-lg font-bold text-lg h-full
+                  transition-all duration-200
+                  ${phase === "playerTurn"
+                    ? "bg-amber-500 hover:bg-amber-400 text-black hover:scale-105"
+                    : "bg-gray-600 text-gray-400 cursor-not-allowed"
                   }
-                  selected={selectedCard?.id === entry.card.id && !!selectedCardIsDefault}
-                  onClick={() => selectDefaultCard(entry.id)}
-                />
-              ))}
+                `}
+              >
+                Finalizar
+                <br />
+                Turno
+              </button>
+
+              <button
+                onClick={() => setShowDiscardModal(true)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
+              >
+                <span>🗑️ Descarte</span>
+                <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{discardPile.length}</span>
+              </button>
+              <button
+                onClick={() => setShowBurnedModal(true)}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-orange-500 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
+              >
+                <span>🔥 Queimadas</span>
+                <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{burnedPile.length}</span>
+              </button>
             </div>
           </div>
-
-          <div className="flex-1 bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm min-h-52 flex items-center justify-center">
-            <Hand
-              cards={hand}
-              energy={player.energy}
-              selectedCard={selectedCard}
-              onSelectCard={handleSelectCard}
-              disabled={
-                phase !== "playerTurn" &&
-                phase !== "selectingMovement" &&
-                phase !== "selectingTarget" &&
-                phase !== "confirmingSkill"
-              }
-            />
-          </div>
-
-          {/* End Turn Button and Discard Button */}
-          <div className="shrink-0 flex flex-col justify-end gap-2">
-            <button
-              onClick={() => setShowDeckModal(true)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
-            >
-              <span>📚 Deck</span>
-              <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{deck.length}</span>
-            </button>
-            <button
-              onClick={endTurn}
-              disabled={phase !== "playerTurn"}
-              className={`
-                px-6 py-4 rounded-lg font-bold text-lg h-full
-                transition-all duration-200
-                ${phase === "playerTurn"
-                  ? "bg-amber-500 hover:bg-amber-400 text-black hover:scale-105"
-                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
-                }
-              `}
-            >
-              Finalizar
-              <br />
-              Turno
-            </button>
-
-            <button
-              onClick={() => setShowDiscardModal(true)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-amber-400 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
-            >
-              <span>🗑️ Descarte</span>
-              <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{discardPile.length}</span>
-            </button>
-            <button
-              onClick={() => setShowBurnedModal(true)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-orange-500 rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
-            >
-              <span>🔥 Queimadas</span>
-              <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">{burnedPile.length}</span>
-            </button>
-          </div>
-        </div>
+        )}
       </main>
 
       {/* Deck View Modal */}
@@ -608,22 +612,7 @@ export default function GamePage() {
         />
       )}
 
-      {/* Initiative Roll Modal - Dice Choice */}
-      {phase === "rollingInitiative" && (
-        <InitiativeRollModal
-          turn={turn}
-          onRoll={rollInitiative}
-        />
-      )}
-
-      {/* Initiative Order Modal - Turn Order Display */}
-      {phase === "viewingInitiative" && (
-        <InitiativeOrderModal
-          turnOrder={turnOrder}
-          turn={turn}
-          onConfirm={confirmInitiativeModal}
-        />
-      )}
+      {/* Initiative panels are rendered inline in the hand area above */}
 
       {/* Burn Selection Modal */}
       {phase === "selectingBurn" && (
