@@ -15,6 +15,7 @@ import { GameLogModal } from "@/app/components/GameLogModal";
 import { HowToPlayModal } from "@/app/components/HowToPlayModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
 import { BurnCardModal } from "@/app/components/BurnCardModal";
+import { InitiativeRollModal, InitiativeOrderModal } from "@/app/components/InitiativeModals";
 import { Card, HexPosition, CharacterClass, Enemy } from "@/app/types/game";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { getFloorConfig } from "@/app/lib/enemies";
@@ -69,6 +70,10 @@ export default function GamePage() {
     selectRewardCard,
     advanceFloor,
     resetGame,
+    rollInitiative,
+    confirmInitiativeModal,
+    turnOrder,
+    activeTurnIndex,
   } = useGameStore();
 
   const handleCharacterSelect = (characterClass: CharacterClass) => {
@@ -600,6 +605,23 @@ export default function GamePage() {
           title="🔥 Cartas Queimadas"
           cards={burnedPile}
           onClose={() => setShowBurnedModal(false)}
+        />
+      )}
+
+      {/* Initiative Roll Modal - Dice Choice */}
+      {phase === "rollingInitiative" && (
+        <InitiativeRollModal
+          turn={turn}
+          onRoll={rollInitiative}
+        />
+      )}
+
+      {/* Initiative Order Modal - Turn Order Display */}
+      {phase === "viewingInitiative" && (
+        <InitiativeOrderModal
+          turnOrder={turnOrder}
+          turn={turn}
+          onConfirm={confirmInitiativeModal}
         />
       )}
 

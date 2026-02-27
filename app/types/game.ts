@@ -160,8 +160,10 @@ export interface GameLogEntry {
 // === ESTADO DO JOGO ===
 export type GamePhase =
   | 'characterSelect'   // Selecting character class
+  | 'rollingInitiative' // Rolling initiative dice
+  | 'viewingInitiative' // Viewing turn order
   | 'playerTurn'
-  | 'enemyTurn'
+  | 'enemyTurn' // Note: This will likely be deprecated with interleaved turns
   | 'victory'
   | 'defeat'
   | 'selectingMovement'
@@ -172,6 +174,17 @@ export type GamePhase =
   | 'selectingReward';  // Selecting reward card
 
 export const MAX_FLOOR = 4;
+
+export interface InitiativeResult {
+  id: string; // Enemy ID or 'player'
+  entityType: 'player' | 'enemy';
+  name: string;
+  total: number;
+  dice: number[];
+  highestDie: number;
+  hp: number;
+  emoji: string;
+}
 
 export interface GameState {
   // Estado do jogador
@@ -197,6 +210,8 @@ export interface GameState {
   phase: GamePhase;
   turn: number;
   floor: number;  // Current dungeon floor (1-4)
+  turnOrder: InitiativeResult[];
+  activeTurnIndex: number;
 
   // Estado de seleção
   selectedCard: Card | null;
