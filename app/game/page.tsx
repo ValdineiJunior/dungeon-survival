@@ -258,6 +258,7 @@ export default function GamePage() {
                                 dice: initiativeEntry.dice,
                                 total: initiativeEntry.total,
                                 highestDie: initiativeEntry.highestDie,
+                                diceFaces: initiativeEntry.diceFaces,
                               }
                             : undefined
                         }
@@ -316,6 +317,7 @@ export default function GamePage() {
                             dice: initiativeEntry.dice,
                             total: initiativeEntry.total,
                             highestDie: initiativeEntry.highestDie,
+                            diceFaces: initiativeEntry.diceFaces,
                           }
                         : undefined
                     }

@@ -314,6 +314,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       name: classDef.name,
       total: playerTotal,
       dice: playerDiceResults,
+      diceFaces: playerDiceFaces,
       highestDie: Math.max(...playerDiceResults),
       hp: state.player.hp,
       emoji: classDef.emoji,
@@ -333,6 +334,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     // Build individual enemy results
+    const enemyDiceFaces = [6, 6];
     const enemyResults: InitiativeResult[] = state.enemies.map(enemy => {
       const group = groupRolls.get(enemy.name)!;
       return {
@@ -341,6 +343,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         name: enemy.name,
         total: group.total,
         dice: group.dice,
+        diceFaces: enemyDiceFaces,
         highestDie: group.highestDie,
         hp: enemy.hp,
         emoji: enemy.emoji,

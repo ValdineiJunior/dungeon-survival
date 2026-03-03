@@ -1,11 +1,13 @@
 "use client";
 
 import { Enemy, EnemyIntent, GamePhase } from "@/app/types/game";
+import { DiceIcon } from "@/app/components/DiceIcon";
 
 interface InitiativeDice {
   dice: number[];
   total: number;
   highestDie: number;
+  diceFaces?: number[];
 }
 
 interface EnemyCardProps {
@@ -158,32 +160,29 @@ export function EnemyCard({
                 Iniciativa
               </div>
               {initiativeDice ? (
-                /* Viewing phase: show rolled dice */
-                <div className="flex items-center gap-0.5">
+                /* Viewing phase: show rolled dice with icons */
+                <div className="flex items-center gap-0.5 flex-wrap justify-center">
                   {initiativeDice.dice.map((d, di) => (
-                    <span
+                    <DiceIcon
                       key={di}
-                      className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${
-                        d === initiativeDice.highestDie
-                          ? "bg-amber-500/30 text-amber-300 border border-amber-600/50"
-                          : "bg-slate-700 text-slate-400"
-                      }`}
-                    >
-                      {d}
-                    </span>
+                      faces={initiativeDice.diceFaces?.[di] ?? 6}
+                      value={d}
+                      size="sm"
+                      highlighted={d === initiativeDice.highestDie}
+                    />
                   ))}
-                  <span className="ml-1 text-xs font-bold text-red-400">
+                  <span className="ml-0.5 text-xs font-bold text-red-400">
                     ={initiativeDice.total}
                   </span>
                 </div>
               ) : (
                 /* Rolling phase: show pool (2d6) */
                 <div
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-0.5"
                   title="2d6 - Aguardando rolagem"
                 >
-                  <span className="text-xl opacity-70">⚄⚄</span>
-                  <span className="text-[10px] text-slate-500">2d6</span>
+                  <DiceIcon faces={6} size="sm" />
+                  <DiceIcon faces={6} size="sm" />
                 </div>
               )}
             </div>

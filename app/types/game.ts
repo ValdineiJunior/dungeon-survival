@@ -181,6 +181,8 @@ export interface InitiativeResult {
   name: string;
   total: number;
   dice: number[];
+  /** Face count per die (e.g. [4, 6] for d4+d6) for displaying the correct dice icon */
+  diceFaces?: number[];
   highestDie: number;
   hp: number;
   emoji: string;

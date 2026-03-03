@@ -1,6 +1,7 @@
 "use client";
 
 import { InitiativeResult } from "@/app/types/game";
+import { DiceIcon } from "@/app/components/DiceIcon";
 
 // ─── Dice Choice Panel (inline, replaces hand area) ─────────────────────────
 
@@ -52,9 +53,15 @@ export function InitiativeRollModal({
 
       <button
         onClick={onRoll}
-        className="group flex flex-col items-center gap-1 px-5 py-3 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-2xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20"
+        className="group flex flex-col items-center gap-2 px-5 py-3 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-2xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20"
       >
-        <span className="text-3xl">🎲🎲</span>
+        <div className="flex items-center justify-center gap-1">
+          {diceFaces.length > 0
+            ? diceFaces.map((faces, i) => (
+                <DiceIcon key={i} faces={faces} size="lg" />
+              ))
+            : <DiceIcon faces={6} size="lg" />}
+        </div>
         <div className="text-sm font-bold text-blue-300 group-hover:text-white">
           Rolar {diceLabel}
         </div>
@@ -117,21 +124,21 @@ export function InitiativeOrderModal({
               {entry.name}
             </div>
             {/* Dice + total */}
-            <div className="flex items-center gap-0.5">
-              {entry.dice.map((d, di) => (
-                <span
-                  key={di}
-                  className={`text-[9px] px-1 py-0.5 rounded font-mono font-bold ${
-                    d === entry.highestDie
-                      ? "bg-amber-500/30 text-amber-300 border border-amber-600/50"
-                      : "bg-slate-700 text-slate-400"
-                  }`}
-                >
-                  {d}
-                </span>
-              ))}
+            <div className="flex items-center gap-0.5 flex-wrap justify-center">
+              {entry.dice.map((d, di) => {
+                const faces = entry.diceFaces?.[di] ?? 6;
+                return (
+                  <DiceIcon
+                    key={di}
+                    faces={faces}
+                    value={d}
+                    size="sm"
+                    highlighted={d === entry.highestDie}
+                  />
+                );
+              })}
               <span
-                className={`ml-1 text-xs font-bold ${entry.entityType === "player" ? "text-emerald-400" : "text-red-400"}`}
+                className={`ml-0.5 text-xs font-bold ${entry.entityType === "player" ? "text-emerald-400" : "text-red-400"}`}
               >
                 ={entry.total}
               </span>
