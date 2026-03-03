@@ -5,14 +5,26 @@ import { InitiativeResult } from "@/app/types/game";
 // ─── Dice Choice Panel (inline, replaces hand area) ─────────────────────────
 
 interface InitiativeRollModalProps {
-  onRoll: (dice: "2d6" | "2d3") => void;
+  onRoll: () => void;
   turn: number;
+  diceFaces: number[];
 }
 
 export function InitiativeRollModal({
   onRoll,
   turn,
+  diceFaces,
 }: InitiativeRollModalProps) {
+  const diceLabel =
+    diceFaces.length > 0
+      ? diceFaces.map((faces) => `d${faces}`).join(" + ")
+      : "dados";
+  const minTotal = diceFaces.length || 1;
+  const maxTotal =
+    diceFaces.length > 0
+      ? diceFaces.reduce((sum, faces) => sum + faces, 0)
+      : 20;
+
   return (
     <div className="w-full h-full min-h-52 flex items-center justify-center gap-6 px-4 py-3 bg-slate-900/80 rounded-3xl border border-amber-700/50 backdrop-blur-sm">
       {/* Label */}
@@ -26,39 +38,28 @@ export function InitiativeRollModal({
 
       <div className="shrink-0 text-slate-600 text-lg">—</div>
 
-      <p className="text-slate-400 text-xs leading-snug hidden sm:block max-w-[160px]">
-        Escolha seu dado.
+      <p className="text-slate-400 text-xs leading-snug hidden sm:block max-w-[200px]">
+        Você irá rolar{" "}
+        <span className="text-amber-300 font-semibold">{diceLabel}</span> para
+        determinar a iniciativa.
         <br />
-        <span className="text-amber-400/80">Maior resultado age primeiro.</span>
+        <span className="text-amber-400/80">
+          Resultado entre {minTotal} e {maxTotal}. Maior valor age primeiro.
+        </span>
       </p>
 
       <div className="shrink-0 text-slate-600 text-lg hidden sm:block">—</div>
 
-      {/* 2d6 button */}
       <button
-        onClick={() => onRoll("2d6")}
+        onClick={onRoll}
         className="group flex flex-col items-center gap-1 px-5 py-3 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-2xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20"
       >
-        <span className="text-3xl">⚄⚄</span>
+        <span className="text-3xl">🎲🎲</span>
         <div className="text-sm font-bold text-blue-300 group-hover:text-white">
-          2d6
+          Rolar {diceLabel}
         </div>
         <div className="text-[10px] text-slate-400">
-          2 – 12 · Alta variância
-        </div>
-      </button>
-
-      {/* 2d3 button */}
-      <button
-        onClick={() => onRoll("2d3")}
-        className="group flex flex-col items-center gap-1 px-5 py-3 bg-purple-900/40 hover:bg-purple-800/60 border-2 border-purple-600 hover:border-purple-400 rounded-2xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20"
-      >
-        <span className="text-3xl">⚂⚂</span>
-        <div className="text-sm font-bold text-purple-300 group-hover:text-white">
-          2d3
-        </div>
-        <div className="text-[10px] text-slate-400">
-          2 – 6 · Mais previsível
+          {minTotal} – {maxTotal} · Dados de iniciativa
         </div>
       </button>
     </div>

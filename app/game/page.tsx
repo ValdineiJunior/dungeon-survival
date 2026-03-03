@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGameStore } from "@/app/lib/gameStore";
+import { useGameStore, CLASS_INITIATIVE_DICE } from "@/app/lib/gameStore";
 import { Hand } from "@/app/components/Hand";
 import { EnemyCard } from "@/app/components/EnemyCard";
 import { PlayerStatus } from "@/app/components/PlayerStatus";
@@ -118,6 +118,8 @@ export default function GamePage() {
 
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
+  const initiativeDiceFaces =
+    CLASS_INITIATIVE_DICE[player.characterClass] ?? [6, 6];
 
   const getPhaseLabel = () => {
     switch (phase) {
@@ -544,7 +546,11 @@ export default function GamePage() {
           {/* Center: Hand or Initiative panels (same container) */}
           <div className="flex-1 bg-slate-900/50 rounded-3xl border border-slate-700 backdrop-blur-sm min-h-52 flex items-center justify-center">
             {phase === "rollingInitiative" ? (
-              <InitiativeRollModal turn={turn} onRoll={rollInitiative} />
+              <InitiativeRollModal
+                turn={turn}
+                onRoll={rollInitiative}
+                diceFaces={initiativeDiceFaces}
+              />
             ) : phase === "viewingInitiative" ? (
               <InitiativeOrderModal turnOrder={turnOrder} turn={turn} />
             ) : (

@@ -14,6 +14,14 @@ import {
   getTile
 } from './hexUtils';
 
+// Initiative dice configuration (D&D-style dice)
+// For now each class has a fixed pair of dice; this can be expanded later.
+export const CLASS_INITIATIVE_DICE: Record<CharacterClass, number[]> = {
+  archer: [4, 6],   // d4 + d6
+  warrior: [8, 10], // d8 + d10
+  mage: [12, 20],   // d12 + d20
+};
+
 // Helper to get innate ability value by type
 function getInnateAbilityValue(characterClass: CharacterClass, abilityType: InnateAbility['type']): number {
   const classDef = CHARACTER_CLASSES[characterClass];
@@ -155,7 +163,7 @@ function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: numb
 interface GameActions {
   selectCharacter: (characterClass: CharacterClass) => void;
   startCombat: () => void;
-  rollInitiative: (playerDice: '2d6' | '2d3') => void;
+  rollInitiative: () => void;
   confirmInitiativeModal: () => Promise<void>;
   _processTurnAt: (index: number) => Promise<void>;
   selectCard: (card: Card) => void;
@@ -288,19 +296,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   // === INITIATIVE SYSTEM ===
 
-  rollInitiative: (playerDice: '2d6' | '2d3') => {
+  rollInitiative: () => {
     const state = get();
     if (state.phase !== 'rollingInitiative') return;
 
     const rollDie = (faces: number) => Math.floor(Math.random() * faces) + 1;
-    const roll = (count: number, faces: number): number[] =>
-      Array.from({ length: count }, () => rollDie(faces));
-
     const classDef = CHARACTER_CLASSES[state.player.characterClass];
 
-    // Roll player dice
-    const [diceCount, diceFaces] = playerDice === '2d6' ? [2, 6] : [2, 3];
-    const playerDiceResults = roll(diceCount, diceFaces);
+    // Roll player dice based on class configuration
+    const playerDiceFaces =
+      CLASS_INITIATIVE_DICE[state.player.characterClass] ?? [6, 6];
+    const playerDiceResults = playerDiceFaces.map((faces) => rollDie(faces));
     const playerTotal = playerDiceResults.reduce((a, b) => a + b, 0);
     const playerResult: InitiativeResult = {
       id: 'player',
@@ -317,7 +323,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const groupRolls = new Map<string, { total: number; dice: number[]; highestDie: number }>();
     for (const enemy of state.enemies) {
       if (!groupRolls.has(enemy.name)) {
-        const enemyDice = roll(2, 6);
+        // For now enemies always roll 2d6 for initiative.
+        // This can be expanded to enemy-specific dice configurations later.
+        const enemyDiceFaces = [6, 6];
+        const enemyDice = enemyDiceFaces.map((faces) => rollDie(faces));
         const total = enemyDice.reduce((a, b) => a + b, 0);
         groupRolls.set(enemy.name, { total, dice: enemyDice, highestDie: Math.max(...enemyDice) });
       }
