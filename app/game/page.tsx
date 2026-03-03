@@ -29,6 +29,7 @@ export default function GamePage() {
   const [showBurnedModal, setShowBurnedModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
+  // Kept for future debug: EnemyActionsModal. To show it, add onViewActions={() => setSelectedEnemyForActions(enemy)} to EnemyCard
   const [selectedEnemyForActions, setSelectedEnemyForActions] =
     useState<Enemy | null>(null);
 
@@ -239,16 +240,28 @@ export default function GamePage() {
                   ⚔️ Inimigos
                 </h3>
                 <div className="flex flex-col gap-3">
-                  {enemies.map((enemy, index) => (
-                    <EnemyCard
-                      key={enemy.id}
-                      enemy={enemy}
-                      orderNumber={index + 1}
-                      isTargetable={targetableEnemyIds.includes(enemy.id)}
-                      onClick={() => handleEnemyClick(enemy.id)}
-                      onViewActions={() => setSelectedEnemyForActions(enemy)}
-                    />
-                  ))}
+                  {enemies.map((enemy, index) => {
+                    const initiativeEntry = turnOrder.find((e) => e.id === enemy.id);
+                    return (
+                      <EnemyCard
+                        key={enemy.id}
+                        enemy={enemy}
+                        orderNumber={index + 1}
+                        isTargetable={targetableEnemyIds.includes(enemy.id)}
+                        onClick={() => handleEnemyClick(enemy.id)}
+                        phase={phase}
+                        initiativeDice={
+                          initiativeEntry
+                            ? {
+                                dice: initiativeEntry.dice,
+                                total: initiativeEntry.total,
+                                highestDie: initiativeEntry.highestDie,
+                              }
+                            : undefined
+                        }
+                      />
+                    );
+                  })}
                 </div>
 
                 {enemies.length === 0 &&
@@ -285,16 +298,28 @@ export default function GamePage() {
               ⚔️ Inimigos
             </h3>
             <div className="flex flex-col gap-3">
-              {enemies.map((enemy, index) => (
-                <EnemyCard
-                  key={enemy.id}
-                  enemy={enemy}
-                  orderNumber={index + 1}
-                  isTargetable={targetableEnemyIds.includes(enemy.id)}
-                  onClick={() => handleEnemyClick(enemy.id)}
-                  onViewActions={() => setSelectedEnemyForActions(enemy)}
-                />
-              ))}
+              {enemies.map((enemy, index) => {
+                const initiativeEntry = turnOrder.find((e) => e.id === enemy.id);
+                return (
+                  <EnemyCard
+                    key={enemy.id}
+                    enemy={enemy}
+                    orderNumber={index + 1}
+                    isTargetable={targetableEnemyIds.includes(enemy.id)}
+                    onClick={() => handleEnemyClick(enemy.id)}
+                    phase={phase}
+                    initiativeDice={
+                      initiativeEntry
+                        ? {
+                            dice: initiativeEntry.dice,
+                            total: initiativeEntry.total,
+                            highestDie: initiativeEntry.highestDie,
+                          }
+                        : undefined
+                    }
+                  />
+                );
+              })}
             </div>
 
             {enemies.length === 0 &&
