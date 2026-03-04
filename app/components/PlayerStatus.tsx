@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
-import { Player, CharacterClassDefinition } from '@/app/types/game';
+import { Player, CharacterClassDefinition } from "@/app/types/game";
+import { DiceIcon } from "./DiceIcon";
+import { CLASS_INITIATIVE_DICE } from "@/app/lib/gameStore";
 
 interface PlayerStatusProps {
   player: Player;
@@ -11,7 +13,14 @@ interface PlayerStatusProps {
   onViewDiscard: () => void;
 }
 
-export function PlayerStatus({ player, deckCount, discardCount, classDef, onViewDeck, onViewDiscard }: PlayerStatusProps) {
+export function PlayerStatus({
+  player,
+  deckCount,
+  discardCount,
+  classDef,
+  onViewDeck,
+  onViewDiscard,
+}: PlayerStatusProps) {
   const hpPercentage = (player.hp / player.maxHp) * 100;
 
   return (
@@ -38,12 +47,18 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
           <span className="text-red-400">❤️ Vida</span>
-          <span className="text-white">{player.hp}/{player.maxHp}</span>
+          <span className="text-white">
+            {player.hp}/{player.maxHp}
+          </span>
         </div>
         <div className="h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
           <div
             className={`h-full transition-all duration-300 ${
-              hpPercentage > 50 ? 'bg-red-500' : hpPercentage > 25 ? 'bg-orange-500' : 'bg-red-700'
+              hpPercentage > 50
+                ? "bg-red-500"
+                : hpPercentage > 25
+                  ? "bg-orange-500"
+                  : "bg-red-700"
             }`}
             style={{ width: `${hpPercentage}%` }}
           />
@@ -64,7 +79,9 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="text-amber-400">⚡ Energia</span>
-          <span className="text-white">{player.energy}/{player.maxEnergy}</span>
+          <span className="text-white">
+            {player.energy}/{player.maxEnergy}
+          </span>
         </div>
         <div className="flex gap-1 justify-center">
           {Array.from({ length: player.maxEnergy }).map((_, i) => (
@@ -72,8 +89,8 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
               key={i}
               className={`w-5 h-5 rounded-full border-2 transition-all ${
                 i < player.energy
-                  ? 'bg-amber-400 border-amber-500 shadow-amber-400/50 shadow-md'
-                  : 'bg-gray-700 border-gray-600'
+                  ? "bg-amber-400 border-amber-500 shadow-amber-400/50 shadow-md"
+                  : "bg-gray-700 border-gray-600"
               }`}
             />
           ))}
@@ -83,6 +100,20 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
       {/* Separador */}
       <div className="border-t border-slate-600" />
 
+      {/* Pool de dados (iniciativa) */}
+      <div className="space-y-2">
+        <div className="text-xs text-slate-500 uppercase tracking-wide">
+          🎲 Iniciativa
+        </div>
+        <div className="flex items-center justify-center gap-1 flex-wrap">
+          {(CLASS_INITIATIVE_DICE[player.characterClass] ?? [6, 6]).map(
+            (faces, i) => (
+              <DiceIcon key={i} faces={faces} size="sm" />
+            ),
+          )}
+        </div>
+      </div>
+
       {/* Habilidades Inatas */}
       {classDef.innateAbilities.length > 0 && (
         <>
@@ -91,13 +122,12 @@ export function PlayerStatus({ player, deckCount, discardCount, classDef, onView
               Habilidades Inatas
             </div>
             {classDef.innateAbilities.map((ability, idx) => (
-              <div
-                key={idx}
-                className="bg-slate-700/50 rounded px-2 py-1.5"
-              >
+              <div key={idx} className="bg-slate-700/50 rounded px-2 py-1.5">
                 <div className="flex items-center gap-2 text-xs">
                   <span>{ability.emoji}</span>
-                  <span className="text-amber-300 font-medium">{ability.name}</span>
+                  <span className="text-amber-300 font-medium">
+                    {ability.name}
+                  </span>
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5 pl-6">
                   {ability.description}

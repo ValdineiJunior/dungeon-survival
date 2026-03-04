@@ -11,6 +11,8 @@ import {
 } from "@/app/lib/cards";
 import { getRewardPool } from "@/app/lib/cardRewards";
 import { CardListModal } from "./CardListModal";
+import { DiceIcon } from "./DiceIcon";
+import { CLASS_INITIATIVE_DICE } from "@/app/lib/gameStore";
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
@@ -146,6 +148,20 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   <span className="text-white font-bold">
                     {hasMinRange ? "Distância" : "Corpo a corpo"}
                   </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-slate-400">🎲 Iniciativa</span>
+                  <div className="flex items-center gap-1">
+                    {(CLASS_INITIATIVE_DICE[classId] ?? [6, 6]).map(
+                      (faces, i) => (
+                        <DiceIcon
+                          key={i}
+                          faces={faces}
+                          size="sm"
+                        />
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
 
