@@ -44,14 +44,9 @@ export function PlayerStatus({
       <div className="border-t border-slate-600" />
 
       {/* HP */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-red-400">❤️ Vida</span>
-          <span className="text-white">
-            {player.hp}/{player.maxHp}
-          </span>
-        </div>
-        <div className="h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-red-400 shrink-0">❤️ Vida</span>
+        <div className="flex-1 min-w-0 h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
           <div
             className={`h-full transition-all duration-300 ${
               hpPercentage > 50
@@ -63,6 +58,9 @@ export function PlayerStatus({
             style={{ width: `${hpPercentage}%` }}
           />
         </div>
+        <span className="text-white shrink-0 tabular-nums">
+          {player.hp}/{player.maxHp}
+        </span>
       </div>
 
       {/* Block */}
@@ -76,18 +74,13 @@ export function PlayerStatus({
       )}
 
       {/* Energia */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-amber-400">⚡ Energia</span>
-          <span className="text-white">
-            {player.energy}/{player.maxEnergy}
-          </span>
-        </div>
-        <div className="flex gap-1 justify-center">
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-amber-400 shrink-0">⚡ Energia</span>
+        <div className="flex-1 flex gap-1 justify-center min-w-0">
           {Array.from({ length: player.maxEnergy }).map((_, i) => (
             <div
               key={i}
-              className={`w-5 h-5 rounded-full border-2 transition-all ${
+              className={`w-5 h-5 rounded-full border-2 transition-all shrink-0 ${
                 i < player.energy
                   ? "bg-amber-400 border-amber-500 shadow-amber-400/50 shadow-md"
                   : "bg-gray-700 border-gray-600"
@@ -95,17 +88,20 @@ export function PlayerStatus({
             />
           ))}
         </div>
+        <span className="text-white shrink-0 tabular-nums">
+          {player.energy}/{player.maxEnergy}
+        </span>
       </div>
 
       {/* Separador */}
       <div className="border-t border-slate-600" />
 
       {/* Pool de dados (iniciativa) */}
-      <div className="space-y-2">
-        <div className="text-xs text-slate-500 uppercase tracking-wide">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs text-slate-500 uppercase tracking-wide shrink-0">
           🎲 Iniciativa
-        </div>
-        <div className="flex items-center justify-center gap-1 flex-wrap">
+        </span>
+        <div className="flex items-center gap-1 justify-end flex-wrap min-w-0">
           {(CLASS_INITIATIVE_DICE[player.characterClass] ?? [6, 6]).map(
             (faces, i) => (
               <DiceIcon key={i} faces={faces} size="sm" />
