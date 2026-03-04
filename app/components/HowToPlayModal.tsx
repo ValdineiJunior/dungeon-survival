@@ -95,7 +95,8 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
             </h3>
             <p className="text-slate-300 text-sm mb-2">
               No seu turno, você pode jogar cartas gastando energia. Ao
-              terminar, clique em "Encerrar Turno" para os inimigos agirem.
+              terminar, clique em &quot;Encerrar Turno&quot; para os inimigos
+              agirem.
             </p>
           </section>
 
