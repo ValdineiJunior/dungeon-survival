@@ -152,11 +152,11 @@ function findPathToClosestTarget(
   return null;
 }
 
-// Encontrar inimigos no alcance (considerando minRange e maxRange)
-function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: number, minRange: number = 1): Enemy[] {
+// Encontrar inimigos no alcance (1 até range; ataques à distância podem acertar adjacente)
+function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: number): Enemy[] {
   return enemies.filter(e => {
     const distance = hexDistance(playerPos, e.position);
-    return distance >= minRange && distance <= range;
+    return distance >= 1 && distance <= range;
   });
 }
 
@@ -470,7 +470,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }
 
       const classDef = CHARACTER_CLASSES[state.player.characterClass];
-      let player = { ...get().player };
+      const player = { ...get().player };
       const newLog = [...get().gameLog];
       const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
       let phase: GamePhase = 'playerTurn'; // will remain unless defeat
@@ -483,32 +483,51 @@ export const useGameStore = create<GameStore>((set, get) => ({
       for (const action of enemy.currentActionCard.actions) {
         if (action.type === 'attack') {
           const attackRange = enemy.attackRange;
-          if (hexDistance(enemy.position, player.position) <= attackRange) {
-            const originalDamage = action.value;
-            let damage = action.value;
-            let blockedAmount = 0;
-            if (player.block > 0) {
-              blockedAmount = Math.min(damage, player.block);
-              player.block -= blockedAmount;
-              damage -= blockedAmount;
+          const distance = hexDistance(enemy.position, player.position);
+          if (distance <= attackRange) {
+            const isRangedVsAdjacent = attackRange > 1 && distance === 1;
+            let attackHits = true;
+            let adjacentRoll: number | undefined;
+            if (isRangedVsAdjacent) {
+              adjacentRoll = 1 + Math.floor(Math.random() * 6);
+              attackHits = adjacentRoll >= 3;
+              if (!attackHits) {
+                newLog.push(createLogEntry(state.turn, state.floor, 'enemyAttack',
+                  `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name} (alcance vs adjacente): 1d6 = ${adjacentRoll} — errou! (1-2 = erra)`));
+                set({ gameLog: newLog });
+              }
             }
-            player.hp = Math.max(0, player.hp - damage);
+            if (attackHits) {
+              const originalDamage = action.value;
+              let damage = action.value;
+              let blockedAmount = 0;
+              if (player.block > 0) {
+                blockedAmount = Math.min(damage, player.block);
+                player.block -= blockedAmount;
+                damage -= blockedAmount;
+              }
+              player.hp = Math.max(0, player.hp - damage);
 
-            const logMsg = blockedAmount > 0
-              ? `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
-              : `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name}: ${originalDamage} dano`;
+              const logMsg = isRangedVsAdjacent
+                ? (blockedAmount > 0
+                  ? `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                  : `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${originalDamage} dano`)
+                : (blockedAmount > 0
+                  ? `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                  : `${enemy.emoji} ${enemy.name} ataca ${classDef.emoji} ${classDef.name}: ${originalDamage} dano`);
 
-            newLog.push(createLogEntry(state.turn, state.floor, 'enemyAttack', logMsg, {
-              attacker: enemy.name, target: classDef.name,
-              damage: originalDamage, blocked: blockedAmount, finalDamage: damage,
-            }));
+              newLog.push(createLogEntry(state.turn, state.floor, 'enemyAttack', logMsg, {
+                attacker: enemy.name, target: classDef.name,
+                damage: originalDamage, blocked: blockedAmount, finalDamage: damage,
+              }));
 
-            set({ player, gameLog: newLog });
-            await sleep(300);
+              set({ player, gameLog: newLog });
+              await sleep(300);
 
-            if (player.hp <= 0) {
-              phase = 'defeat';
-              break;
+              if (player.hp <= 0) {
+                phase = 'defeat';
+                break;
+              }
             }
           } else {
             newLog.push(createLogEntry(state.turn, state.floor, 'enemyAttack',
@@ -598,10 +617,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         remainingMovement: card.movement,
       });
     } else if (card.type === 'attack' && card.damage) {
-      // Attack card: show targetable enemies
+      // Attack card: show targetable enemies (1 to range; ranged can target adjacent)
       const range = card.range || 1;
-      const minRange = card.minRange || 1;
-      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range, minRange);
+      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range);
 
       if (enemiesInRange.length === 0) {
         // No enemies in range - can't use this card
@@ -662,8 +680,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       });
     } else if (card.type === 'attack' && card.damage) {
       const range = card.range || 1;
-      const minRange = card.minRange || 1;
-      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range, minRange);
+      const enemiesInRange = getEnemiesInRange(state.player.position, state.enemies, range);
       if (enemiesInRange.length === 0) return;
 
       set({
@@ -981,11 +998,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     if (card.type === 'attack' && card.damage) {
       const range = card.range || 1;
-      const minRange = card.minRange || 1;
 
       let targetId = targetEnemyId;
       if (!targetId) {
-        const inRange = getEnemiesInRange(state.player.position, newEnemies, range, minRange);
+        const inRange = getEnemiesInRange(state.player.position, newEnemies, range);
         targetId = inRange[0]?.id;
       }
 
@@ -996,42 +1012,71 @@ export const useGameStore = create<GameStore>((set, get) => ({
           const target = { ...newEnemies[targetIndex] };
           const distance = hexDistance(state.player.position, target.position);
 
-          if (distance >= minRange && distance <= range) {
-            const originalDamage = card.damage;
-            let damage = card.damage;
-            let blockedAmount = 0;
+          if (distance >= 1 && distance <= range) {
+            const isRangedVsAdjacent = range > 1 && distance === 1;
+            let attackHits = true;
+            let adjacentRoll: number | undefined;
 
-            if (target.block > 0) {
-              blockedAmount = Math.min(damage, target.block);
-              target.block -= blockedAmount;
-              damage -= blockedAmount;
+            if (isRangedVsAdjacent) {
+              adjacentRoll = 1 + Math.floor(Math.random() * 6);
+              attackHits = adjacentRoll >= 3;
+              if (!attackHits) {
+                newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack',
+                  `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll} — errou! (1-2 = erra)`, {
+                  attacker: classDef.name,
+                  target: target.name,
+                }));
+              }
             }
 
-            target.hp = Math.max(0, target.hp - damage);
+            if (attackHits) {
+              const originalDamage = card.damage;
+              let damage = card.damage;
+              let blockedAmount = 0;
 
-            // Log the attack
-            const logMessage = blockedAmount > 0
-              ? `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
-              : `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name}: ${originalDamage} dano`;
+              if (target.block > 0) {
+                blockedAmount = Math.min(damage, target.block);
+                target.block -= blockedAmount;
+                damage -= blockedAmount;
+              }
 
-            newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
-              attacker: classDef.name,
-              target: target.name,
-              damage: originalDamage,
-              blocked: blockedAmount,
-              finalDamage: damage,
-            }));
+              target.hp = Math.max(0, target.hp - damage);
 
-            // Check if enemy was defeated
-            if (target.hp <= 0) {
-              newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated',
-                `💀 ${target.emoji} ${target.name} foi derrotado!`, {
-                target: target.name,
-              }));
+              if (!isRangedVsAdjacent) {
+                const logMessage = blockedAmount > 0
+                  ? `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                  : `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name}: ${originalDamage} dano`;
+                newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
+                  attacker: classDef.name,
+                  target: target.name,
+                  damage: originalDamage,
+                  blocked: blockedAmount,
+                  finalDamage: damage,
+                }));
+              } else {
+                const dmgPart = blockedAmount > 0
+                  ? `${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                  : `${originalDamage} dano`;
+                newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack',
+                  `${classDef.emoji} ${classDef.name} ataca ${target.emoji} ${target.name} com ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${dmgPart}`, {
+                  attacker: classDef.name,
+                  target: target.name,
+                  damage: originalDamage,
+                  blocked: blockedAmount,
+                  finalDamage: damage,
+                }));
+              }
+
+              if (target.hp <= 0) {
+                newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated',
+                  `💀 ${target.emoji} ${target.name} foi derrotado!`, {
+                  target: target.name,
+                }));
+              }
+
+              newEnemies[targetIndex] = target;
+              newEnemies = newEnemies.filter(e => e.hp > 0);
             }
-
-            newEnemies[targetIndex] = target;
-            newEnemies = newEnemies.filter(e => e.hp > 0);
           }
         }
       }
@@ -1109,43 +1154,54 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Apply effects (attack/skill/movement)
     if (card.type === 'attack' && card.damage) {
       const range = card.range || 1;
-      const minRange = card.minRange || 1;
-
-      // find a target in range (first match)
-      const inRange = getEnemiesInRange(player.position, enemies, range, minRange);
+      const inRange = getEnemiesInRange(player.position, enemies, range);
       const target = inRange[0];
       if (target) {
         const targetIndex = enemies.findIndex(e => e.id === target.id);
         if (targetIndex !== -1) {
           const tgt = { ...enemies[targetIndex] };
-          const originalDamage = card.damage!;
-          let damage = card.damage!;
-          let blockedAmount = 0;
-          if (tgt.block > 0) {
-            blockedAmount = Math.min(damage, tgt.block);
-            tgt.block -= blockedAmount;
-            damage -= blockedAmount;
+          const distance = hexDistance(player.position, tgt.position);
+          const isRangedVsAdjacent = range > 1 && distance === 1;
+          let attackHits = true;
+          let adjacentRoll: number | undefined;
+          if (isRangedVsAdjacent) {
+            adjacentRoll = 1 + Math.floor(Math.random() * 6);
+            attackHits = adjacentRoll >= 3;
+            if (!attackHits) {
+              newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack',
+                `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll} — errou! (1-2 = erra)`, { attacker: classDef.name, target: tgt.name }));
+            }
           }
-          tgt.hp = Math.max(0, tgt.hp - damage);
-
-          const logMessage = blockedAmount > 0
-            ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
-            : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano`;
-
-          newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
-            attacker: classDef.name,
-            target: tgt.name,
-            damage: originalDamage,
-            blocked: blockedAmount,
-            finalDamage: damage,
-          }));
-
-          if (tgt.hp <= 0) {
-            newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', `💀 ${tgt.emoji} ${tgt.name} foi derrotado!`, { target: tgt.name }));
+          if (attackHits) {
+            const originalDamage = card.damage!;
+            let damage = card.damage!;
+            let blockedAmount = 0;
+            if (tgt.block > 0) {
+              blockedAmount = Math.min(damage, tgt.block);
+              tgt.block -= blockedAmount;
+              damage -= blockedAmount;
+            }
+            tgt.hp = Math.max(0, tgt.hp - damage);
+            const logMessage = isRangedVsAdjacent
+              ? (blockedAmount > 0
+                ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${originalDamage} dano`)
+              : (blockedAmount > 0
+                ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano`);
+            newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
+              attacker: classDef.name,
+              target: tgt.name,
+              damage: originalDamage,
+              blocked: blockedAmount,
+              finalDamage: damage,
+            }));
+            if (tgt.hp <= 0) {
+              newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', `💀 ${tgt.emoji} ${tgt.name} foi derrotado!`, { target: tgt.name }));
+            }
+            enemies[targetIndex] = tgt;
+            enemies = enemies.filter(e => e.hp > 0);
           }
-
-          enemies[targetIndex] = tgt;
-          enemies = enemies.filter(e => e.hp > 0);
         }
       }
     }
@@ -1200,11 +1256,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     if (card.type === 'attack' && card.damage) {
       const range = card.range || 1;
-      const minRange = card.minRange || 1;
 
       let targetId = targetEnemyId;
       if (!targetId) {
-        const inRange = getEnemiesInRange(player.position, enemies, range, minRange);
+        const inRange = getEnemiesInRange(player.position, enemies, range);
         targetId = inRange[0]?.id;
       }
 
@@ -1213,35 +1268,48 @@ export const useGameStore = create<GameStore>((set, get) => ({
         if (targetIndex !== -1) {
           const target = { ...enemies[targetIndex] };
           const distance = hexDistance(player.position, target.position);
-          if (distance >= minRange && distance <= range) {
-            const originalDamage = card.damage!;
-            let damage = card.damage!;
-            let blockedAmount = 0;
-            if (target.block > 0) {
-              blockedAmount = Math.min(damage, target.block);
-              target.block -= blockedAmount;
-              damage -= blockedAmount;
+          if (distance >= 1 && distance <= range) {
+            const isRangedVsAdjacent = range > 1 && distance === 1;
+            let attackHits = true;
+            let adjacentRoll: number | undefined;
+            if (isRangedVsAdjacent) {
+              adjacentRoll = 1 + Math.floor(Math.random() * 6);
+              attackHits = adjacentRoll >= 3;
+              if (!attackHits) {
+                newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack',
+                  `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll} — errou! (1-2 = erra)`, { attacker: classDef.name, target: target.name }));
+              }
             }
-            target.hp = Math.max(0, target.hp - damage);
-
-            const logMessage = blockedAmount > 0
-              ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
-              : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano`;
-
-            newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
-              attacker: classDef.name,
-              target: target.name,
-              damage: originalDamage,
-              blocked: blockedAmount,
-              finalDamage: damage,
-            }));
-
-            if (target.hp <= 0) {
-              newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', `💀 ${target.emoji} ${target.name} foi derrotado!`, { target: target.name }));
+            if (attackHits) {
+              const originalDamage = card.damage!;
+              let damage = card.damage!;
+              let blockedAmount = 0;
+              if (target.block > 0) {
+                blockedAmount = Math.min(damage, target.block);
+                target.block -= blockedAmount;
+                damage -= blockedAmount;
+              }
+              target.hp = Math.max(0, target.hp - damage);
+              const logMessage = isRangedVsAdjacent
+                ? (blockedAmount > 0
+                  ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                  : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name} (alcance vs adjacente): 1d6 = ${adjacentRoll!} — acertou! ${originalDamage} dano`)
+                : (blockedAmount > 0
+                  ? `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano - ${blockedAmount} bloqueio = ${damage} dano`
+                  : `${classDef.emoji} ${classDef.name} usa carta padrão ${card.name}: ${originalDamage} dano`);
+              newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack', logMessage, {
+                attacker: classDef.name,
+                target: target.name,
+                damage: originalDamage,
+                blocked: blockedAmount,
+                finalDamage: damage,
+              }));
+              if (target.hp <= 0) {
+                newLog.push(createLogEntry(state.turn, state.floor, 'enemyDefeated', `💀 ${target.emoji} ${target.name} foi derrotado!`, { target: target.name }));
+              }
+              enemies[targetIndex] = target;
+              enemies = enemies.filter(e => e.hp > 0);
             }
-
-            enemies[targetIndex] = target;
-            enemies = enemies.filter(e => e.hp > 0);
           }
         }
       }

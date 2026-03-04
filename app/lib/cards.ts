@@ -156,8 +156,7 @@ export const ARCHER_CARDS: Card[] = [
     type: 'attack',
     damage: 6,
     range: 3,
-    minRange: 2,
-    description: 'Causa 6 de dano. Alcance: 2-3',
+    description: 'Causa 6 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'arrow_shot_2',
@@ -166,8 +165,7 @@ export const ARCHER_CARDS: Card[] = [
     type: 'attack',
     damage: 6,
     range: 3,
-    minRange: 2,
-    description: 'Causa 6 de dano. Alcance: 2-3',
+    description: 'Causa 6 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'arrow_shot_3',
@@ -176,8 +174,7 @@ export const ARCHER_CARDS: Card[] = [
     type: 'attack',
     damage: 6,
     range: 3,
-    minRange: 2,
-    description: 'Causa 6 de dano. Alcance: 2-3',
+    description: 'Causa 6 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'arrow_shot_4',
@@ -186,8 +183,7 @@ export const ARCHER_CARDS: Card[] = [
     type: 'attack',
     damage: 6,
     range: 3,
-    minRange: 2,
-    description: 'Causa 6 de dano. Alcance: 2-3',
+    description: 'Causa 6 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'piercing_arrow_1',
@@ -196,8 +192,7 @@ export const ARCHER_CARDS: Card[] = [
     type: 'attack',
     damage: 10,
     range: 4,
-    minRange: 2,
-    description: 'Causa 10 de dano. Alcance: 2-4',
+    description: 'Causa 10 de dano. Alcance: 4 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'archer_dodge_1',
@@ -250,8 +245,7 @@ export const MAGE_CARDS: Card[] = [
     type: 'attack',
     damage: 7,
     range: 3,
-    minRange: 2,
-    description: 'Causa 7 de dano. Alcance: 2-3',
+    description: 'Causa 7 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'fireball_2',
@@ -260,8 +254,7 @@ export const MAGE_CARDS: Card[] = [
     type: 'attack',
     damage: 7,
     range: 3,
-    minRange: 2,
-    description: 'Causa 7 de dano. Alcance: 2-3',
+    description: 'Causa 7 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'fireball_3',
@@ -270,8 +263,7 @@ export const MAGE_CARDS: Card[] = [
     type: 'attack',
     damage: 7,
     range: 3,
-    minRange: 2,
-    description: 'Causa 7 de dano. Alcance: 2-3',
+    description: 'Causa 7 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'fireball_4',
@@ -280,8 +272,7 @@ export const MAGE_CARDS: Card[] = [
     type: 'attack',
     damage: 7,
     range: 3,
-    minRange: 2,
-    description: 'Causa 7 de dano. Alcance: 2-3',
+    description: 'Causa 7 de dano. Alcance: 3 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'lightning_bolt_1',
@@ -290,8 +281,7 @@ export const MAGE_CARDS: Card[] = [
     type: 'attack',
     damage: 12,
     range: 4,
-    minRange: 2,
-    description: 'Causa 12 de dano. Alcance: 2-4',
+    description: 'Causa 12 de dano. Alcance: 4 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'mage_barrier_1',
@@ -345,7 +335,7 @@ export const WARRIOR_DEFAULT_CARDS: Card[] = [
     type: 'attack',
     damage: 6,
     range: 2,
-    description: '[Carta Padrão] Causa 6 de dano. Alcance: 2',
+    description: '[Carta Padrão] Causa 6 de dano. Alcance: 2 (vs adjacente: 1d6, 1-2 erra).',
   },
   {
     id: 'warrior_default_defend',

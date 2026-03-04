@@ -229,8 +229,9 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
               </div>
               <p className="text-slate-400 text-xs">
                 Inimigos sem indicador de alcance atacam apenas corpo a corpo (1
-                hex). Inimigos com 📏2 ou 📏3 podem te acertar de longe -
-                cuidado com o Dragão Ancião!
+                hex). Inimigos com 📏2 ou 📏3 podem te acertar de longe —
+                cuidado com o Dragão Ancião! Ataque à distância contra alvo
+                adjacente: role 1d6 — 1 ou 2 = erra, 3–6 = acerta.
               </p>
             </div>
           </section>

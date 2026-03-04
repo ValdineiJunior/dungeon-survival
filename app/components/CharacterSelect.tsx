@@ -97,8 +97,8 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
           const classDef = CHARACTER_CLASSES[classId];
           const cards = getClassCards(classId);
           const attackCards = cards.filter((c) => c.type === "attack");
-          const hasMinRange = attackCards.some(
-            (c) => c.minRange && c.minRange > 1,
+          const hasRanged = attackCards.some(
+            (c) => (c.range ?? 1) > 1,
           );
 
           return (
@@ -146,7 +146,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400">📏 Alcance</span>
                   <span className="text-white font-bold">
-                    {hasMinRange ? "Distância" : "Corpo a corpo"}
+                    {hasRanged ? "Distância" : "Corpo a corpo"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">

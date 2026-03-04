@@ -50,8 +50,7 @@ export interface Card {
   type: CardType;
   damage?: number;
   block?: number;
-  range?: number;      // Alcance máximo do ataque (em hexes)
-  minRange?: number;   // Alcance mínimo do ataque (para ataques à distância)
+  range?: number;      // Alcance máximo (1 a range). Ataque à distância (range > 1) vs adjacente: 1d6, 1-2 erra.
   movement?: number;   // Quantidade de movimento (em hexes)
   burnsCards?: number; // Quantidade de cartas para descartar definitivamente
   drawCards?: number;  // Quantidade de cartas para comprar

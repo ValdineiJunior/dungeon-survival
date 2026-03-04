@@ -474,13 +474,18 @@ export default function GamePage() {
           )}
 
           {phase === "selectingTarget" && (
-            <span className="px-4 py-2 bg-yellow-600/50 rounded-lg text-yellow-200 text-sm">
+            <span className="px-4 py-2 bg-yellow-600/50 rounded-lg text-yellow-200 text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
               🎯 Clique em um inimigo para atacar com{" "}
               <strong>{selectedCard?.name}</strong> ({selectedCard?.damage}{" "}
-              dano) •
+              dano)
+              {selectedCard?.range != null && selectedCard.range > 1 && (
+                <span className="text-amber-200/90 text-xs">
+                  • Ataque à distância (alcance {selectedCard.range}). Se o alvo estiver adjacente: role 1d6 — 1 ou 2 = erra, 3–6 = acerta.
+                </span>
+              )}
               <button
                 onClick={cancelSelection}
-                className="ml-2 underline hover:text-white"
+                className="ml-1 underline hover:text-white"
               >
                 Cancelar
               </button>
