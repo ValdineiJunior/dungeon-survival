@@ -34,7 +34,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'slime_attack',
         name: 'Golpe Viscoso',
-        actions: [{ type: 'attack', value: 5 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 5 },
+        ],
       },
       {
         id: 'slime_move_attack',
@@ -62,7 +65,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'rat_bite',
         name: 'Mordida',
-        actions: [{ type: 'attack', value: 4 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 4 },
+        ],
       },
       {
         id: 'rat_scratch',
@@ -92,7 +98,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'goblin_stab',
         name: 'Facada',
-        actions: [{ type: 'attack', value: 8 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 8 },
+        ],
       },
       {
         id: 'goblin_rush',
@@ -131,7 +140,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'skeleton_arrow',
         name: 'Flecha Óssea',
-        actions: [{ type: 'attack', value: 6 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 6 },
+        ],
       },
       {
         id: 'skeleton_volley',
@@ -152,7 +164,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'skeleton_power_shot',
         name: 'Tiro Poderoso',
-        actions: [{ type: 'attack', value: 12 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 12 },
+        ],
       },
       {
         id: 'skeleton_fortify',
@@ -177,12 +192,16 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'orc_smash',
         name: 'Esmagamento',
-        actions: [{ type: 'attack', value: 12 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 12 },
+        ],
       },
       {
         id: 'orc_rage',
         name: 'Fúria',
         actions: [
+          { type: 'move', value: 1 },
           { type: 'buff', value: 3 },
           { type: 'attack', value: 8 },
         ],
@@ -216,7 +235,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'dark_bolt',
         name: 'Raio Sombrio',
-        actions: [{ type: 'attack', value: 10 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 10 },
+        ],
       },
       {
         id: 'dark_barrage',
@@ -255,7 +277,10 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
       {
         id: 'ghost_drain',
         name: 'Dreno Vital',
-        actions: [{ type: 'attack', value: 8 }],
+        actions: [
+          { type: 'move', value: 1 },
+          { type: 'attack', value: 8 },
+        ],
       },
       {
         id: 'ghost_haunt',
@@ -288,6 +313,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
         id: 'dragon_breath',
         name: 'Sopro de Fogo',
         actions: [
+          { type: 'move', value: 1 },
           { type: 'attack', value: 15 },
           { type: 'attack', value: 10 },
         ],
@@ -296,6 +322,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
         id: 'dragon_claw',
         name: 'Garras Devastadoras',
         actions: [
+          { type: 'move', value: 1 },
           { type: 'attack', value: 20 },
         ],
       },
