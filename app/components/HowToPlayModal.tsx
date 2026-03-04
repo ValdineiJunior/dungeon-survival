@@ -34,6 +34,26 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
             </p>
           </section>
 
+          {/* Dados de Iniciativa */}
+          <section>
+            <h3 className="text-lg font-bold text-amber-300 mb-3">🎲 Dados de Iniciativa</h3>
+            <p className="text-slate-300 text-sm mb-3">
+              No início de cada rodada, a ordem de turno é definida pela iniciativa: todos rolam dados. 
+              Quem tiver o maior total age primeiro. Você escolhe quais dos seus dados rolar (pode rolar 1 ou os 2).
+            </p>
+            <div className="bg-slate-700/50 rounded-lg p-3 border border-slate-600 mb-2">
+              <p className="text-slate-200 text-sm font-medium mb-2">Seus dados por classe:</p>
+              <ul className="text-slate-300 text-sm space-y-1">
+                <li><span className="text-green-400">Arqueiro</span> — d4 + d6 (rápido, menos variável)</li>
+                <li><span className="text-amber-400">Guerreiro</span> — d8 + d10 (meio-termo)</li>
+                <li><span className="text-purple-400">Mago</span> — d12 + d20 (maior pico, mais aleatório)</li>
+              </ul>
+            </div>
+            <p className="text-slate-400 text-xs">
+              Inimigos rolam 2d6. Os ícones de dados nos cards mostram o resultado da rodada (quem age primeiro).
+            </p>
+          </section>
+
           {/* Turno do Jogador */}
           <section>
             <h3 className="text-lg font-bold text-amber-300 mb-2">🎮 Turno do Jogador</h3>
@@ -188,7 +208,7 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
               <li>O bloqueio é resetado no início de cada turno</li>
               <li>Fique atento às intenções dos inimigos para se preparar</li>
               <li>Posicione-se estrategicamente para evitar ataques</li>
-              <li>Clique em "Intenção" nos cards de inimigos para ver todas as ações possíveis</li>
+              <li>Os cards dos inimigos mostram a intenção (ataque, defesa, movimento) da rodada</li>
               <li>Use o botão "📜 Log" para ver o histórico de ações</li>
             </ul>
           </section>
