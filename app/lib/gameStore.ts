@@ -163,7 +163,7 @@ function getEnemiesInRange(playerPos: HexPosition, enemies: Enemy[], range: numb
 interface GameActions {
   selectCharacter: (characterClass: CharacterClass) => void;
   startCombat: () => void;
-  rollInitiative: () => void;
+  rollInitiative: (selectedDiceIndices: number[]) => void;
   confirmInitiativeModal: () => Promise<void>;
   _processTurnAt: (index: number) => Promise<void>;
   selectCard: (card: Card) => void;
@@ -296,16 +296,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   // === INITIATIVE SYSTEM ===
 
-  rollInitiative: () => {
+  rollInitiative: (selectedDiceIndices: number[]) => {
     const state = get();
     if (state.phase !== 'rollingInitiative') return;
+    if (selectedDiceIndices.length === 0) return;
 
     const rollDie = (faces: number) => Math.floor(Math.random() * faces) + 1;
     const classDef = CHARACTER_CLASSES[state.player.characterClass];
 
-    // Roll player dice based on class configuration
-    const playerDiceFaces =
+    const fullPool =
       CLASS_INITIATIVE_DICE[state.player.characterClass] ?? [6, 6];
+    const playerDiceFaces = selectedDiceIndices
+      .filter((i) => i >= 0 && i < fullPool.length)
+      .map((i) => fullPool[i]);
+    if (playerDiceFaces.length === 0) return;
+
     const playerDiceResults = playerDiceFaces.map((faces) => rollDie(faces));
     const playerTotal = playerDiceResults.reduce((a, b) => a + b, 0);
     const playerResult: InitiativeResult = {
