@@ -7,6 +7,8 @@ interface SmallDefaultCardProps {
   disabled?: boolean;
   selected?: boolean;
   onClick?: () => void;
+  /** Current player energy; if provided and less than card cost, card is disabled and gray */
+  currentEnergy?: number;
 }
 
 export function SmallDefaultCard({
@@ -14,9 +16,14 @@ export function SmallDefaultCard({
   disabled,
   selected,
   onClick,
+  currentEnergy,
 }: SmallDefaultCardProps) {
   const card = entry.card;
-  const shouldGrayscale = entry.usedThisTurn || disabled;
+  const canAfford =
+    currentEnergy === undefined || currentEnergy >= card.cost;
+  const noEnergy = currentEnergy !== undefined && !canAfford;
+  const effectivelyDisabled = disabled || entry.usedThisTurn || noEnergy;
+  const shouldGrayscale = entry.usedThisTurn || disabled || noEnergy;
 
   const typeColors: Record<CardType["type"], string> = {
     attack: "from-red-900 to-red-700 border-red-500",
@@ -35,13 +42,13 @@ export function SmallDefaultCard({
   return (
     <button
       onClick={onClick}
-      disabled={disabled || entry.usedThisTurn}
+      disabled={effectivelyDisabled}
       className={`
         relative w-full rounded-lg border-2 px-2 py-1.5
         bg-linear-to-r ${typeColors[card.type]}
         flex items-center gap-2
         transform transition-all duration-200
-        ${disabled || entry.usedThisTurn
+        ${effectivelyDisabled
           ? "opacity-50 cursor-not-allowed"
           : "hover:scale-105 hover:shadow-lg hover:shadow-black/50 cursor-pointer hover:border-white"
         }
@@ -49,7 +56,11 @@ export function SmallDefaultCard({
         ${selected ? "ring-2 ring-yellow-400 scale-105 border-yellow-400" : ""}
         shadow-md text-left
       `}
-      title={card.description}
+      title={
+        noEnergy
+          ? `Requer ${card.cost} de energia (você tem ${currentEnergy})`
+          : card.description
+      }
     >
       <div className="flex bg-amber-400 border border-amber-600 rounded-full w-5 h-5 items-center justify-center text-black font-bold text-xs shrink-0">
         {card.cost}

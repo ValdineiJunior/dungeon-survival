@@ -530,6 +530,7 @@ export default function GamePage() {
                 <SmallDefaultCard
                   key={entry.id}
                   entry={entry}
+                  currentEnergy={player.energy}
                   disabled={
                     phase !== "playerTurn" &&
                     phase !== "selectingMovement" &&
