@@ -89,13 +89,13 @@ export function DiceIcon({
 
   return (
     <div
-      className={`relative shrink-0 flex flex-col items-center gap-0 rounded-md border-2 ${rarity.bg} ${rarity.border} ${padding} ${className}`}
+      className={`relative shrink-0 flex flex-col items-center gap-0 rounded-md border-2 ${rarity.bg} ${rarity.border} ${padding} ${className} ${highlighted ? "ring-2 ring-amber-400 ring-offset-1 ring-offset-transparent" : ""}`}
       title={value != null ? `d${faces} = ${value}` : `d${faces}`}
     >
       <img
         src={src}
         alt={`d${faces}`}
-        className={`${sizeClass} object-contain ${highlighted ? "opacity-100 ring-2 ring-amber-400 ring-offset-1 ring-offset-transparent rounded" : "opacity-95"}`}
+        className={`${sizeClass} object-contain ${highlighted ? "opacity-100" : "opacity-95"}`}
       />
       {value != null && (
         <span
