@@ -383,20 +383,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   // Internal: process the entity at a given index in the turn order
-  // @ts-ignore - internal helper
   _processTurnAt: async (index: number) => {
     const state = get();
     const order = state.turnOrder;
 
     // Check if round is over
     if (index >= order.length) {
-      // New round: bump turn counter and start new initiative phase
+      // New round: bump turn counter, draw next action card for all enemies,
+      // then start new initiative phase. We draw here (not after each enemy
+      // turn) so the intention shown on EnemyCard stays "what they just did"
+      // until the round ends, then becomes "what they'll do next round".
       const newTurn = state.turn + 1;
       const newLog = [...state.gameLog];
       newLog.push(createLogEntry(newTurn, state.floor, 'turnStart', `=== Turno ${newTurn} ===`));
 
-      // Draw next action cards for all survivors
-      const updatedEnemies = state.enemies.map(enemy => {
+      const updatedEnemies = state.enemies.map((enemy) => {
         const nextCardState = drawNextActionCard(enemy);
         return { ...enemy, ...nextCardState };
       });
@@ -563,12 +564,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         return;
       }
 
-      // Draw next card for this enemy
-      const nextCardState = drawNextActionCard(enemy);
-      enemies = enemies.map(e => e.id === enemy.id
-        ? { ...e, ...nextCardState }
-        : e
-      );
+      // Do not draw the next card here — keep showing the intention they just
+      // executed until the round ends. Cards are drawn for all enemies when the
+      // round ends (see round-over branch above).
       set({ enemies, player });
 
       // Small pause before next entity
