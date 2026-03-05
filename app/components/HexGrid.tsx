@@ -18,7 +18,7 @@ interface HexGridProps {
   onHexClick: (position: HexPosition) => void;
   onEnemyClick: (enemyId: string) => void;
   onViewLog?: () => void;
-  movementPath?: HexPosition[];  // Path of hexes selected for current movement
+  movementPath?: HexPosition[]; // Path of hexes selected for current movement
 }
 
 export function HexGrid({
@@ -41,7 +41,9 @@ export function HexGrid({
 
   // Check if position is in the current movement path
   const isInMovementPath = (pos: HexPosition, pathIndex: number) => {
-    return movementPath.some((p, index) => hexEquals(p, pos) && index === pathIndex);
+    return movementPath.some(
+      (p, index) => hexEquals(p, pos) && index === pathIndex,
+    );
   };
 
   // Get the position in the movement path (for numbering)
@@ -86,11 +88,6 @@ export function HexGrid({
 
   return (
     <div className="flex flex-col items-center gap-4">
-      {/* Title */}
-      <div className="text-amber-400 font-bold text-lg tracking-wider">
-        🏰 Sala da Masmorra
-      </div>
-
       {/* Hex map container */}
       <div
         className="relative border-4 border-stone-600 rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
@@ -150,15 +147,15 @@ export function HexGrid({
               disabled={!isValid && !isTargetable && content.type === "empty"}
               className={`
                 absolute
-                w-12 h-12
+                w-15 h-15
                 flex items-center justify-center
                 ${bgColor} ${hoverClass} ${extraClasses}
                 transition-all duration-150
                 text-lg
               `}
               style={{
-                left: pixel.x + offsetX - 26 + "px",
-                top: pixel.y + offsetY - 26 + "px",
+                left: pixel.x + offsetX - 34 + "px",
+                top: pixel.y + offsetY - 36 + "px",
                 clipPath:
                   "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
               }}
