@@ -14,14 +14,6 @@ import {
   getTile
 } from './hexUtils';
 
-// Initiative dice configuration (D&D-style dice)
-// For now each class has a fixed pair of dice; this can be expanded later.
-export const CLASS_INITIATIVE_DICE: Record<CharacterClass, number[]> = {
-  archer: [4, 6],   // d4 + d6
-  warrior: [8, 10], // d8 + d10
-  mage: [12, 20],   // d12 + d20
-};
-
 // Helper to get innate ability value by type
 function getInnateAbilityValue(characterClass: CharacterClass, abilityType: InnateAbility['type']): number {
   const classDef = CHARACTER_CLASSES[characterClass];
@@ -305,7 +297,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const classDef = CHARACTER_CLASSES[state.player.characterClass];
 
     const fullPool =
-      CLASS_INITIATIVE_DICE[state.player.characterClass] ?? [6, 6];
+      classDef.initiativeDice ?? [6, 6, 6];
     const playerDiceFaces = selectedDiceIndices
       .filter((i) => i >= 0 && i < fullPool.length)
       .map((i) => fullPool[i]);
@@ -325,30 +317,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
       emoji: classDef.emoji,
     };
 
-    // Roll for each enemy group (same name = same roll)
+    // Roll for each enemy group (same name = same roll); dice config is per enemy type (initiativeDice)
     const groupRolls = new Map<string, { total: number; dice: number[]; highestDie: number }>();
     for (const enemy of state.enemies) {
       if (!groupRolls.has(enemy.name)) {
-        // For now enemies always roll 2d6 for initiative.
-        // This can be expanded to enemy-specific dice configurations later.
-        const enemyDiceFaces = [6, 6];
+        const enemyDiceFaces = enemy.initiativeDice ?? [6, 6, 6];
         const enemyDice = enemyDiceFaces.map((faces) => rollDie(faces));
         const total = enemyDice.reduce((a, b) => a + b, 0);
         groupRolls.set(enemy.name, { total, dice: enemyDice, highestDie: Math.max(...enemyDice) });
       }
     }
 
-    // Build individual enemy results
-    const enemyDiceFaces = [6, 6];
+    // Build individual enemy results (each enemy uses its own initiativeDice for diceFaces display)
     const enemyResults: InitiativeResult[] = state.enemies.map(enemy => {
       const group = groupRolls.get(enemy.name)!;
+      const diceFaces = enemy.initiativeDice ?? [6, 6, 6];
       return {
         id: enemy.id,
         entityType: 'enemy',
         name: enemy.name,
         total: group.total,
         dice: group.dice,
-        diceFaces: enemyDiceFaces,
+        diceFaces,
         highestDie: group.highestDie,
         hp: enemy.hp,
         emoji: enemy.emoji,

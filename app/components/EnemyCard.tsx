@@ -55,6 +55,10 @@ export function EnemyCard({
   const actionCard = enemy.currentActionCard;
   const isInitiativePhase =
     phase === "rollingInitiative" || phase === "viewingInitiative";
+  const initiativeDiceFaces = enemy.initiativeDice ?? [6, 6, 6];
+  const initiativeMin = initiativeDiceFaces.length;
+  const initiativeMax = initiativeDiceFaces.reduce((a, b) => a + b, 0);
+  const initiativeRange = `${initiativeMin}-${initiativeMax}`;
 
   return (
     <div
@@ -154,35 +158,46 @@ export function EnemyCard({
         {/* Right side: Dice pool during initiative, or intent icons otherwise */}
         <div className="flex flex-col items-center gap-1 pl-2 border-l border-slate-600 w-24">
           {isInitiativePhase ? (
-            /* Dice pool visualization (enemies always use 2d6) */
+            /* Dice pool: 3 dice per enemy, configurable faces per enemy type */
             <div className="flex flex-col items-center gap-1">
               <div className="text-[10px] text-slate-500 font-bold">
                 Iniciativa
               </div>
               {initiativeDice ? (
                 /* Viewing phase: show rolled dice with icons */
-                <div className="flex items-center gap-0.5 flex-wrap justify-center">
-                  {initiativeDice.dice.map((d, di) => (
-                    <DiceIcon
-                      key={di}
-                      faces={initiativeDice.diceFaces?.[di] ?? 6}
-                      value={d}
-                      size="sm"
-                      highlighted={d === initiativeDice.highestDie}
-                    />
-                  ))}
-                  <span className="ml-0.5 text-xs font-bold text-red-400">
-                    ={initiativeDice.total}
+                <div className="flex flex-col items-center gap-0.5">
+                  <div className="flex items-center gap-0.5 flex-wrap justify-center">
+                    {initiativeDice.dice.map((d, di) => (
+                      <DiceIcon
+                        key={di}
+                        faces={initiativeDice.diceFaces?.[di] ?? 6}
+                        value={d}
+                        size="sm"
+                        highlighted={d === initiativeDice.highestDie}
+                      />
+                    ))}
+                    <span className="ml-0.5 text-xs font-bold text-red-400">
+                      ={initiativeDice.total}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-500">
+                    {initiativeRange}
                   </span>
                 </div>
               ) : (
-                /* Rolling phase: show pool (2d6) */
-                <div
-                  className="flex items-center gap-0.5"
-                  title="2d6 - Aguardando rolagem"
-                >
-                  <DiceIcon faces={6} size="sm" />
-                  <DiceIcon faces={6} size="sm" />
+                /* Rolling phase: show pool (e.g. 3 dice with enemy's config) */
+                <div className="flex flex-col items-center gap-0.5">
+                  <div
+                    className="flex items-center gap-0.5 flex-wrap justify-center"
+                    title={`${initiativeDiceFaces.map((f) => `d${f}`).join(" + ")} - Aguardando rolagem`}
+                  >
+                    {initiativeDiceFaces.map((faces, i) => (
+                      <DiceIcon key={i} faces={faces} size="sm" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] text-slate-500">
+                    {initiativeRange}
+                  </span>
                 </div>
               )}
             </div>

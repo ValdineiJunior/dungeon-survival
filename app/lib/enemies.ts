@@ -8,6 +8,8 @@ export interface EnemyDefinition {
   minHp: number;
   maxHp: number;
   attackRange: number;
+  /** Initiative: array of die face counts (1+ dice), e.g. [4, 6] or [4, 6, 8]. Defaults to [6, 6, 6]. */
+  initiativeDice?: number[];
   actionCards: EnemyActionCard[];
 }
 
@@ -30,6 +32,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 12,
     maxHp: 16,
     attackRange: 1,
+    initiativeDice: [4, 6],
     actionCards: [
       {
         id: 'slime_attack',
@@ -61,6 +64,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 8,
     maxHp: 12,
     attackRange: 1,
+    initiativeDice: [4, 6, 6],
     actionCards: [
       {
         id: 'rat_bite',
@@ -94,6 +98,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 20,
     maxHp: 26,
     attackRange: 1,
+    initiativeDice: [6, 6, 6],
     actionCards: [
       {
         id: 'goblin_stab',
@@ -136,6 +141,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 25,
     maxHp: 32,
     attackRange: 2,
+    initiativeDice: [4, 6, 8],
     actionCards: [
       {
         id: 'skeleton_arrow',
@@ -188,6 +194,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 35,
     maxHp: 45,
     attackRange: 1,
+    initiativeDice: [6, 6, 8],
     actionCards: [
       {
         id: 'orc_smash',
@@ -231,6 +238,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 28,
     maxHp: 35,
     attackRange: 3,
+    initiativeDice: [6, 8, 8],
     actionCards: [
       {
         id: 'dark_bolt',
@@ -273,6 +281,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 22,
     maxHp: 28,
     attackRange: 2,
+    initiativeDice: [4, 6, 8],
     actionCards: [
       {
         id: 'ghost_drain',
@@ -308,6 +317,7 @@ export const ENEMY_DEFINITIONS: Record<string, EnemyDefinition> = {
     minHp: 120,
     maxHp: 150,
     attackRange: 3,
+    initiativeDice: [8, 8, 12],
     actionCards: [
       {
         id: 'dragon_breath',
@@ -449,6 +459,7 @@ export function createEnemy(definitionId: string, instanceId: string, position: 
     actionDrawPile: remainingDeck,
     actionDiscardPile: [],
     position,
+    initiativeDice: def.initiativeDice ?? [6, 6, 6],
   };
 }
 

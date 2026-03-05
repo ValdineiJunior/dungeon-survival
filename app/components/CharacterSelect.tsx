@@ -12,7 +12,6 @@ import {
 import { getRewardPool } from "@/app/lib/cardRewards";
 import { CardListModal } from "./CardListModal";
 import { DiceIcon } from "./DiceIcon";
-import { CLASS_INITIATIVE_DICE } from "@/app/lib/gameStore";
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
@@ -100,6 +99,8 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
           const hasRanged = attackCards.some(
             (c) => (c.range ?? 1) > 1,
           );
+          const initiativeDice = classDef.initiativeDice ?? [6, 6, 6];
+          const initiativeRange = `${initiativeDice.length}-${initiativeDice.reduce((a, b) => a + b, 0)}`;
 
           return (
             <div
@@ -151,16 +152,17 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-slate-400">🎲 Iniciativa</span>
-                  <div className="flex items-center gap-1">
-                    {(CLASS_INITIATIVE_DICE[classId] ?? [6, 6]).map(
-                      (faces, i) => (
-                        <DiceIcon
-                          key={i}
-                          faces={faces}
-                          size="sm"
-                        />
-                      )
-                    )}
+                  <div className="flex items-center gap-2">
+                    {initiativeDice.map((faces, i) => (
+                      <DiceIcon
+                        key={i}
+                        faces={faces}
+                        size="sm"
+                      />
+                    ))}
+                    <span className="text-slate-500 text-xs tabular-nums">
+                      {initiativeRange}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -69,22 +69,23 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
               </p>
               <ul className="text-slate-300 text-sm space-y-1">
                 <li>
-                  <span className="text-green-400">Arqueiro</span> — d4 + d6
+                  <span className="text-green-400">Arqueira</span> — d4 + d6 + d8
                   (rápido, menos variável)
                 </li>
                 <li>
-                  <span className="text-amber-400">Guerreiro</span> — d8 + d10
+                  <span className="text-amber-400">Guerreira</span> — d6 + d8 + d10
                   (meio-termo)
                 </li>
                 <li>
-                  <span className="text-purple-400">Mago</span> — d12 + d20
+                  <span className="text-purple-400">Mago</span> — d6 + d12 + d20
                   (maior pico, mais aleatório)
                 </li>
               </ul>
             </div>
             <p className="text-slate-400 text-xs">
-              Inimigos rolam 2d6. Os ícones de dados nos cards mostram o
-              resultado da rodada (quem age primeiro).
+              Cada inimigo rola um ou mais dados de iniciativa; a quantidade e o
+              tipo (d4, d6, d8, d12) variam por inimigo. Os ícones nos cards
+              mostram o resultado da rodada (quem age primeiro).
             </p>
           </section>
 

@@ -10,6 +10,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     imageUrl: '/heroes/warrior.png',
     baseHp: 90,
     baseEnergy: 3,
+    initiativeDice: [6, 8, 10],
     innateAbilities: [
       {
         type: 'passiveBlock',
@@ -28,6 +29,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     imageUrl: '/heroes/archer.png',
     baseHp: 70,
     baseEnergy: 3,
+    initiativeDice: [4, 6, 8],
     innateAbilities: [
       {
         type: 'bonusDraw',
@@ -46,6 +48,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     imageUrl: '/heroes/mage.png',
     baseHp: 60,
     baseEnergy: 4,
+    initiativeDice: [6, 12, 20],
     innateAbilities: [
       {
         type: 'energyRegen',

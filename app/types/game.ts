@@ -26,6 +26,8 @@ export interface CharacterClassDefinition {
   imageUrl: string;
   baseHp: number;
   baseEnergy: number;
+  /** Initiative: array of die face counts (1+ dice), e.g. [4, 6, 8]. Defaults to [6, 6, 6]. */
+  initiativeDice?: number[];
   innateAbilities: InnateAbility[];
 }
 
@@ -92,6 +94,8 @@ export interface Enemy {
   actionDiscardPile: EnemyActionCard[]; // Used cards
   position: HexPosition;
   emoji: string;
+  /** Initiative dice: array of face counts, e.g. [4, 6, 8] = d4 + d6 + d8 (3 dice) */
+  initiativeDice: number[];
 }
 
 export interface Player {

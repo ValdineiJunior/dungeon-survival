@@ -2,7 +2,6 @@
 
 import { Player, CharacterClassDefinition } from "@/app/types/game";
 import { DiceIcon } from "./DiceIcon";
-import { CLASS_INITIATIVE_DICE } from "@/app/lib/gameStore";
 
 interface PlayerStatusProps {
   player: Player;
@@ -102,7 +101,7 @@ export function PlayerStatus({
           🎲 Iniciativa
         </span>
         <div className="flex items-center gap-1 justify-end flex-wrap min-w-0">
-          {(CLASS_INITIATIVE_DICE[player.characterClass] ?? [6, 6]).map(
+          {(classDef.initiativeDice ?? [6, 6, 6]).map(
             (faces, i) => (
               <DiceIcon key={i} faces={faces} size="sm" />
             ),

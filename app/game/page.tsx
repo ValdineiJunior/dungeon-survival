@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useGameStore, CLASS_INITIATIVE_DICE } from "@/app/lib/gameStore";
+import { useGameStore } from "@/app/lib/gameStore";
 import { Hand } from "@/app/components/Hand";
 import { EnemyCard } from "@/app/components/EnemyCard";
 import { PlayerStatus } from "@/app/components/PlayerStatus";
@@ -119,7 +119,7 @@ export default function GamePage() {
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
   const initiativeDiceFaces =
-    CLASS_INITIATIVE_DICE[player.characterClass] ?? [6, 6];
+    CHARACTER_CLASSES[player.characterClass].initiativeDice ?? [6, 6, 6];
 
   const getPhaseLabel = () => {
     switch (phase) {
