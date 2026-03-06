@@ -15,7 +15,10 @@ import { GameLogModal } from "@/app/components/GameLogModal";
 import { HowToPlayModal } from "@/app/components/HowToPlayModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
 import { BurnCardModal } from "@/app/components/BurnCardModal";
-import { InitiativeRollModal, InitiativeOrderModal } from "@/app/components/InitiativeModals";
+import {
+  InitiativeRollModal,
+  InitiativeOrderModal,
+} from "@/app/components/InitiativeModals";
 import { Card, HexPosition, CharacterClass, Enemy } from "@/app/types/game";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { getFloorConfig } from "@/app/lib/enemies";
@@ -118,8 +121,8 @@ export default function GamePage() {
 
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
-  const initiativeDiceFaces =
-    CHARACTER_CLASSES[player.characterClass].initiativeDice ?? [6, 6, 6];
+  const initiativeDiceFaces = CHARACTER_CLASSES[player.characterClass]
+    .initiativeDice ?? [6, 6, 6];
 
   const getPhaseLabel = () => {
     switch (phase) {
@@ -194,7 +197,9 @@ export default function GamePage() {
             </div>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
-            <span className="text-slate-400 text-sm md:text-base">Turno {turn}</span>
+            <span className="text-slate-400 text-sm md:text-base">
+              Turno {turn}
+            </span>
             <span
               className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}
             >
@@ -238,12 +243,11 @@ export default function GamePage() {
             {/* Right panel - Enemies (for small screens) */}
             <div className="w-1/2 lg:hidden">
               <div className="flex flex-col gap-3 h-full">
-                <h3 className="text-amber-400 font-bold text-center">
-                  ⚔️ Inimigos
-                </h3>
                 <div className="flex flex-col gap-3">
                   {enemies.map((enemy, index) => {
-                    const initiativeEntry = turnOrder.find((e) => e.id === enemy.id);
+                    const initiativeEntry = turnOrder.find(
+                      (e) => e.id === enemy.id,
+                    );
                     return (
                       <EnemyCard
                         key={enemy.id}
@@ -280,7 +284,7 @@ export default function GamePage() {
           </div>
 
           {/* Center - Hexagonal Map */}
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex">
             <HexGrid
               map={hexMap}
               player={player}
@@ -297,12 +301,11 @@ export default function GamePage() {
 
           {/* Right panel - Enemies (for large screens) */}
           <div className="w-72 hidden lg:flex flex-col gap-3">
-            <h3 className="text-amber-400 font-bold text-center">
-              ⚔️ Inimigos
-            </h3>
             <div className="flex flex-col gap-3">
               {enemies.map((enemy, index) => {
-                const initiativeEntry = turnOrder.find((e) => e.id === enemy.id);
+                const initiativeEntry = turnOrder.find(
+                  (e) => e.id === enemy.id,
+                );
                 return (
                   <EnemyCard
                     key={enemy.id}
@@ -385,8 +388,9 @@ export default function GamePage() {
                 {phase === "victory" ? "🐉" : "💀"}
               </div>
               <h2
-                className={`text-4xl font-bold mb-4 ${phase === "victory" ? "text-amber-400" : "text-red-400"
-                  }`}
+                className={`text-4xl font-bold mb-4 ${
+                  phase === "victory" ? "text-amber-400" : "text-red-400"
+                }`}
               >
                 {phase === "victory" ? "Vitória Total!" : "Derrota"}
               </h2>
@@ -441,11 +445,13 @@ export default function GamePage() {
             <div className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200 text-sm flex items-center gap-3">
               {remainingMovement > 0 ? (
                 <span>
-                  ⬡ Passo {movementPath.length + 1}/{selectedCard?.movement} • Clique em um hexágono verde
+                  ⬡ Passo {movementPath.length + 1}/{selectedCard?.movement} •
+                  Clique em um hexágono verde
                 </span>
               ) : (
                 <span>
-                  ⬡ Movimento completo! Clique em &quot;Confirmar&quot; para aplicar
+                  ⬡ Movimento completo! Clique em &quot;Confirmar&quot; para
+                  aplicar
                 </span>
               )}
               {movementPath.length > 0 && (
@@ -480,7 +486,8 @@ export default function GamePage() {
               dano)
               {selectedCard?.range != null && selectedCard.range > 1 && (
                 <span className="text-amber-200/90 text-xs">
-                  • Ataque à distância (alcance {selectedCard.range}). Se o alvo estiver adjacente: role 1d6 — 1 ou 2 = erra, 3–6 = acerta.
+                  • Ataque à distância (alcance {selectedCard.range}). Se o alvo
+                  estiver adjacente: role 1d6 — 1 ou 2 = erra, 3–6 = acerta.
                 </span>
               )}
               <button
@@ -543,7 +550,8 @@ export default function GamePage() {
                     phase !== "confirmingSkill"
                   }
                   selected={
-                    selectedCard?.id === entry.card.id && !!selectedCardIsDefault
+                    selectedCard?.id === entry.card.id &&
+                    !!selectedCardIsDefault
                   }
                   onClick={() => selectDefaultCard(entry.id)}
                 />
@@ -590,13 +598,9 @@ export default function GamePage() {
             </button>
             <button
               onClick={
-                phase === "viewingInitiative"
-                  ? confirmInitiativeModal
-                  : endTurn
+                phase === "viewingInitiative" ? confirmInitiativeModal : endTurn
               }
-              disabled={
-                phase !== "playerTurn" && phase !== "viewingInitiative"
-              }
+              disabled={phase !== "playerTurn" && phase !== "viewingInitiative"}
               className={`
                   px-4 py-2 rounded-lg font-bold text-sm
                   transition-all duration-200 flex justify-between items-center whitespace-nowrap
@@ -683,7 +687,7 @@ export default function GamePage() {
       {/* Burn Selection Modal */}
       {phase === "selectingBurn" && (
         <BurnCardModal
-          hand={hand.filter(c => c.id !== selectedCard?.id)}
+          hand={hand.filter((c) => c.id !== selectedCard?.id)}
           cardsToBurn={cardsToBurn}
           onConfirm={confirmBurnCard}
           onCancel={cancelSelection}
