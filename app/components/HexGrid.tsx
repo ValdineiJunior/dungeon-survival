@@ -20,7 +20,6 @@ interface HexGridProps {
   targetableEnemyIds: string[];
   onHexClick: (position: HexPosition) => void;
   onEnemyClick: (enemyId: string) => void;
-  onViewLog?: () => void;
   movementPath?: HexPosition[]; // Path of hexes selected for current movement
 }
 
@@ -34,7 +33,6 @@ export function HexGrid({
   targetableEnemyIds,
   onHexClick,
   onEnemyClick,
-  onViewLog,
   movementPath = [],
 }: HexGridProps) {
   const bounds = getMapBounds(map);
@@ -151,7 +149,7 @@ export function HexGrid({
               disabled={!isValid && !isTargetable && content.type === "empty"}
               className={`
                 absolute
-                w-15 h-15
+                w-16 h-16
                 flex items-center justify-center
                 ${bgColor} ${hoverClass} ${extraClasses}
                 transition-all duration-150
@@ -159,7 +157,7 @@ export function HexGrid({
               `}
               style={{
                 left: pixel.x + offsetX - 34 + "px",
-                top: pixel.y + offsetY - 36 + "px",
+                top: pixel.y + offsetY - 38 + "px",
                 clipPath:
                   "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
               }}
@@ -213,32 +211,6 @@ export function HexGrid({
             </button>
           );
         })}
-      </div>
-
-      {/* Legend */}
-      <div className="flex gap-4 text-sm text-slate-400 items-center">
-        <span className="flex items-center gap-1">
-          <span className="text-blue-500">⬡</span> Você
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="text-red-500">⬡</span> Inimigo
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="text-green-500">⬡</span> Movimento válido
-        </span>
-        {targetableEnemyIds.length > 0 && (
-          <span className="flex items-center gap-1">
-            <span className="text-yellow-400">🎯</span> Alvo
-          </span>
-        )}
-        {onViewLog && (
-          <button
-            onClick={onViewLog}
-            className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-300 hover:text-white transition-colors flex items-center gap-1"
-          >
-            📜 Log
-          </button>
-        )}
       </div>
     </div>
   );

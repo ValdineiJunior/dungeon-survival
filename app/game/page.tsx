@@ -292,7 +292,6 @@ export default function GamePage() {
               movementPath={movementPath}
               onHexClick={handleHexClick}
               onEnemyClick={handleEnemyClick}
-              onViewLog={() => setShowLogModal(true)}
             />
           </div>
 
@@ -599,8 +598,8 @@ export default function GamePage() {
                 phase !== "playerTurn" && phase !== "viewingInitiative"
               }
               className={`
-                  px-6 py-4 rounded-lg font-bold text-lg h-full
-                  transition-all duration-200
+                  px-4 py-2 rounded-lg font-bold text-sm
+                  transition-all duration-200 flex justify-between items-center whitespace-nowrap
                   ${
                     phase === "playerTurn" || phase === "viewingInitiative"
                       ? "bg-amber-500 hover:bg-amber-400 text-black hover:scale-105"
@@ -610,8 +609,7 @@ export default function GamePage() {
             >
               {phase === "rollingInitiative" || phase === "viewingInitiative"
                 ? "Começar"
-                : "Finalizar"}
-              <br />
+                : "Finalizar"}{" "}
               Turno
             </button>
 
@@ -632,6 +630,12 @@ export default function GamePage() {
               <span className="text-xs font-bold bg-slate-800 px-2 py-0.5 rounded-full ml-2">
                 {burnedPile.length}
               </span>
+            </button>
+            <button
+              onClick={() => setShowLogModal(true)}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 hover:text-white rounded-lg text-sm transition-colors flex justify-between items-center whitespace-nowrap"
+            >
+              <span>📜 Log</span>
             </button>
           </div>
         </div>
