@@ -96,9 +96,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
           const classDef = CHARACTER_CLASSES[classId];
           const cards = getClassCards(classId);
           const attackCards = cards.filter((c) => c.type === "attack");
-          const hasRanged = attackCards.some(
-            (c) => (c.range ?? 1) > 1,
-          );
+          const hasRanged = attackCards.some((c) => (c.range ?? 1) > 1);
           const initiativeDice = classDef.initiativeDice ?? [6, 6, 6];
           const initiativeRange = `${initiativeDice.length}-${initiativeDice.reduce((a, b) => a + b, 0)}`;
 
@@ -153,16 +151,12 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-slate-400">🎲 Iniciativa</span>
                   <div className="flex items-center gap-2">
-                    {initiativeDice.map((faces, i) => (
-                      <DiceIcon
-                        key={i}
-                        faces={faces}
-                        size="sm"
-                      />
-                    ))}
                     <span className="text-slate-500 text-xs tabular-nums">
                       {initiativeRange}
                     </span>
+                    {initiativeDice.map((faces, i) => (
+                      <DiceIcon key={i} faces={faces} size="sm" />
+                    ))}
                   </div>
                 </div>
               </div>

@@ -389,7 +389,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
       const updatedEnemies = state.enemies.map((enemy) => {
         const nextCardState = drawNextActionCard(enemy);
-        return { ...enemy, ...nextCardState };
+        return { ...enemy, ...nextCardState, block: 0 };
       });
 
       set({
