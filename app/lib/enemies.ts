@@ -13,6 +13,18 @@ export interface EnemyDefinition {
   actionCards: EnemyActionCard[];
 }
 
+/** Enemy display name -> image filename under /enemies/ (for cards and hex grid) */
+export const ENEMY_IMAGE_FILES: Record<string, string> = {
+  Gosma: 'slime.png',
+  'Rato Gigante': 'rat.png',
+  Goblin: 'goblin.png',
+  Esqueleto: 'skeleton.png',
+  Orc: 'orc.png',
+  'Mago Negro': 'dark_Mage.png',
+  Fantasma: 'ghost.png',
+  'Dragão Ancião': 'dragon.png',
+};
+
 // Shuffle array using Fisher-Yates algorithm
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];

@@ -2,6 +2,7 @@
 
 import { Enemy, EnemyIntent, GamePhase } from "@/app/types/game";
 import { DiceIcon } from "@/app/components/DiceIcon";
+import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
 interface InitiativeDice {
   dice: number[];
@@ -19,17 +20,6 @@ interface EnemyCardProps {
   phase?: GamePhase;
   initiativeDice?: InitiativeDice;
 }
-
-const enemyImages: Record<string, string> = {
-  Gosma: "slime.png",
-  "Rato Gigante": "rat.png",
-  Goblin: "goblin.png",
-  Esqueleto: "skeleton.png",
-  Orc: "orc.png",
-  "Mago Negro": "dark_Mage.png",
-  Fantasma: "ghost.png",
-  "Dragão Ancião": "dragon.png",
-};
 
 const actionIcons: Record<
   EnemyIntent,
@@ -89,9 +79,9 @@ export function EnemyCard({
       <div className="flex items-center gap-2">
         {/* Monster avatar with order number */}
         <div className="shrink-0 w-12 h-12 relative rounded border-2 border-slate-600 bg-slate-800 overflow-hidden">
-          {enemyImages[enemy.name] ? (
+          {ENEMY_IMAGE_FILES[enemy.name] ? (
             <img
-              src={`/enemies/${enemyImages[enemy.name]}`}
+              src={`/enemies/${ENEMY_IMAGE_FILES[enemy.name]}`}
               alt={enemy.name}
               className="w-full h-full object-cover object-top"
             />
@@ -101,7 +91,7 @@ export function EnemyCard({
             </div>
           )}
           <span
-            className="absolute -bottom-0 -right-0 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[10px] font-bold rounded-sm border border-amber-600 z-10"
+            className="absolute -bottom-0 -right-0 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[10px] font-bold rounded-full border border-amber-600 z-10"
             title={`Ordem de turno: ${orderNumber}`}
           >
             {orderNumber}

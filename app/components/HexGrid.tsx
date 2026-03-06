@@ -7,11 +7,14 @@ import {
   hexKey,
   hexEquals,
 } from "@/app/lib/hexUtils";
+import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
 interface HexGridProps {
   map: HexMap;
   player: Player;
   playerEmoji: string;
+  /** Hero image URL (e.g. from CHARACTER_CLASSES[].imageUrl). If set, shown on the player hex instead of emoji. */
+  playerImageUrl?: string;
   enemies: Enemy[];
   validMovePositions: HexPosition[];
   targetableEnemyIds: string[];
@@ -25,6 +28,7 @@ export function HexGrid({
   map,
   player,
   playerEmoji,
+  playerImageUrl,
   enemies,
   validMovePositions,
   targetableEnemyIds,
@@ -169,12 +173,35 @@ export function HexGrid({
                       : `(${tile.q}, ${tile.r})`
               }
             >
-              {isEnemy && content.orderNumber ? (
-                <span className="relative">
-                  {content.emoji}
-                  <span className="absolute -bottom-1 -right-2 w-3.5 h-3.5 flex items-center justify-center bg-amber-400 text-black text-[8px] font-bold rounded-full border border-amber-600">
+              {isEnemy && content.enemy ? (
+                <span className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-[inherit]">
+                  {ENEMY_IMAGE_FILES[content.enemy.name] ? (
+                    <img
+                      src={`/enemies/${ENEMY_IMAGE_FILES[content.enemy.name]}`}
+                      alt={content.enemy.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <span className="text-lg">{content.emoji}</span>
+                  )}
+                  <span
+                    className="absolute bottom-3 right-1 z-10 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[9px] font-bold rounded-full border border-amber-600 shadow-sm"
+                    style={{ minWidth: "1rem", minHeight: "1rem" }}
+                  >
                     {content.orderNumber}
                   </span>
+                </span>
+              ) : isPlayer ? (
+                <span className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-[inherit]">
+                  {playerImageUrl ? (
+                    <img
+                      src={playerImageUrl}
+                      alt="Hero"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <span className="text-lg">{content.emoji}</span>
+                  )}
                 </span>
               ) : isInPath ? (
                 <span className="text-cyan-300 font-bold text-sm">

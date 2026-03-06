@@ -285,6 +285,7 @@ export default function GamePage() {
               map={hexMap}
               player={player}
               playerEmoji={CHARACTER_CLASSES[player.characterClass].emoji}
+              playerImageUrl={CHARACTER_CLASSES[player.characterClass].imageUrl}
               enemies={enemies}
               validMovePositions={validMovePositions}
               targetableEnemyIds={targetableEnemyIds}
