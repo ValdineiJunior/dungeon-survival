@@ -146,7 +146,7 @@ export function EnemyCard({
         </div>
 
         {/* Right side: Dice pool during initiative, or intent icons otherwise */}
-        <div className="flex flex-col items-center gap-1 border-l border-slate-600 w-28">
+        <div className="flex flex-col items-center gap-1 pl-2 border-l border-slate-600 w-28">
           {isInitiativePhase ? (
             /* Dice pool: 3 dice per enemy, configurable faces per enemy type */
             <div className="flex flex-col items-center gap-1">
