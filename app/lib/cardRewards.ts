@@ -23,7 +23,8 @@ const CROSS_CLASS_RARES: Card[] = [
     cost: 1,
     type: 'skill',
     burnsCards: 1,
-    description: 'Queime 1 carta de sua mão.',
+    drawCards: 2,
+    description: 'Queime 1 carta de sua mão e compre 2 cartas.',
   },
   {
     id: 'prepared',
@@ -32,6 +33,15 @@ const CROSS_CLASS_RARES: Card[] = [
     type: 'skill',
     drawCards: 2,
     description: 'Compre duas cartas.',
+  },
+  {
+    id: 'energy_draught',
+    name: 'Poção de Energia',
+    cost: 0,
+    type: 'skill',
+    energy: 2,
+    exhaust: true,
+    description: 'Ganhe 2 energia. Esgota.',
   },
 ];
 
@@ -94,9 +104,9 @@ const WARRIOR_RARE_REWARDS: Card[] = [
     name: 'Ataque em Espiral',
     cost: 3,
     type: 'attack',
-    damage: 20,
+    damage: 42,
     range: 1,
-    description: 'Causa 20 de dano. Alcance: 1',
+    description: 'Causa 42 de dano. Alcance: 1',
   },
   {
     id: 'shield_mastery_1',

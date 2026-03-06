@@ -73,6 +73,15 @@ export const WARRIOR_CARDS: Card[] = [
     description: 'Causa 8 de dano. Alcance: 1',
   },
   {
+    id: 'energy_draught',
+    name: 'Poção de Energia',
+    cost: 0,
+    type: 'skill',
+    energy: 2,
+    exhaust: true,
+    description: 'Ganhe 2 energia. Esgota.',
+  },
+  {
     id: 'sword_slash_2',
     name: 'Corte de Espada',
     cost: 1,

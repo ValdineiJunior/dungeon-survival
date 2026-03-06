@@ -417,7 +417,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const updatedPlayer = {
         ...state.player,
         block: passiveBlock,
-        energy: state.player.maxEnergy,
+        energy: state.player.maxEnergy, // Refill to limit each round; cards can grant extra for that round only
       };
 
       const discardPile = [...state.discardPile, ...state.hand];
@@ -978,9 +978,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     let newHand = [...state.hand];
     newHand.splice(cardIndex, 1);
 
+    let newEnergy = state.player.energy - card.cost;
+    if (card.energy) {
+      newEnergy = newEnergy + card.energy; // Energy gains are not capped by maxEnergy
+    }
     const newPlayer = {
       ...state.player,
-      energy: state.player.energy - card.cost,
+      energy: newEnergy,
     };
 
     let newEnemies = [...state.enemies];
@@ -1082,8 +1086,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }));
     }
 
+    if (card.energy) {
+      newLog.push(createLogEntry(state.turn, state.floor, 'innateAbility',
+        `${classDef.emoji} ${classDef.name} usa ${card.name}: +${card.energy} energia`, {
+        healing: card.energy,
+      }));
+    }
+
     let newDrawPile = [...state.drawPile];
     let newDiscardPile = [...state.discardPile];
+    let newBurnedPile = [...state.burnedPile];
 
     if (card.drawCards) {
       // Create temporary state state to use drawCards helper function
@@ -1100,7 +1112,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }));
     }
 
-    newDiscardPile.push(card);
+    if (card.exhaust) {
+      newBurnedPile = [...newBurnedPile, card];
+    } else {
+      newDiscardPile.push(card);
+    }
 
     // Check if floor is cleared
     let phase: GamePhase = 'playerTurn';
@@ -1115,6 +1131,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       enemies: newEnemies,
       drawPile: newDrawPile,
       discardPile: newDiscardPile,
+      burnedPile: newBurnedPile,
       gameLog: newLog,
       phase,
       selectedCard: null,

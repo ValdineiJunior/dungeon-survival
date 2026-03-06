@@ -75,7 +75,7 @@ export function Card({
       </div>
 
       {/* Valores */}
-      <div className="flex justify-center gap-2 text-sm">
+      <div className="flex flex-wrap justify-center gap-2 text-sm">
         {card.damage && (
           <span className="text-red-300 font-bold">🗡️ {card.damage}</span>
         )}
@@ -87,6 +87,12 @@ export function Card({
         )}
         {card.range && card.range > 1 && (
           <span className="text-purple-300 font-bold">📏 {card.range}</span>
+        )}
+        {card.energy && (
+          <span className="text-amber-300 font-bold">⚡ +{card.energy}</span>
+        )}
+        {card.exhaust && (
+          <span className="text-orange-400/90 text-[10px] font-medium">Esgota</span>
         )}
       </div>
     </button>

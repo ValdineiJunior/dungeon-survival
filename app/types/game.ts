@@ -8,7 +8,8 @@ export type InnateAbilityType =
   | 'passiveBlock'    // Ganha bloqueio no início de cada turno
   | 'roomHealing'     // Cura HP ao completar cada sala
   | 'bonusDraw'       // Compra cartas extras no início do turno
-  | 'energyRegen';    // Ganha energia extra
+  | 'energyRegen'     // Ganha energia extra no primeiro turno de cada sala
+  | 'turnStartEnergy'; // Ganha energia extra no início de cada turno (não limitado por maxEnergy)
 
 export interface InnateAbility {
   type: InnateAbilityType;
@@ -56,6 +57,8 @@ export interface Card {
   movement?: number;   // Quantidade de movimento (em hexes)
   burnsCards?: number; // Quantidade de cartas para descartar definitivamente
   drawCards?: number;  // Quantidade de cartas para comprar
+  energy?: number;    // Ganho de energia ao jogar (ex.: +2)
+  exhaust?: boolean;  // Se true, a carta vai para a pilha de queimadas (não volta ao deck neste combate)
   description: string;
   effects?: CardEffect[];
 }
