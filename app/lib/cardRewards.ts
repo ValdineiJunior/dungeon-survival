@@ -43,6 +43,16 @@ const CROSS_CLASS_RARES: Card[] = [
     exhaust: true,
     description: 'Ganhe 2 energia. Esgota.',
   },
+  {
+    id: 'blood_pact',
+    name: 'Pacto de Sangue',
+    cost: 0,
+    type: 'skill',
+    loseHp: 6,
+    drawCards: 3,
+    exhaust: true,
+    description: 'Perde 6 HP. Compre 3 cartas. Esgota.',
+  },
 ];
 
 const WARRIOR_NORMAL_REWARDS: Card[] = [

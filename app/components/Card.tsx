@@ -91,6 +91,9 @@ export function Card({
         {card.energy && (
           <span className="text-amber-300 font-bold">⚡ +{card.energy}</span>
         )}
+        {card.loseHp && (
+          <span className="text-red-400 font-bold">❤️ -{card.loseHp}</span>
+        )}
         {card.exhaust && (
           <span className="text-orange-400/90 text-[10px] font-medium">Esgota</span>
         )}

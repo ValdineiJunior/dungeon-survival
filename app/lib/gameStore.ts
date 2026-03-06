@@ -1086,6 +1086,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }));
     }
 
+    if (card.loseHp) {
+      const damage = card.loseHp;
+      let hpLoss = damage;
+      let blocked = 0;
+      if (newPlayer.block > 0) {
+        blocked = Math.min(newPlayer.block, damage);
+        newPlayer.block -= blocked;
+        hpLoss = Math.max(0, damage - blocked);
+      }
+      newPlayer.hp = Math.max(0, newPlayer.hp - hpLoss);
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerAttack',
+        `${classDef.emoji} ${classDef.name} usa ${card.name}: perde ${hpLoss} HP${blocked > 0 ? ` (${blocked} bloqueado)` : ''}`, {
+        damage: hpLoss,
+      }));
+    }
+
     if (card.energy) {
       newLog.push(createLogEntry(state.turn, state.floor, 'innateAbility',
         `${classDef.emoji} ${classDef.name} usa ${card.name}: +${card.energy} energia`, {
@@ -1118,9 +1134,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       newDiscardPile.push(card);
     }
 
-    // Check if floor is cleared
+    // Check for defeat (e.g. from loseHp) or floor cleared
     let phase: GamePhase = 'playerTurn';
-    if (newEnemies.length === 0) {
+    if (newPlayer.hp <= 0) {
+      phase = 'defeat';
+    } else if (newEnemies.length === 0) {
       // If final floor, victory! Otherwise, floor complete
       phase = state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
     }

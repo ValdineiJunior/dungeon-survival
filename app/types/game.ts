@@ -59,6 +59,7 @@ export interface Card {
   drawCards?: number;  // Quantidade de cartas para comprar
   energy?: number;    // Ganho de energia ao jogar (ex.: +2)
   exhaust?: boolean;  // Se true, a carta vai para a pilha de queimadas (não volta ao deck neste combate)
+  loseHp?: number;    // Perde este tanto de HP ao jogar (ex.: 6)
   description: string;
   effects?: CardEffect[];
 }
