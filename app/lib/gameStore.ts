@@ -420,11 +420,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
         energy: state.player.maxEnergy, // Refill to limit each round; cards can grant extra for that round only
       };
 
-      const discardPile = [...state.discardPile, ...state.hand];
-      const cardState = drawCards(
-        { ...state, discardPile, hand: [] } as GameState,
-        HAND_SIZE + bonusDraw
-      );
+      // Only discard hand and redraw when hand is empty (e.g. start of new round after we already played).
+      // When we already have cards (e.g. after reward or after advancing floor), keep the hand.
+      const shouldRedraw = state.hand.length === 0;
+      const discardPile = shouldRedraw ? [...state.discardPile, ...state.hand] : state.discardPile;
+      const cardState = shouldRedraw
+        ? drawCards(
+            { ...state, discardPile, hand: [] } as GameState,
+            HAND_SIZE + bonusDraw
+          )
+        : { hand: state.hand, drawPile: state.drawPile, discardPile: state.discardPile };
 
       const newLog = [...state.gameLog];
       if (passiveBlock > 0) {
@@ -932,9 +937,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const newHand = [...state.hand];
     const [burnedCard] = newHand.splice(targetCardIndex, 1);
 
-    // Also remove from deck (so it doesn't appear in future floors)
-    const newDeck = state.deck.filter(c => c.id !== burnedCard.id);
-
+    // Burned cards stay in the deck (deck = full library); they just move to burnedPile for this room
     const newBurnedPile = [...state.burnedPile, burnedCard];
 
     // Decrease cards to burn count
@@ -943,18 +946,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (newCardsToBurn > 0) {
       set({
         hand: newHand,
-        deck: newDeck,
         burnedPile: newBurnedPile,
         cardsToBurn: newCardsToBurn,
       });
       return;
     }
 
-    // Once all cards are properly burned, update state to confirmingSkill and call playCard 
-    // to execute the original skill block/effects/energy cost.
+    // Once all cards are properly burned, update state to confirmingSkill and call playCard
     set({
       hand: newHand,
-      deck: newDeck,
       burnedPile: newBurnedPile,
       cardsToBurn: 0,
       phase: 'confirmingSkill',
@@ -1446,8 +1446,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Create new enemies for the next floor
     const enemies = createFloorEnemies(nextFloor);
 
-    // Shuffle all cards back into draw pile
-    const allCards = [...state.hand, ...state.drawPile, ...state.discardPile];
+    // Burned cards return at the start of a new room: merge into draw pile (deck is unchanged — burned cards were never removed)
+    const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, ...state.burnedPile];
     const drawPile = shuffleArray(allCards);
 
     // Draw new hand with bonus draw
@@ -1474,6 +1474,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       hand: cardState.hand,
       drawPile: cardState.drawPile,
       discardPile: cardState.discardPile,
+      burnedPile: [], // Burned cards merged into draw pile for the new room; deck unchanged
       gameLog: newLog,
       rewardCards,
       phase: rewardCards.length > 0 ? 'selectingReward' : 'rollingInitiative',
