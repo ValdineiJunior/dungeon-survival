@@ -28,7 +28,7 @@ export default function Home() {
         {/* Botões */}
         <div className="flex flex-col gap-4 items-center">
           <Link
-            href="/game"
+            href="/hub"
             className="
               px-12 py-4 
               bg-linear-to-r from-amber-500 to-amber-600 
