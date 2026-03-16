@@ -2,8 +2,8 @@ import type { StoryPart } from "@/app/types/story";
 
 /**
  * Prólogo: A Recepção.
- * Os heróis são invocados e o recepcionista explica o mundo e as regras.
- * Dividido em seções para permitir imagens entre os diálogos.
+ * Cinco heróis (guerreira, arqueira, mago, pistoleira, anão) são invocados.
+ * O recepcionista explica o mundo dos sonhos, os seres superiores e o contrato.
  */
 export const prologo: StoryPart = {
   id: "prologo",
@@ -13,24 +13,62 @@ export const prologo: StoryPart = {
       id: "invocacao",
       image: {
         src: "/images/story/prologo-invocacao.jpg",
-        alt: "Heróis invocados na marcação no chão, recepcionista os recebe",
+        alt: "Os cinco heróis invocados na marcação no chão, recepcionista os recebe",
       },
       content: [
         {
           type: "narrative",
-          text: "Os heróis são invocados em uma marcação no chão. O recepcionista os recebe.",
+          text: "Cinco heróis são invocados em uma marcação no chão: uma guerreira, uma arqueira, um mago, uma pistoleira e um anão. O recepcionista os recebe.",
         },
-        { type: "dialogue", speaker: "Recepcionista", text: "Parabéns, vocês foram os escolhidos a participar desse nosso mundo. Sejam bem-vindos." },
-        { type: "dialogue", speaker: "Um dos heróis", text: "Mas que mundo é esse? E por que nós?" },
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Bom, esse é um mundo mágico. Digamos que ele se originou de um sonho, e vocês têm a determinação necessária para participar dele. Nós fizemos muitas buscas e demoramos muito tempo para encontrá-los. Vocês são aventureiros em busca de novos desafios e muitas ambições — não estou certo?",
+          text: "Sejam bem-vindos, aventureiros. Parabéns, vocês foram escolhidos a participar desse maravilhoso mundo.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Heróis",
+          text: "O que está acontecendo?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Heróis",
+          text: "Que lugar é esse?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Bom, deixe-me explicar a situação. Esse é um mundo mágico criado através da imaginação, desejo e ambição de todos que vêm parar aqui. E vocês têm a determinação necessária para participar dele.",
         },
         {
           type: "dialogue",
           speaker: "Herói",
-          text: "Nisso você acertou em cheio. Mas como viemos parar aqui? E o meu próprio mundo… isso é muito confuso e frustrante ao mesmo tempo.",
+          text: "Mas como viemos parar aqui?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Heróis",
+          text: "E se esse é um mundo mágico, e o meu próprio mundo — como fica nessa história?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Calma, aventureiros. Na realidade vocês não estão fisicamente aqui. O que ocorre é que, em seu mundo real, vocês estão apenas em um sono profundo. Todos vocês foram invocados aqui enquanto dormiam. Então tudo que viverem aqui não passará de um sonho para vocês no mundo real.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Herói",
+          text: "Então estou apenas sonhando?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Basicamente. Mas, diferente dos demais sonhos, aqui vocês podem passar o tempo que quiserem antes de retornarem para suas vidas. Interessante, não é? Ah, e mais uma coisa: caso queiram retornar imediatamente para os seus mundos, basta desejar isso de coração e solicitar. Não temos uma palavra ou frase específica para isso — basta apenas desejar e vocês retornarão.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Herói",
+          text: "Bom, mas parece muito suspeito você estar nos explicando tudo isso. Quais são suas reais intenções por trás disso?",
         },
       ],
     },
@@ -38,48 +76,86 @@ export const prologo: StoryPart = {
       id: "mundodossonhos",
       image: {
         src: "/images/story/prologo-mundo-sonhos.jpg",
-        alt: "O mundo dos sonhos e a explicação sobre as cópias",
+        alt: "O mundo dos sonhos: na vida real todos dormem em paz",
       },
       content: [
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Bom, deixe-me tentar explicar. Vocês não foram movidos nem teleportados para esse mundo. Como esse é o mundo dos sonhos, vamos dizer que vocês são somente uma cópia do seu eu original.",
-        },
-        { type: "dialogue", speaker: "Herói", text: "Mas o quê? Você nos clonou?" },
-        {
-          type: "dialogue",
-          speaker: "Recepcionista",
-          text: "Eu não diria que vocês são um clone ou algo assim. Como esse é o mundo dos sonhos, onde tudo é possível, vamos dizer que, depois de estudar, coletamos todo o seu conhecimento e suas experiências e os recriamos aqui. Não temos como levar vocês ao mundo anterior. Vocês existem somente nesse mundo.",
+          text: "Minhas intenções? Apresentar a vocês um desafio e uma oportunidade. Vocês foram convidados a uma masmorra de vários andares — e podem, se quiserem, fazer um contrato com os seres superiores que chamamos de mestres. Antes disso, saibam: os danos, feridas e itens daqui não vão para o mundo real. Mas as experiências vividas… essas sim ficam com vocês.",
         },
         {
           type: "dialogue",
           speaker: "Heróis",
-          text: "Caramba, isso é muito confuso. Mas se nos trouxeram aqui, qual o propósito com isso?",
+          text: "Uma masmorra? Seres superiores? Explique melhor.",
         },
       ],
     },
     {
-      id: "entretenimento-masmorra",
+      id: "seres-superiores-masmorra",
       image: {
         src: "/images/story/prologo-masmorra.jpg",
-        alt: "A masmorra e os observadores",
+        alt: "A masmorra de vários andares e os seres superiores",
       },
       content: [
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Simples: vocês estão aqui para o entretenimento de seres de fora. Vamos dizer que temos pessoas acima de nós que podem nos observar. Os heróis olham para cima, ainda bem confusos.",
+          text: "Vocês foram convidados a participar de uma masmorra — uma masmorra com vários andares, para vocês desafiarem. Podem enfrentá-la por conta própria, se quiserem; muitos aventureiros escolhem esse caminho.",
         },
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "E para entreter tanto eles quanto vocês, vocês receberão a ajuda deles. Eles os guiarão através do que chamamos de masmorra. Vocês devem emprestar a sua força e habilidades para se aventurar e desafiar essa masmorra. O objetivo é simples: chegar ao topo dela e derrotar o boss final. Simples, não é?",
+          text: "Mas também podem realizar um contrato com os que chamamos de seres superiores. Eles agiriam como seus mestres. Sob contrato, vocês devem obedecer às ordens deles dentro da masmorra. Em troca, ganham várias vantagens concedidas por eles.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Herói",
+          text: "Seres superiores? Mestres? Que tipo de vantagens?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "A primeira é um pagamento fixo, a partir da data em que se dispõem a participar da masmorra — como um salário. A segunda: vantagens durante a exploração. Por exemplo, a possibilidade de acumular experiência para a própria evolução — aprender técnicas novas e aprimorar as que já têm. Os seres superiores os guiam e, quando aceitam o contrato, fortalecem seu crescimento.",
         },
         {
           type: "dialogue",
           speaker: "Heróis",
-          text: "E por que deveríamos fazer isso? Arriscar nossas próprias vidas para o entretenimento? Vocês são loucos.",
+          text: "E se não quisermos obedecer a ninguém?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Aí seguem por conta própria, como já disse. A masmorra está aberta a todos. O contrato é uma opção.",
+        },
+      ],
+    },
+    {
+      id: "contrato-limite",
+      image: {
+        src: "/images/story/prologo-contrato.jpg",
+        alt: "O acordo do contrato e o limite pessoal",
+      },
+      content: [
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Para que o contrato não tenha validade perpétua, cada herói deve estabelecer seu próprio limite pessoal — quantas incursões, quanto tempo, o que fizer sentido para vocês. Isso pode ser acordado comigo.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Uma vez acordado, o herói fica à disposição para eventuais incursões na masmorra, até atingir esse limite. Uma quebra de contrato, porém, resulta na expulsão do mundo dos sonhos, com a deleção de todas as memórias vividas nele. Portanto, só assinem se estiverem dispostos a cumprir.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Herói",
+          text: "Então, se quebrarmos o trato, perdemos tudo o que vivemos aqui da cabeça?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Recepcionista",
+          text: "Exatamente. Por isso falo com clareza: o contrato é sério. Pensem bem.",
         },
       ],
     },
@@ -93,13 +169,13 @@ export const prologo: StoryPart = {
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Calme, meu jovem. Além de portar todas as suas habilidades e experiências, esse mundo adiciona algumas peculiaridades em todos aqui. Vejam bem. — O recepcionista saca uma pistola antiga e atira no peito de um dos heróis.",
+          text: "Neste mundo dos sonhos há outras peculiaridades. Vejam bem. — O recepcionista saca uma pistola antiga e atira no peito de um dos heróis.",
         },
         {
           type: "narrative",
-          text: "Ele, sem tempo de reação, arregala os olhos e grita ao receber o tiro no peito, caindo para trás. Deitado no chão, coloca a mão no peito cheio de sangue e pergunta: — O que está acontecendo?",
+          text: "O herói, sem tempo de reação, arregala os olhos e grita ao receber o tiro no peito, caindo para trás. Deitado no chão, coloca a mão no peito cheio de sangue e pergunta: — O que está acontecendo?",
         },
-        { type: "narrative", text: "Os outros dois heróis olham assustados." },
+        { type: "narrative", text: "Os outros quatro heróis olham assustados." },
         {
           type: "dialogue",
           speaker: "Herói",
@@ -108,18 +184,23 @@ export const prologo: StoryPart = {
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Bem, nesse mundo vocês não sentem dor — ao menos não dores extremas. Reduzimos bastante os danos recebidos por vocês. Vocês ainda sentem dor, mas bem menos que antes; deixamos um pouquinho para a diversão. E outra coisa: aqui vocês não morrem. — E o recepcionista, que se aproximou lentamente, enche o corpo do herói de balas, gastando o restante do revolver antigo.",
+          text: "Aqui a dor é atenuada — deixamos um pouquinho para que a experiência faça sentido. E neste mundo vocês não morrem. — O recepcionista se aproxima e dispara o restante do revolver. O herói, de olhos arregalados, desmaterializa-se em pequenas luzes e reaparece em um portal marcado no chão.",
         },
         {
-          type: "narrative",
-          text: "Nesse momento o herói, de olhos arregalados, vai se desmaterializando em pequenas luzes e reaparece em um local que parece ser um portal marcado no chão. — Eu estou vivo! O que aconteceu?",
+          type: "dialogue",
+          speaker: "Herói",
+          text: "Eu estou vivo! O que aconteceu?",
         },
-        { type: "dialogue", speaker: "Recepcionista", text: "Bom, você reviveu." },
-        { type: "dialogue", speaker: "Herói", text: "Você é maluco. Tudo isso é loucura." },
+        { type: "dialogue", speaker: "Recepcionista", text: "Você reviveu. Como em todo sonho, o corpo aqui se refaz." },
+        {
+          type: "dialogue",
+          speaker: "Herói",
+          text: "Você é maluco. Tudo isso é loucura.",
+        },
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Leve o seu tempo para assimilar tudo isso. Enquanto isso, vou ficar na recepção. Quando estiverem prontos, venham falar comigo.",
+          text: "Leve o tempo que precisarem para assimilar. Enquanto isso, vou ficar na recepção. Quando estiverem prontos, venham falar comigo.",
         },
       ],
     },
@@ -132,27 +213,27 @@ export const prologo: StoryPart = {
       content: [
         {
           type: "narrative",
-          text: "— Depois de um tempo, os três heróis conversando entre si se encontram com o recepcionista.",
+          text: "— Depois de um tempo, os cinco heróis conversando entre si se encontram com o recepcionista.",
         },
         {
           type: "dialogue",
           speaker: "Heróis",
-          text: "Seu maluco, ainda temos muitas dúvidas sobre tudo isso. Mas gostaríamos de te perguntar uma coisa: e se nos recusarmos a essa coisa de masmorra?",
+          text: "Ainda temos muitas dúvidas sobre tudo isso. Mas gostaríamos de te perguntar: e se nos recusarmos a essa coisa de masmorra?",
         },
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Se não quiserem, vocês podem ter uma vida normal nesse lugar. Aqui temos uma cidade com um pouco de tudo que tem nos seus mundos originais: campos, colheitas. Na cidade temos tavernas ou bares, se preferirem. Temos uma pessoa responsável que foi trazida a esse mundo e cuida dessa parte — se quiserem algo especial, falem com ela. Mas saibam que isso não vai ser de graça: para manter as coisas interessantes, nesse mundo temos uma economia própria. E é claro, vocês, como primeiros aventureiros, vão nos ajudar a melhorá-la. Por enquanto temos uma loja de armas, um alquimista e várias outras coisas. Então fiquem à vontade para fazer o que quiserem aqui.",
+          text: "Se não quiserem, podem ter uma vida normal neste lugar. Temos uma cidade com um pouco de tudo: campos, colheitas, tavernas ou bares. Uma pessoa foi trazida a este mundo e cuida dessa parte — se quiserem algo especial, falem com ela. Para manter as coisas interessantes, temos uma economia própria. Vocês, como novos aventureiros, podem ajudar a movimentá-la. Há uma loja de armas, um alquimista e várias outras coisas. Fiquem à vontade para fazer o que quiserem aqui.",
         },
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "Mas claro, quando selecionamos vocês três já levamos tudo em consideração. Então a chance de vocês não se aventurarem na masmorra é muito baixa. Sabemos da curiosidade e sede de aventuras de vocês, sabemos dos seus interesses também. Quem sabe é o nosso Hunter — ele é o responsável pela seleção do que chamamos de heróis, e vocês foram os primeiros três selecionados. Ele está em busca de mais heróis para se juntar a vocês.",
+          text: "Quando selecionamos vocês cinco, já levamos tudo em consideração. Sabemos da curiosidade e sede de aventuras de vocês. O nosso Hunter é o responsável pela seleção do que chamamos de heróis — vocês foram os primeiros cinco selecionados. Ele está em busca de mais para se juntar a vocês.",
         },
         {
           type: "dialogue",
           speaker: "Recepcionista",
-          text: "O que estamos oferecendo aqui é uma oportunidade de vocês se aventurarem nessa masmorra, arriscando suas vidas, mas sem a possibilidade de morrerem. Assim que chegarem a esse ponto, retornarão àquele portal novinhos em folha. Então aproveitem. Vejam bem: eu não sou um herói, me considero um facilitador. Vim parar aqui para facilitar as coisas, hehehe. Eu os guiarei e instruirei da melhor forma possível para que vocês alcancem suas ambições e se divirtam no processo. Mas façam como quiser.",
+          text: "O que oferecemos é a chance de se aventurarem na masmorra sem morrer de verdade: ao serem derrotados, retornam ao portal como estão agora. Eu não sou herói; me considero um facilitador. Vim para facilitar as coisas, hehehe. Os guiarei da melhor forma para que alcancem suas ambições e se divirtam no processo. Mas façam como quiser.",
         },
       ],
     },
