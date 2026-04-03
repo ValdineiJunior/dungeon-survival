@@ -19,7 +19,7 @@ export function InitiativeRollModal({
 }: InitiativeRollModalProps) {
   const pool = diceFaces.length > 0 ? diceFaces : [6];
   const [selected, setSelected] = useState<boolean[]>(() =>
-    pool.map(() => true)
+    pool.map(() => true),
   );
 
   const toggle = (index: number) => {
@@ -52,56 +52,64 @@ export function InitiativeRollModal({
   };
 
   return (
-    <div className="w-full h-full min-h-52 flex items-center justify-center gap-4 sm:gap-6 px-4 py-3 bg-slate-900/80 rounded-3xl border border-amber-700/50 backdrop-blur-sm">
+    <div className="w-full max-w-full min-w-0 h-full min-h-0 md:min-h-52 flex flex-col md:flex-row items-stretch md:items-center justify-center gap-3 md:gap-6 px-2 py-2 sm:px-4 sm:py-3 bg-slate-900/80 rounded-2xl md:rounded-3xl border border-amber-700/50 backdrop-blur-sm">
       {/* Label */}
-      <div className="shrink-0 text-center">
-        <div className="text-2xl mb-0.5">🎲</div>
-        <div className="text-amber-400 font-bold text-sm leading-tight">
-          Iniciativa
+      <div className="shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-0 text-center justify-center">
+        <div className="text-xl md:text-2xl">🎲</div>
+        <div>
+          <div className="text-amber-400 font-bold text-xs md:text-sm leading-tight">
+            Iniciativa
+          </div>
+          <div className="text-slate-500 text-[10px] md:text-xs">
+            Turno {turn}
+          </div>
         </div>
-        <div className="text-slate-500 text-xs">Turno {turn}</div>
       </div>
 
-      <div className="shrink-0 text-slate-600 text-lg">—</div>
+      <div className="hidden md:block shrink-0 text-slate-600 text-lg">—</div>
 
-      {/* Pool: clickable dice */}
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-slate-400 text-xs text-center">
+      {/* Pool: dados pequenos (como EnemyCard), uma linha no mobile */}
+      <div className="flex flex-col items-center gap-1.5 md:gap-2 flex-1 min-w-0 w-full">
+        <p className="text-slate-400 text-[10px] md:text-xs text-center hidden sm:block px-1">
           Selecione os dados que quer rolar. Clique para marcar/desmarcar.
         </p>
-        <div className="flex items-center justify-center gap-2 flex-wrap">
+        <div className="flex flex-row flex-nowrap items-center justify-center gap-1 sm:gap-2 w-full max-w-full overflow-x-auto py-0.5">
           {pool.map((faces, i) => (
             <button
               key={i}
               type="button"
               onClick={() => toggle(i)}
-              className={`rounded-lg border-2 transition-all duration-200 ${
+              className={`shrink-0 rounded-lg border-2 transition-all duration-200 ${
                 selected[i]
                   ? "border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50 scale-100"
                   : "border-slate-600 bg-slate-800/50 opacity-50 scale-95"
               }`}
-              title={selected[i] ? `d${faces} selecionado (clique para desmarcar)` : `d${faces} (clique para incluir)`}
+              title={
+                selected[i]
+                  ? `d${faces} selecionado (clique para desmarcar)`
+                  : `d${faces} (clique para incluir)`
+              }
             >
-              <DiceIcon faces={faces} size="lg" />
+              <DiceIcon faces={faces} size="sm" />
             </button>
           ))}
         </div>
-        <p className="text-amber-400/80 text-[10px] text-center max-w-[180px]">
+        <p className="text-amber-400/80 text-[9px] md:text-[10px] text-center max-w-[220px] px-1">
           Menos dados = tende a agir depois. Mais dados = tende a agir primeiro.
         </p>
       </div>
 
-      <div className="shrink-0 text-slate-600 text-lg hidden sm:block">—</div>
+      <div className="hidden md:block shrink-0 text-slate-600 text-lg">—</div>
 
       <button
         onClick={handleRoll}
         disabled={!canRoll}
-        className="group flex flex-col items-center gap-2 px-5 py-3 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-2xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        className="group flex flex-col items-center gap-1 md:gap-2 px-4 py-2 md:px-5 md:py-3 w-full md:w-auto shrink-0 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-xl md:rounded-2xl transition-all duration-200 hover:scale-[1.02] md:hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
-        <div className="text-sm font-bold text-blue-300 group-hover:text-white">
+        <div className="text-xs md:text-sm font-bold text-blue-300 group-hover:text-white text-center">
           Rolar {diceLabel}
         </div>
-        <div className="text-[10px] text-slate-400">
+        <div className="text-[9px] md:text-[10px] text-slate-400 text-center">
           {minTotal} – {maxTotal} · Pelo menos 1 dado
         </div>
       </button>
@@ -121,31 +129,30 @@ export function InitiativeOrderModal({
   turn,
 }: InitiativeOrderModalProps) {
   return (
-    <div className="w-full h-full min-h-52 flex items-center gap-3 px-4 py-3 bg-slate-900/80 rounded-3xl border border-amber-700/50 backdrop-blur-sm overflow-hidden">
+    <div className="w-full max-w-full min-w-0 h-full min-h-36 md:min-h-52 flex items-center gap-2 md:gap-3 px-2 py-2 md:px-4 md:py-3 bg-slate-900/80 rounded-2xl md:rounded-3xl border border-amber-700/50 backdrop-blur-sm overflow-hidden">
       {/* Label */}
       <div className="shrink-0 text-center">
-        <div className="text-2xl mb-0.5">⚔️</div>
-        <div className="text-amber-400 font-bold text-xs leading-tight">
+        <div className="text-xl md:text-2xl mb-0.5">⚔️</div>
+        <div className="text-amber-400 font-bold text-[10px] md:text-xs leading-tight">
           Ordem
         </div>
-        <div className="text-slate-500 text-xs">T{turn}</div>
+        <div className="text-slate-500 text-[10px] md:text-xs">T{turn}</div>
       </div>
 
-      {/* Horizontal scrollable list */}
-      <div className="flex-1 flex items-center gap-2 overflow-x-auto py-1 scrollbar-hide">
+      {/* Lista horizontal */}
+      <div className="flex-1 min-w-0 flex items-center gap-1.5 md:gap-2 overflow-x-auto py-1">
         {turnOrder.map((entry, i) => (
           <div
             key={entry.id}
-            className={`shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-xl border min-w-[72px] ${
+            className={`shrink-0 flex flex-col items-center gap-0.5 md:gap-1 px-2 py-1.5 md:px-3 md:py-2 rounded-xl border min-w-[60px] md:min-w-[72px] ${
               entry.entityType === "player"
                 ? "bg-emerald-900/40 border-emerald-700/60"
                 : "bg-red-900/20 border-red-800/40"
             }`}
           >
-            {/* Position badge + emoji */}
             <div className="flex items-center gap-1">
               <span
-                className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shrink-0 ${
+                className={`w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full text-[9px] md:text-[10px] font-bold shrink-0 ${
                   i === 0
                     ? "bg-amber-400 text-black"
                     : "bg-slate-700 text-slate-300"
@@ -153,14 +160,12 @@ export function InitiativeOrderModal({
               >
                 {i + 1}
               </span>
-              <span className="text-lg">{entry.emoji}</span>
+              <span className="text-base md:text-lg">{entry.emoji}</span>
             </div>
-            {/* Name */}
-            <div className="text-[10px] font-semibold text-white text-center leading-tight max-w-[64px] truncate">
+            <div className="text-[9px] md:text-[10px] font-semibold text-white text-center leading-tight max-w-[56px] md:max-w-[64px] truncate">
               {entry.name}
             </div>
-            {/* Dice + total */}
-            <div className="flex items-center gap-0.5 flex-wrap justify-center">
+            <div className="flex flex-row flex-nowrap items-center gap-0.5 justify-center">
               {entry.dice.map((d, di) => {
                 const faces = entry.diceFaces?.[di] ?? 6;
                 return (
@@ -174,7 +179,7 @@ export function InitiativeOrderModal({
                 );
               })}
               <span
-                className={`ml-0.5 text-xs font-bold ${entry.entityType === "player" ? "text-emerald-400" : "text-red-400"}`}
+                className={`ml-0.5 text-[10px] md:text-xs font-bold shrink-0 ${entry.entityType === "player" ? "text-emerald-400" : "text-red-400"}`}
               >
                 ={entry.total}
               </span>

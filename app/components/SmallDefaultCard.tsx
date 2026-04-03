@@ -19,8 +19,7 @@ export function SmallDefaultCard({
   currentEnergy,
 }: SmallDefaultCardProps) {
   const card = entry.card;
-  const canAfford =
-    currentEnergy === undefined || currentEnergy >= card.cost;
+  const canAfford = currentEnergy === undefined || currentEnergy >= card.cost;
   const noEnergy = currentEnergy !== undefined && !canAfford;
   const effectivelyDisabled = disabled || entry.usedThisTurn || noEnergy;
   const shouldGrayscale = entry.usedThisTurn || disabled || noEnergy;
@@ -44,17 +43,18 @@ export function SmallDefaultCard({
       onClick={onClick}
       disabled={effectivelyDisabled}
       className={`
-        relative w-full rounded-lg border-2 px-2 py-1.5
+        relative w-full min-h-0 rounded-md md:rounded-lg border-2 px-1 py-1 md:px-2 md:py-1.5
         bg-linear-to-r ${typeColors[card.type]}
-        flex items-center gap-2
+        flex items-center max-md:justify-center max-md:gap-1 md:justify-start md:gap-2
         transform transition-all duration-200
-        ${effectivelyDisabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:scale-105 hover:shadow-lg hover:shadow-black/50 cursor-pointer hover:border-white"
+        ${
+          effectivelyDisabled
+            ? "opacity-50 cursor-not-allowed"
+            : "max-md:hover:scale-[1.02] md:hover:scale-105 hover:shadow-lg hover:shadow-black/50 cursor-pointer hover:border-white"
         }
         ${shouldGrayscale ? "grayscale" : ""}
-        ${selected ? "ring-2 ring-yellow-400 scale-105 border-yellow-400" : ""}
-        shadow-md text-left
+        ${selected ? "ring-1 ring-yellow-400 max-md:scale-[1.02] md:ring-2 md:scale-105 border-yellow-400" : ""}
+        shadow-md text-left max-md:overflow-hidden
       `}
       title={
         noEnergy
@@ -62,14 +62,15 @@ export function SmallDefaultCard({
           : card.description
       }
     >
-      <div className="flex bg-amber-400 border border-amber-600 rounded-full w-5 h-5 items-center justify-center text-black font-bold text-xs shrink-0">
+      <div className="flex shrink-0 items-center justify-center rounded-full border border-amber-600 bg-amber-400 w-4 h-4 text-[10px] font-bold text-black md:w-5 md:h-5 md:text-xs">
         {card.cost}
       </div>
-      <div className="flex-1 flex justify-end items-center gap-1">
-        <div className="text-sm">
+      {/* Mobile: display:contents → custo, ícone e valor centralizados na linha. Desktop: grupo à direita. */}
+      <div className="max-md:contents md:flex md:min-w-0 md:flex-1 md:items-center md:justify-end md:gap-1">
+        <div className="shrink-0 text-xs leading-none md:text-sm">
           {typeIcons[card.type]}
         </div>
-        <div className="font-bold text-white text-sm">
+        <div className="min-w-0 truncate text-[11px] font-bold text-white tabular-nums md:text-right md:text-sm">
           {card.damage || card.block || card.movement || card.range || ""}
         </div>
       </div>
