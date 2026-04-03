@@ -4,10 +4,28 @@
  * com seções que podem incluir imagens e blocos de diálogo/narração.
  */
 
+/** IDs de heróis com arte em public/heroes */
+export type HeroSpeakerId =
+  | "warrior"
+  | "archer"
+  | "mage"
+  | "gunner"
+  | "dwarf";
+
+/** Falante com avatar (heróis + NPCs em public/characters) */
+export type StorySpeakerId = HeroSpeakerId | "host";
+
 /** Uma linha de conteúdo: narração ou fala de personagem */
 export type StoryLine =
   | { type: "narrative"; text: string }
-  | { type: "dialogue"; speaker: string; text: string };
+  | {
+      type: "dialogue";
+      /** Nome exibido (ex.: Guerreira, Host) */
+      speaker: string;
+      /** Define o avatar em StoryView */
+      speakerId: StorySpeakerId;
+      text: string;
+    };
 
 /** Imagem opcional no início de uma seção */
 export interface StorySectionImage {

@@ -45,7 +45,7 @@ export default function HubPage() {
           <main className="flex-1 flex flex-col p-4 md:p-6 max-w-4xl mx-auto w-full min-h-0 overflow-auto pb-28">
             <div className="flex-1 flex items-center justify-center min-h-[200px]">
               <p className="text-slate-400 text-center">
-                Bem-vindo à recepção. Explore as opções abaixo.
+                Bem-vindo. Explore as opções abaixo.
               </p>
             </div>
           </main>

@@ -2,7 +2,7 @@ import type { StoryPart } from "@/app/types/story";
 
 /**
  * Prólogo: A Recepção.
- * Cinco heróis são invocados; o Host explica o mundo dos sonhos, masmorra, seres superiores, contrato e cidade.
+ * Cinco heróis são invocados; o Host explica o mundo dos sonhos, masmorra, contrato e cidade; os três heróis iniciais fecham os termos com o Host.
  * Cada diálogo usa speakerId para o avatar em StoryView.
  */
 export const prologo: StoryPart = {
@@ -72,7 +72,7 @@ export const prologo: StoryPart = {
           type: "dialogue",
           speaker: "Host",
           speakerId: "host",
-          text: "Basicamente, Basicamente. Mas, diferente dos demais sonhos, esse aqui tem suas peculiaridades. Vocês podem passar o tempo que quiserem aqui antes de acordarem e retornarem para suas vidas. Interessante, Interessante não é? Ah, e mais uma coisa: caso desejem retornar imediatamente para suas proprias realidades, basta desejar e dizer: \"Despertar imediato\" e vocês retornarão.",
+          text: "Basicamente, Basicamente. Mas, diferente dos demais sonhos, esse aqui tem suas peculiaridades. Vocês podem passar o tempo que quiserem aqui antes de acordarem e retornarem para suas vidas. Interessante, Interessante não é?",
         },
         {
           type: "dialogue",
@@ -93,7 +93,7 @@ export const prologo: StoryPart = {
           type: "dialogue",
           speaker: "Host",
           speakerId: "host",
-          text: "Minhas reais intenções, intenções? Bom eu diria que seria satisfazer as vontades dos seres superiores e para isso devo lhes apresentar a nossa masmorra. Essa masmorra contem varios andares e desafios para vocês enfrentarem perfeito pra quem gosta de um desafio. Mas vou logo lhes avisando que ela nao e nada facil, ela contem vario monstros enigmas suepresas, mas elas tambem contem varias recompensas que deve agradar alguns de voces.",
+          text: "Minhas reais intenções, intenções? Bom eu diria que seria satisfazer as vontades dos seres superiores e para isso devo lhes apresentar a nossa masmorra. Essa masmorra contem varios andares e desafios para vocês enfrentarem perfeito pra quem gosta de um desafio. Mas vou logo lhes avisando que ela nao e nada facil, ela contem vario monstros enigmas suepresas, mas elas tambem contem varias recompensas que deve agradar alguns de voces. Lá dentro podem encontrar vários itens e moedas de ouro — úteis para a sobrevivência e para o dia a dia neste mundo.",
         },
         {
           type: "dialogue",
@@ -156,7 +156,7 @@ export const prologo: StoryPart = {
           type: "dialogue",
           speaker: "Host",
           speakerId: "host",
-          text: "Aí seguem por conta própria, como já disse. A masmorra está aberta a todos. O contrato é uma opção.",
+          text: "Aí seguem por conta própria, como já disse. A masmorra está aberta a todos.",
         },
       ],
     },
@@ -270,19 +270,187 @@ export const prologo: StoryPart = {
           type: "dialogue",
           speaker: "Host",
           speakerId: "host",
-          text: "Se não quiserem, podem ter uma vida normal neste lugar. Temos uma cidade com um pouco de tudo: campos, colheitas, tavernas ou bares. Uma pessoa foi trazida a este mundo e cuida dessa parte — se quiserem algo especial, falem com ela. Para manter as coisas interessantes, temos uma economia própria. Vocês, como novos aventureiros, podem ajudar a movimentá-la. Há uma loja de armas, um alquimista e várias outras coisas. Fiquem à vontade para fazer o que quiserem aqui.",
+          text: "Se não quiserem, podem ter uma vida normal neste lugar. Temos uma cidade com um pouco de tudo: campos, colheitas, tavernas ou bares. Uma pessoa foi trazida a este mundo e cuida dessa parte — se quiserem algo especial, falem com ela. Para manter as coisas interessantes, temos uma economia própria. Vocês, como novos aventureiros, podem ajudar a movimentá-la. Há uma loja de armas, um alquimista e várias outras coisas. Fiquem à vontade para fazer o que quiserem aqui.  O contrato é uma opção. Ah, e mais uma coisa: caso desejem retornar imediatamente para suas proprias realidades, basta desejar e dizer: \"Despertar imediato\" e vocês retornarão.",
         },
         {
           type: "dialogue",
           speaker: "Host",
           speakerId: "host",
-          text: "Quando selecionamos vocês cinco, já levamos tudo em consideração. Sabemos da curiosidade e sede de aventuras de vocês. O nosso Hunter é o responsável pela seleção do que chamamos de heróis — vocês foram os primeiros cinco selecionados. Ele está em busca de mais para se juntar a vocês.",
+          text: "Para se estabelecerem ao chegar, cada um recebe uma quantia em ouro para gastos pessoais — até arranjarem um emprego na cidade ou passarem a ganhar com a masmorra, se for o caminho que escolherem.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Quando trouxemos vocês cinco para cá, já levamos muito em consideração o perfil de cada um. O nosso Hunter é o responsável pela seleção do que chamamos de heróis — vocês são mais um grupo entre os convocados a este mundo; ele segue em busca de outros para somar aos que já estão aqui.",
         },
         {
           type: "dialogue",
           speaker: "Host",
           speakerId: "host",
           text: "O que oferecemos é a chance de se aventurarem na masmorra sem morrer de verdade: ao serem derrotados, retornam ao portal como estão agora. Eu não sou herói; me considero um facilitador. Vim para facilitar as coisas, hehehe. Os guiarei da melhor forma para que alcancem suas ambições e se divirtam no processo. Mas façam como quiser.",
+        },
+        {
+          type: "narrative",
+          text: "Para entenderem melhor a situação no próprio ritmo, decidem rumar à cidade. A pistoleira vai na frente, o rosto fechado — ainda carregando a raiva do que acabou de viver.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Ei, pistoleira — se quiser afinar o manejo da arma e o tempo de reação, é só voltar a me procurar. Foi mais rápido que você naquele instante, não foi?",
+        },
+        {
+          type: "narrative",
+          text: "Ela não responde: vira o rosto, aperta o passo e segue em direção à cidade. Os outros quatro trocam olhares, ainda assimilando tudo, e também partem rumo ao povoado.",
+        },
+      ],
+    },
+    {
+      id: "dias-cidade-contrato",
+      content: [
+        {
+          type: "narrative",
+          text: "Alguns dias passam. Na cidade, a arqueira, a guerreira e o mago se aproximam, fazem amizade e decidem enfrentar a masmorra juntos.",
+        },
+        {
+          type: "narrative",
+          text: "O Host acompanha o movimento à distância: de uma estalagem, observa quem se encaminha para desafiar a masmorra. Não intervém — limita-se a ver passar.",
+        },
+        {
+          type: "narrative",
+          text: "Em outro momento, vê o anão entrar na masmorra sozinho. Mais tarde, bem disfarçada, a pistoleira também entra por conta própria.",
+        },
+        {
+          type: "narrative",
+          text: "Depois de um tempo, os três heróis que estreitaram laços voltam a procurar o Host: decidiram firmar contrato com os seres superiores.",
+        },
+      ],
+    },
+    {
+      id: "contrato-termos-iniciais",
+      image: {
+        src: "/images/story/prologo-contrato.jpg",
+        alt: "O Host negocia os termos do contrato com a guerreira, a arqueira e o mago",
+      },
+      content: [
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Hora, hora — o que temos aqui? Um verdadeiro grupo de aventureiros.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Guerreira",
+          speakerId: "warrior",
+          text: "Bom, viemos experimentar e decidimos os três fazer esse contrato.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Olha, olha! Muito bem. E por acaso já decidiram os termos dos contratos?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Arqueira",
+          speakerId: "archer",
+          text: "Bem… sim. Ou parcialmente, sim. Eu gostaria de melhorar minhas habilidades com o arco, para poder retornar com um pouco mais de destreza ao meu próprio mundo. Olha, não sou muito reconhecida entre meus companheiros, então gostaria de melhorar e surpreendê-los. É isso: melhorar minhas habilidades com o arco.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Isso me parece interessante, mas ainda é vago. Posso fazer uma sugestão?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Arqueira",
+          speakerId: "archer",
+          text: "Claro.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Que tal você se comprometer a derrotar cem inimigos usando seu arco de longo alcance?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Arqueira",
+          speakerId: "archer",
+          text: "Cem inimigos? Isso é muita coisa.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Veja bem: junto ao contrato vêm alguns benefícios que ajudam a superar esse desafio — posso explicar depois. E se deseja se especializar de verdade no arco, esta é uma ótima oportunidade; no seu mundo real dificilmente teria treino assim contra tantos inimigos.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Arqueira",
+          speakerId: "archer",
+          text: "Tudo bem — aceito o desafio.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Muito bem. E os outros dois, o que será?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Guerreira",
+          speakerId: "warrior",
+          text: "Bem, fiquei mais interessada nas vantagens do contrato; não tenho nada em mente para os termos ainda. Só gostaria de ser uma guerreira melhor.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Nesse caso não quer treinar com uma arma em específico — quer melhorar como guerreira em geral. Podemos usar termos mais básicos, os que ofereço a vários heróis: que tal derrotar o primeiro chefe da masmorra dez vezes?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Guerreira",
+          speakerId: "warrior",
+          text: "Hora, hora… não consegui derrotá-lo uma única vez ainda, mas estou doido para cortar a cabeça daquele desgraçado. Vamos embora — aceito o desafio.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Muito bem, muito bem — contrato fechado. Agora só falta o senhor estiloso.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Mago",
+          speakerId: "mage",
+          text: "Engraçadinho! Vamos direto ao ponto: tenho uma proposta. Atualmente sou bom com feitiços individuais, mas preciso melhorar minhas habilidades com magias em área. Gostaria de estabelecer uma meta de derrotar inimigos usando magias em área — acredito que derrotar uns trinta inimigos seriam o suficiente para me acostumar e aprender o jeito delas.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Olha, olha — gosto de você, que pessoa decidida. Mas que tal aumentarmos para cinquenta inimigos? Não acha meio injusto? Sua colega aqui precisa derrotar cem com o arco, não é?",
+        },
+        {
+          type: "dialogue",
+          speaker: "Mago",
+          speakerId: "mage",
+          text: "E ainda se diz facilitador — parece mais um negociador. Bom, de qualquer modo me parece razuavel ver aceitar o contrato.",
+        },
+        {
+          type: "dialogue",
+          speaker: "Host",
+          speakerId: "host",
+          text: "Ótimo, ótimo. Contratos fechados — meus parabéns. Agora deixem que eu lhes explique as vantagens adquiridas em detalhes — venham comigo.",
+        },
+        {
+          type: "narrative",
+          text: "O Host conduz os três até uma mesa ao fundo e passa a detalhar, um a um, os benefícios ligados a cada contrato.",
         },
       ],
     },

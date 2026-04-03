@@ -1,25 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import type { StoryPart, StoryLine } from "@/app/types/story";
+import type { StoryPart, StoryLine, StorySpeakerId } from "@/app/types/story";
+import { getSpeakerAvatarSrc } from "@/app/lib/story/speakerAvatars";
 
 interface StoryViewProps {
-  /** Uma ou mais partes da história a exibir (ex: prólogo, capítulo 1) */
   parts: StoryPart[];
-  /** Classe CSS opcional no container do scroll */
   className?: string;
+}
+
+function DialogueAvatar({ speakerId }: { speakerId: StorySpeakerId }) {
+  const [failed, setFailed] = useState(false);
+  const src = getSpeakerAvatarSrc(speakerId);
+  if (failed) {
+    return (
+      <div className="shrink-0 w-12 h-12 rounded-lg border border-amber-500/40 bg-slate-800 flex items-center justify-center text-amber-500/80 text-xs font-bold">
+        ?
+      </div>
+    );
+  }
+  return (
+    <div className="shrink-0 w-12 h-12 rounded-lg border border-amber-500/40 bg-slate-800 overflow-hidden">
+      <img
+        src={src}
+        alt=""
+        className="h-full w-full object-cover object-top scale-[1.18] origin-top"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
 }
 
 function StoryLineBlock({ line }: { line: StoryLine }) {
   if (line.type === "narrative") {
-    return (
-      <p className="text-slate-400 italic text-sm">{line.text}</p>
-    );
+    return <p className="text-slate-400 italic text-sm">{line.text}</p>;
   }
   return (
-    <p className="text-amber-100">
-      <strong className="text-amber-400">{line.speaker}:</strong> {line.text}
-    </p>
+    <div className="flex gap-3 items-start text-amber-100">
+      <DialogueAvatar speakerId={line.speakerId} />
+      <p className="min-w-0 flex-1 pt-0.5">
+        <strong className="text-amber-400">{line.speaker}:</strong> {line.text}
+      </p>
+    </div>
   );
 }
 
