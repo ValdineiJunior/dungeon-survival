@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import { HexMap, HexPosition, Enemy, Player } from "@/app/types/game";
 import {
   hexToPixel,
@@ -88,13 +89,72 @@ export function HexGrid({
   // Render tiles
   const tiles = Array.from(map.tiles.values());
 
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+
+    const computeScale = () => {
+      const cw = el.clientWidth;
+      if (cw <= 0 || width <= 0 || height <= 0) return;
+
+      const vh =
+        typeof window !== "undefined"
+          ? window.visualViewport?.height ?? window.innerHeight
+          : height;
+      const horizontalPad = 8;
+      const maxDisplayH = vh * 0.52;
+      const s = Math.min(
+        1,
+        (cw - horizontalPad) / width,
+        maxDisplayH / height,
+      );
+      setScale((prev) => (Math.abs(prev - s) < 0.0005 ? prev : s));
+    };
+
+    computeScale();
+    const ro = new ResizeObserver(computeScale);
+    ro.observe(el);
+    window.visualViewport?.addEventListener("resize", computeScale);
+    window.addEventListener("orientationchange", computeScale);
+    return () => {
+      ro.disconnect();
+      window.visualViewport?.removeEventListener("resize", computeScale);
+      window.removeEventListener("orientationchange", computeScale);
+    };
+  }, [width, height]);
+
   return (
-    <div className="flex flex-col items-center gap-4">
-      {/* Hex map container */}
+    <div
+      ref={wrapRef}
+      className="flex w-full max-w-full min-w-0 flex-col items-center gap-4"
+    >
+      {/*
+        Mapa em pixels fixos: em mobile ultrapassa a tela.
+        Viewport “caixa” = largura do pai × fração da altura da tela; escala uniforme.
+      */}
       <div
-        className="relative border-4 border-stone-600 rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
-        style={{ width: width + "px", height: height + "px" }}
+        className="relative mx-auto shrink-0"
+        style={{
+          width: width * scale,
+          height: height * scale,
+        }}
       >
+        <div
+          className="absolute left-0 top-0"
+          style={{
+            width,
+            height,
+            transform: `scale(${scale})`,
+            transformOrigin: "0 0",
+          }}
+        >
+          <div
+            className="relative border-4 border-stone-600 rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
+            style={{ width: width + "px", height: height + "px" }}
+          >
         {tiles.map((tile) => {
           const pixel = hexToPixel({ q: tile.q, r: tile.r });
           const content = getHexContent({ q: tile.q, r: tile.r });
@@ -211,6 +271,8 @@ export function HexGrid({
             </button>
           );
         })}
+          </div>
+        </div>
       </div>
     </div>
   );

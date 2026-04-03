@@ -283,8 +283,8 @@ export default function GamePage() {
             </div>
           </div>
 
-          {/* Center - Hexagonal Map */}
-          <div className="flex-1 flex">
+          {/* Center - Hexagonal Map (min-w-0 para o HexGrid medir a largura útil no flex) */}
+          <div className="flex-1 flex min-w-0 w-full justify-center">
             <HexGrid
               map={hexMap}
               player={player}
