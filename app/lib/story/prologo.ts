@@ -11,10 +11,6 @@ export const prologo: StoryPart = {
   sections: [
     {
       id: "invocacao",
-      image: {
-        src: "/images/story/prologo-invocacao.png",
-        alt: "Os cinco heróis invocados na marcação no chão, o Host os recebe",
-      },
       content: [
         {
           type: "narrative",
@@ -84,10 +80,6 @@ export const prologo: StoryPart = {
     },
     {
       id: "intencoes-masmorra",
-      image: {
-        src: "/images/story/prologo-mundo-sonhos.png",
-        alt: "O mundo dos sonhos: na vida real todos dormem em paz",
-      },
       content: [
         {
           type: "dialogue",
@@ -111,10 +103,6 @@ export const prologo: StoryPart = {
     },
     {
       id: "seres-superiores-masmorra",
-      image: {
-        src: "/images/story/prologo-masmorra.jpg",
-        alt: "A masmorra de vários andares e os seres superiores",
-      },
       content: [
         {
           type: "dialogue",
@@ -162,10 +150,6 @@ export const prologo: StoryPart = {
     },
     {
       id: "contrato-limite",
-      image: {
-        src: "/images/story/prologo-contrato.jpg",
-        alt: "O acordo do contrato e o limite pessoal",
-      },
       content: [
         {
           type: "dialogue",
@@ -195,10 +179,6 @@ export const prologo: StoryPart = {
     },
     {
       id: "tiro-reviver",
-      image: {
-        src: "/images/story/prologo-demonstracao.jpg",
-        alt: "O Host demonstra: a pistoleira leva um tiro e revive no portal",
-      },
       content: [
         {
           type: "dialogue",
@@ -251,10 +231,6 @@ export const prologo: StoryPart = {
     },
     {
       id: "cidade-e-facilitador",
-      image: {
-        src: "/images/story/prologo-cidade.jpg",
-        alt: "A cidade e a oferta de vida normal ou aventura",
-      },
       content: [
         {
           type: "narrative",
@@ -329,10 +305,6 @@ export const prologo: StoryPart = {
     },
     {
       id: "contrato-termos-iniciais",
-      image: {
-        src: "/images/story/prologo-contrato.jpg",
-        alt: "O Host negocia os termos do contrato com a guerreira, a arqueira e o mago",
-      },
       content: [
         {
           type: "dialogue",

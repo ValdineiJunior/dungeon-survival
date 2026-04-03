@@ -1,14 +1,5 @@
 # Imagens da história
 
-Coloque aqui as imagens das seções do prólogo (e de outras partes no futuro).
+Por ora as seções narrativas do prólogo **não** usam imagens de cena — só os **avatars dos personagens** (em `public/heroes/` e `public/characters/`) aparecem ao lado das falas no hub.
 
-## Prólogo – A Recepção
-
-- **prologo-invocacao.jpg** – Os cinco heróis invocados na marcação no chão, o Host os recebe
-- **prologo-mundo-sonhos.jpg** – O mundo dos sonhos: na vida real todos dormem em paz
-- **prologo-masmorra.jpg** – A masmorra de vários andares e os seres superiores
-- **prologo-contrato.jpg** – O acordo do contrato e o limite pessoal
-- **prologo-demonstracao.jpg** – O Host demonstra: a pistoleira leva um tiro e revive no portal
-- **prologo-cidade.jpg** – A cidade e a oferta de vida normal ou aventura
-
-Se uma imagem não existir, a seção mostra o texto alternativo (alt) no lugar. As seções continuam funcionando sem imagem.
+Se no futuro você voltar a ilustrar cada seção, basta definir de novo o campo `image` em cada `StorySection` no código (ex.: `app/lib/story/prologo.ts`) e colocar os arquivos aqui.
