@@ -1,6 +1,12 @@
 "use client";
 
-import { Player, CharacterClassDefinition } from "@/app/types/game";
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import {
+  Player,
+  CharacterClassDefinition,
+  InnateAbility,
+} from "@/app/types/game";
 import { DiceIcon } from "./DiceIcon";
 
 interface PlayerStatusProps {
@@ -21,6 +27,7 @@ export function PlayerStatus({
   onViewDiscard,
 }: PlayerStatusProps) {
   const hpPercentage = (player.hp / player.maxHp) * 100;
+  const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-slate-800/80 rounded-xl border border-slate-600 backdrop-blur-sm h-full">
@@ -92,42 +99,79 @@ export function PlayerStatus({
       <div className="border-t border-slate-600" />
 
       {/* Pool de dados (iniciativa) */}
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs text-slate-500 uppercase tracking-wide shrink-0">
-          🎲 Iniciativa
+      <div className="flex flex-col gap-1.5">
+        <span className="text-xs text-slate-500 tracking-wide">
+          Iniciativa
         </span>
-        <div className="flex items-center gap-1 justify-end flex-wrap min-w-0">
-          {(classDef.initiativeDice ?? [6, 6, 6]).map(
-            (faces, i) => (
-              <DiceIcon key={i} faces={faces} size="sm" />
-            ),
-          )}
+        <div className="flex flex-wrap items-center gap-1">
+          {(classDef.initiativeDice ?? [6, 6, 6]).map((faces, i) => (
+            <DiceIcon key={i} faces={faces} size="sm" />
+          ))}
         </div>
       </div>
 
       {/* Habilidades Inatas */}
       {classDef.innateAbilities.length > 0 && (
-        <>
-          <div className="space-y-2">
-            <div className="text-xs text-slate-500 uppercase tracking-wide">
-              Habilidades Inatas
-            </div>
+        <div className="flex flex-col gap-1.5">
+          <span className="text-xs text-slate-500 tracking-wide">
+            Habilidades Inatas
+          </span>
+          <div className="flex flex-col gap-1">
             {classDef.innateAbilities.map((ability, idx) => (
-              <div key={idx} className="bg-slate-700/50 rounded px-2 py-1.5">
-                <div className="flex items-center gap-2 text-xs">
-                  <span>{ability.emoji}</span>
-                  <span className="text-amber-300 font-medium">
-                    {ability.name}
-                  </span>
-                </div>
-                <div className="text-xs text-slate-400 mt-0.5 pl-6">
-                  {ability.description}
-                </div>
-              </div>
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setInnateDetail(ability)}
+                className="flex w-full min-w-0 items-center gap-2 rounded bg-slate-700/50 px-2 py-1.5 text-left text-xs transition-colors hover:bg-slate-700"
+              >
+                <span className="shrink-0">{ability.emoji}</span>
+                <span className="min-w-0 truncate font-medium text-amber-300">
+                  {ability.name}
+                </span>
+              </button>
             ))}
           </div>
-        </>
+        </div>
       )}
+
+      {innateDetail &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => setInnateDetail(null)}
+            role="presentation"
+          >
+            <div
+              className="mx-4 w-full max-w-md rounded-2xl border-2 border-slate-600 bg-slate-800 p-8 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="innate-ability-title"
+            >
+              <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-600 pb-4">
+                <h3
+                  id="innate-ability-title"
+                  className="flex min-w-0 items-center gap-2 text-xl font-bold text-amber-400"
+                >
+                  <span className="shrink-0 text-2xl">{innateDetail.emoji}</span>
+                  <span className="min-w-0 leading-tight">{innateDetail.name}</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setInnateDetail(null)}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-700 text-lg font-bold text-slate-300 transition-colors hover:bg-red-600 hover:text-white"
+                  aria-label="Fechar"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-center text-sm leading-relaxed text-slate-300">
+                {innateDetail.description}
+              </p>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
