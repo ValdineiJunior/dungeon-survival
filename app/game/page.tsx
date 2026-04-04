@@ -188,34 +188,6 @@ export default function GamePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-lg h-lg bg-amber-900/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Header */}
-      <header className="relative z-10 p-4 border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl md:text-2xl font-bold text-amber-400 tracking-wider">
-              ⬡ Dungeon Survival
-            </h1>
-            <div className="px-3 py-1 rounded bg-slate-800 border border-slate-600">
-              <span className="text-slate-400 text-sm">Andar </span>
-              <span className="text-amber-400 font-bold">{floor}/4</span>
-              <span className="text-slate-500 text-xs ml-2 hidden sm:inline">
-                - {floorConfig.name}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 md:gap-4">
-            <span className="text-slate-400 text-sm md:text-base">
-              Turno {turn}
-            </span>
-            <span
-              className={`px-3 py-1 rounded text-sm font-bold ${getPhaseColor()}`}
-            >
-              {getPhaseLabel()}
-            </span>
-          </div>
-        </div>
-      </header>
-
       {/* Combat area */}
       <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-4">
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
@@ -276,20 +248,61 @@ export default function GamePage() {
             </div>
           </div>
 
-          {/* Center - Hexagonal Map (min-w-0 para o HexGrid medir a largura útil no flex) */}
-          <div className="flex-1 flex min-w-0 w-full justify-center">
-            <HexGrid
-              map={hexMap}
-              player={player}
-              playerEmoji={CHARACTER_CLASSES[player.characterClass].emoji}
-              playerImageUrl={CHARACTER_CLASSES[player.characterClass].imageUrl}
-              enemies={enemies}
-              validMovePositions={validMovePositions}
-              targetableEnemyIds={targetableEnemyIds}
-              movementPath={movementPath}
-              onHexClick={handleHexClick}
-              onEnemyClick={handleEnemyClick}
-            />
+          {/* Centro: status em uma linha + mapa hex */}
+          <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col gap-2">
+            <div
+              className="shrink-0 w-full overflow-x-auto rounded-lg border border-slate-600/80 bg-slate-900/70 px-2 py-1.5 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="flex min-w-max items-center justify-center gap-x-2 sm:gap-x-4 text-[11px] leading-tight sm:text-sm">
+                <span className="shrink-0 font-bold tracking-wide text-amber-400">
+                  <span className="sm:hidden">⬡</span>
+                  <span className="hidden sm:inline">⬡ Dungeon Survival</span>
+                </span>
+                <span className="shrink-0 text-slate-600" aria-hidden>
+                  |
+                </span>
+                <span
+                  className="shrink-0 text-slate-300"
+                  title={`${floorConfig.name} — andar ${floor} de 4`}
+                >
+                  <span className="text-slate-500">Andar </span>
+                  <span className="font-bold text-amber-400">{floor}/4</span>
+                  <span className="ml-1 hidden text-slate-500 md:inline">
+                    · {floorConfig.name}
+                  </span>
+                </span>
+                <span className="shrink-0 text-slate-600" aria-hidden>
+                  |
+                </span>
+                <span className="shrink-0 tabular-nums text-slate-400">
+                  Turno {turn}
+                </span>
+                <span className="shrink-0 text-slate-600" aria-hidden>
+                  |
+                </span>
+                <span
+                  className={`shrink-0 rounded px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
+                >
+                  {getPhaseLabel()}
+                </span>
+              </div>
+            </div>
+            <div className="flex min-h-0 min-w-0 flex-1 justify-center">
+              <HexGrid
+                map={hexMap}
+                player={player}
+                playerEmoji={CHARACTER_CLASSES[player.characterClass].emoji}
+                playerImageUrl={CHARACTER_CLASSES[player.characterClass].imageUrl}
+                enemies={enemies}
+                validMovePositions={validMovePositions}
+                targetableEnemyIds={targetableEnemyIds}
+                movementPath={movementPath}
+                onHexClick={handleHexClick}
+                onEnemyClick={handleEnemyClick}
+              />
+            </div>
           </div>
 
           {/* Right panel - Enemies (for large screens) */}
