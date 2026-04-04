@@ -31,19 +31,18 @@ export function PlayerStatus({
 
   return (
     <div className="flex h-full min-w-0 max-w-full flex-col gap-4 rounded-xl border border-slate-600 bg-slate-800/80 p-3 backdrop-blur-sm sm:p-4">
-      {/* Avatar e Nome */}
+      {/* Nome + avatar */}
       <div className="text-center">
-        <div className="mx-auto mb-3 aspect-square w-full max-w-32 overflow-hidden rounded-lg border-2 border-amber-500/50 bg-slate-700">
+        <h3 className="mb-2 text-amber-400 font-bold lg:mb-3">
+          {classDef.name}
+        </h3>
+        <div className="mx-auto size-14 shrink-0 overflow-hidden rounded border-2 border-amber-500/50 bg-slate-700 lg:size-32 lg:rounded-lg">
           <img
             src={classDef.imageUrl}
             alt={classDef.name}
-            className="w-full h-full object-cover object-top"
+            className="h-full w-full object-cover object-top"
           />
         </div>
-        <h3 className="text-amber-400 font-bold">{classDef.name}</h3>
-        <span className="text-slate-500 text-xs font-mono">
-          ⬡ {player.position.q},{player.position.r}
-        </span>
       </div>
 
       {/* Separador */}
@@ -100,9 +99,7 @@ export function PlayerStatus({
 
       {/* Pool de dados (iniciativa) */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs text-slate-500 tracking-wide">
-          Iniciativa
-        </span>
+        <span className="text-xs text-slate-500 tracking-wide">Iniciativa</span>
         <div className="flex flex-wrap items-center gap-1">
           {(classDef.initiativeDice ?? [6, 6, 6]).map((faces, i) => (
             <DiceIcon key={i} faces={faces} size="sm" />
@@ -153,8 +150,12 @@ export function PlayerStatus({
                   id="innate-ability-title"
                   className="flex min-w-0 items-center gap-2 text-xl font-bold text-amber-400"
                 >
-                  <span className="shrink-0 text-2xl">{innateDetail.emoji}</span>
-                  <span className="min-w-0 leading-tight">{innateDetail.name}</span>
+                  <span className="shrink-0 text-2xl">
+                    {innateDetail.emoji}
+                  </span>
+                  <span className="min-w-0 leading-tight">
+                    {innateDetail.name}
+                  </span>
                 </h3>
                 <button
                   type="button"
