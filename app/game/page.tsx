@@ -12,7 +12,6 @@ import { CardListModal } from "@/app/components/CardListModal";
 import { CardRewardModal } from "@/app/components/CardRewardModal";
 import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
 import { GameLogModal } from "@/app/components/GameLogModal";
-import { HowToPlayModal } from "@/app/components/HowToPlayModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
 import { BurnCardModal } from "@/app/components/BurnCardModal";
 import {
@@ -31,7 +30,6 @@ export default function GamePage() {
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [showBurnedModal, setShowBurnedModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
-  const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
   // Kept for future debug: EnemyActionsModal. To show it, add onViewActions={() => setSelectedEnemyForActions(enemy)} to EnemyCard
   const [selectedEnemyForActions, setSelectedEnemyForActions] =
     useState<Enemy | null>(null);
@@ -214,13 +212,6 @@ export default function GamePage() {
             >
               {getPhaseLabel()}
             </span>
-            <button
-              onClick={() => setShowHowToPlayModal(true)}
-              className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white transition-colors"
-            >
-              <span className="hidden sm:inline">📖 Como Jogar</span>
-              <span className="sm:hidden">📖</span>
-            </button>
           </div>
         </div>
       </header>
@@ -766,11 +757,6 @@ export default function GamePage() {
       {/* Game Log Modal */}
       {showLogModal && (
         <GameLogModal logs={gameLog} onClose={() => setShowLogModal(false)} />
-      )}
-
-      {/* How To Play Modal */}
-      {showHowToPlayModal && (
-        <HowToPlayModal onClose={() => setShowHowToPlayModal(false)} />
       )}
     </div>
   );
