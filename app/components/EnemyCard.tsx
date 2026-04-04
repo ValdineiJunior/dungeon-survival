@@ -100,10 +100,13 @@ export function EnemyCard({
           <div
             className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5"
           >
-            <h3 className="w-full min-w-0 px-0.5 text-center text-xs font-bold leading-tight text-white sm:text-sm">
-              <span className="line-clamp-3 wrap-break-word">{enemy.name}</span>
+            <h3
+              className="w-full min-w-0 truncate px-0.5 text-center text-xs font-bold leading-tight text-white sm:text-sm"
+              title={enemy.name}
+            >
+              {enemy.name}
             </h3>
-            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded border-2 border-slate-600 bg-slate-800">
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded border-2 border-slate-600 bg-slate-800">
               {ENEMY_IMAGE_FILES[enemy.name] ? (
                 <img
                   src={`/enemies/${ENEMY_IMAGE_FILES[enemy.name]}`}
@@ -111,7 +114,7 @@ export function EnemyCard({
                   className="h-full w-full object-cover object-top"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-2xl">
+                <div className="flex h-full w-full items-center justify-center text-xl">
                   {enemy.emoji}
                 </div>
               )}
