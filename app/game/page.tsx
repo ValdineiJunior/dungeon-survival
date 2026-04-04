@@ -191,10 +191,10 @@ export default function GamePage() {
       {/* Combat area */}
       <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-4">
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
-        <div className="flex-1 flex flex-col lg:flex-row gap-4 py-4">
-          <div className="flex flex-row lg:flex-col gap-4">
-            {/* Left panel - Player Status */}
-            <div className="w-1/2 lg:w-72">
+        <div className="flex min-w-0 w-full flex-1 flex-col gap-4 py-4 lg:flex-row">
+          {/* Mobile: 2 colunas com gap sem estourar 100% (evita w-1/2 + gap > largura) */}
+          <div className="grid min-w-0 w-full grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 lg:w-72 lg:shrink-0">
+            <div className="min-w-0">
               <PlayerStatus
                 player={player}
                 deckCount={deck.length}
@@ -205,8 +205,8 @@ export default function GamePage() {
               />
             </div>
 
-            {/* Right panel - Enemies (for small screens) */}
-            <div className="w-1/2 lg:hidden">
+            {/* Inimigos ao lado do status só no mobile */}
+            <div className="min-w-0 lg:hidden">
               <div className="flex flex-col gap-3 h-full">
                 <div className="flex flex-col gap-3">
                   {enemies.map((enemy, index) => {

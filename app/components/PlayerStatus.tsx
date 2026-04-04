@@ -30,10 +30,10 @@ export function PlayerStatus({
   const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-slate-800/80 rounded-xl border border-slate-600 backdrop-blur-sm h-full">
+    <div className="flex h-full min-w-0 max-w-full flex-col gap-4 rounded-xl border border-slate-600 bg-slate-800/80 p-3 backdrop-blur-sm sm:p-4">
       {/* Avatar e Nome */}
       <div className="text-center">
-        <div className="w-32 h-32 mx-auto mb-3 rounded-lg overflow-hidden border-2 border-amber-500/50 bg-slate-700">
+        <div className="mx-auto mb-3 aspect-square w-full max-w-32 overflow-hidden rounded-lg border-2 border-amber-500/50 bg-slate-700">
           <img
             src={classDef.imageUrl}
             alt={classDef.name}
