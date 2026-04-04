@@ -179,7 +179,7 @@ export default function GamePage() {
     phase !== "confirmingSkill";
 
   const pileButtonClass =
-    "min-h-11 w-full min-w-0 px-1.5 py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg text-xs sm:text-sm transition-colors flex items-center justify-center gap-1 sm:justify-between sm:gap-2 whitespace-nowrap";
+    "min-h-11 w-full min-w-0 px-1 py-2 md:px-1.5 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg text-xs md:text-sm transition-colors flex flex-row items-center justify-center gap-1 md:justify-between md:gap-2 whitespace-nowrap";
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col">
@@ -579,7 +579,10 @@ export default function GamePage() {
                 onClick={() => setShowLogModal(true)}
                 className={`${pileButtonClass} h-full min-h-11 hover:text-white`}
               >
-                <span className="truncate">📜 Log</span>
+                <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                  <span className="text-base leading-none md:text-sm">📜</span>
+                  <span className="hidden md:inline truncate">Log</span>
+                </span>
               </button>
             </div>
 
@@ -627,8 +630,11 @@ export default function GamePage() {
                 onClick={() => setShowDrawPileModal(true)}
                 className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
               >
-                <span className="truncate">🗂️ Compra</span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums sm:px-2">
+                <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                  <span className="text-base leading-none md:text-sm">🗂️</span>
+                  <span className="hidden md:inline truncate">Compra</span>
+                </span>
+                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
                   {drawPile.length}
                 </span>
               </button>
@@ -643,8 +649,11 @@ export default function GamePage() {
                 onClick={() => setShowDeckModal(true)}
                 className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
               >
-                <span className="truncate">📚 Deck</span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums sm:px-2">
+                <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                  <span className="text-base leading-none md:text-sm">📚</span>
+                  <span className="hidden md:inline truncate">Deck</span>
+                </span>
+                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
                   {deck.length}
                 </span>
               </button>
@@ -659,8 +668,11 @@ export default function GamePage() {
                 onClick={() => setShowDiscardModal(true)}
                 className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
               >
-                <span className="truncate">🗑️ Descarte</span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums sm:px-2">
+                <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                  <span className="text-base leading-none md:text-sm">🗑️</span>
+                  <span className="hidden md:inline truncate">Descarte</span>
+                </span>
+                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
                   {discardPile.length}
                 </span>
               </button>
@@ -675,8 +687,11 @@ export default function GamePage() {
                 onClick={() => setShowBurnedModal(true)}
                 className={`${pileButtonClass} h-full min-h-11 hover:text-orange-500`}
               >
-                <span className="truncate">🔥 Queimadas</span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums text-orange-400 sm:px-2">
+                <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                  <span className="text-base leading-none md:text-sm">🔥</span>
+                  <span className="hidden md:inline truncate">Queimadas</span>
+                </span>
+                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums text-orange-400 md:px-2">
                   {burnedPile.length}
                 </span>
               </button>
