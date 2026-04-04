@@ -1,7 +1,6 @@
 "use client";
 
 import { Card as CardType } from "@/app/types/game";
-
 interface CardProps {
   card: CardType;
   disabled?: boolean;
@@ -86,7 +85,9 @@ export function Card({
           <span className="text-green-300 font-bold">👟 {card.movement}</span>
         )}
         {card.range && card.range > 1 && (
-          <span className="text-purple-300 font-bold">📏 {card.range}</span>
+          <span className="font-bold text-purple-300">
+            🏹 {card.range}
+          </span>
         )}
         {card.energy && (
           <span className="text-amber-300 font-bold">⚡ +{card.energy}</span>

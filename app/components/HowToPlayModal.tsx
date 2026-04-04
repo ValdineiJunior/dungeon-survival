@@ -1,7 +1,6 @@
 "use client";
 
 import { DiceIcon } from "./DiceIcon";
-
 interface HowToPlayModalProps {
   onClose: () => void;
 }
@@ -169,7 +168,7 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
                 <span className="text-slate-300">Dano</span>
               </div>
               <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
-                <span>📏</span>
+                <span>🏹</span>
                 <span className="text-slate-300">Alcance</span>
               </div>
               <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
@@ -214,7 +213,7 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
           {/* Alcance de Ataque */}
           <section>
             <h3 className="text-lg font-bold text-amber-300 mb-3">
-              📏 Alcance de Ataque
+              🏹 Alcance de Ataque
             </h3>
             <p className="text-slate-300 text-sm mb-3">
               Alguns inimigos podem atacar à distância! Fique atento ao
@@ -222,7 +221,7 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
             </p>
             <div className="bg-orange-900/20 border border-orange-700/50 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-orange-400">📏</span>
+                <span className="text-orange-400">🏹</span>
                 <span className="text-orange-300 font-bold">Alcance</span>
                 <span className="text-slate-400 text-sm">
                   - Número de hexes que o inimigo pode atacar
@@ -230,9 +229,10 @@ export function HowToPlayModal({ onClose }: HowToPlayModalProps) {
               </div>
               <p className="text-slate-400 text-xs">
                 Inimigos sem indicador de alcance atacam apenas corpo a corpo (1
-                hex). Inimigos com 📏2 ou 📏3 podem te acertar de longe —
-                cuidado com o Dragão Ancião! Ataque à distância contra alvo
-                adjacente: role 1d6 — 1 ou 2 = erra, 3–6 = acerta.
+                hex). Inimigos com 🏹2 ou 🏹3 podem te acertar de longe —
+                cuidado com o Dragão Ancião! Ataque
+                à distância contra alvo adjacente: role 1d6 — 1 ou 2 = erra,
+                3–6 = acerta.
               </p>
             </div>
           </section>

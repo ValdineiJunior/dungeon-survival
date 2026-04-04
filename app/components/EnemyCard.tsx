@@ -98,12 +98,12 @@ export function EnemyCard({
       )}
 
       <div className="flex flex-col gap-2">
-        {/* Coluna esquerda: nome acima da imagem; direita: pills */}
-        <div className="flex items-stretch gap-3">
+        {/* Duas metades com mesma largura + divisor vertical */}
+        <div className="flex w-full min-w-0 items-stretch gap-3">
           <div
-            className={`flex w-16 shrink-0 flex-col items-center gap-1.5 ${isTargetable ? "pt-0.5" : ""}`}
+            className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5 ${isTargetable ? "pt-0.5" : ""}`}
           >
-            <h3 className="w-full min-w-0 text-center text-[11px] font-bold leading-tight text-white sm:text-xs">
+            <h3 className="w-full min-w-0 px-0.5 text-center text-xs font-bold leading-tight text-white sm:text-sm">
               <span className="line-clamp-3 wrap-break-word">{enemy.name}</span>
             </h3>
             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded border-2 border-slate-600 bg-slate-800">
@@ -126,6 +126,12 @@ export function EnemyCard({
               </span>
             </div>
           </div>
+
+          <div
+            className="w-px shrink-0 self-stretch bg-slate-600"
+            role="separator"
+            aria-orientation="vertical"
+          />
 
           <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
             <div className="flex items-center justify-between gap-2">
@@ -151,8 +157,8 @@ export function EnemyCard({
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="shrink-0 text-xs text-amber-400" aria-hidden>
-                📏
+              <span className="shrink-0 text-sm leading-none" title="Alcance">
+                🏹
               </span>
               <span
                 className={`${pillBase} ${rangePillClass}`}
