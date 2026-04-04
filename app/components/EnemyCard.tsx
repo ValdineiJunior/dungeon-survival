@@ -69,7 +69,7 @@ export function EnemyCard({
       : "border-gray-600 bg-gray-600 text-slate-300";
 
   const pillBase =
-    "inline-flex min-w-[2.75rem] items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
+    "inline-flex min-w-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
 
   return (
     <div
@@ -97,9 +97,7 @@ export function EnemyCard({
       <div className="flex flex-col gap-2">
         {/* Duas metades com mesma largura + divisor vertical */}
         <div className="flex w-full min-w-0 items-stretch gap-3">
-          <div
-            className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5"
-          >
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5">
             <h3
               className="w-full min-w-0 truncate px-0.5 text-center text-xs font-bold leading-tight text-white sm:text-sm"
               title={enemy.name}
