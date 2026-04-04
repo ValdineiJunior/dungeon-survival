@@ -89,7 +89,7 @@ export function DiceIcon({
 
   return (
     <div
-      className={`relative shrink-0 flex flex-col items-center gap-0 rounded-md border-2 ${rarity.bg} ${rarity.border} ${padding} ${className} ${highlighted ? "ring-2 ring-amber-400 ring-offset-1 ring-offset-transparent" : ""}`}
+      className={`relative shrink-0 flex flex-col items-center gap-0 rounded-md border-2 ${rarity.bg} ${highlighted ? "border-amber-400" : rarity.border} ${padding} ${className}`}
       title={value != null ? `d${faces} = ${value}` : `d${faces}`}
     >
       <img

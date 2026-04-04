@@ -208,32 +208,25 @@ export function EnemyCard({
           </div>
         )}
 
-        {/* Intenção (fora da fase de iniciativa) */}
-        {!isInitiativePhase && (
-          <div className="flex flex-col gap-1 border-t border-slate-600 pt-2">
-            <div className="text-center text-[10px] font-bold text-slate-500">
-              Intenção
-            </div>
-            {actionCard && (
-              <div
-                className="flex flex-wrap items-center justify-center gap-2"
-                title={actionCard.name}
-              >
-                {actionCard.actions.map((action, index) => {
-                  const info = actionIcons[action.type];
-                  return (
-                    <span
-                      key={index}
-                      className={`text-sm ${info.color}`}
-                      title={`${info.label}: ${action.value}`}
-                    >
-                      {info.icon}
-                      <span className="text-xs font-bold">{action.value}</span>
-                    </span>
-                  );
-                })}
-              </div>
-            )}
+        {/* Ícones de intenção (sem rótulo; fora da fase de iniciativa) */}
+        {!isInitiativePhase && actionCard && (
+          <div
+            className="flex flex-wrap items-center justify-center gap-2 border-t border-slate-600 pt-2"
+            title={actionCard.name}
+          >
+            {actionCard.actions.map((action, index) => {
+              const info = actionIcons[action.type];
+              return (
+                <span
+                  key={index}
+                  className={`text-sm ${info.color}`}
+                  title={`${info.label}: ${action.value}`}
+                >
+                  {info.icon}
+                  <span className="text-xs font-bold">{action.value}</span>
+                </span>
+              );
+            })}
           </div>
         )}
       </div>
