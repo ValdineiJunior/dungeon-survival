@@ -172,9 +172,9 @@ export function EnemyCard({
           </div>
         </div>
 
-        {/* Dados de iniciativa (sem rótulo); min-h reserva altura dos dados com valor */}
+        {/* Iniciativa: min-h cobre dado sm + valor + borda (sm+); no mobile dado menor → min-h-12 basta */}
         {isInitiativePhase && (
-          <div className="flex min-h-14 w-full flex-wrap items-center justify-center gap-x-1 gap-y-0.5 border-t border-slate-600 pt-2">
+          <div className="flex min-h-12 w-full flex-wrap items-center justify-center gap-x-1 gap-y-0.5 border-t border-slate-600 pt-2 sm:min-h-14">
             {initiativeDice ? (
               <>
                 {initiativeDice.dice.map((d, di) => (
@@ -206,10 +206,10 @@ export function EnemyCard({
           </div>
         )}
 
-        {/* Ícones de intenção; mesma min-h da faixa de iniciativa para altura estável */}
+        {/* Intenção: mesma escala de min-h que iniciativa (cartão estável entre fases) */}
         {!isInitiativePhase && actionCard && (
           <div
-            className="flex min-h-14 w-full flex-wrap items-center justify-center gap-2 border-t border-slate-600 pt-2"
+            className="flex min-h-12 w-full flex-wrap items-center justify-center gap-2 border-t border-slate-600 pt-2 sm:min-h-14"
             title={actionCard.name}
           >
             {actionCard.actions.map((action, index) => {

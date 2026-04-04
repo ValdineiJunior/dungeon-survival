@@ -64,9 +64,10 @@ interface DiceIconProps {
 }
 
 const sizeClasses = {
-  sm: "w-5 h-5",
-  md: "w-8 h-8",
-  lg: "w-10 h-10",
+  /** No mobile (< sm) menor que o sm padrão para colunas estreitas */
+  sm: "h-4 w-4 sm:h-5 sm:w-5",
+  md: "h-8 w-8",
+  lg: "h-10 w-10",
 };
 
 const paddingBySize = {

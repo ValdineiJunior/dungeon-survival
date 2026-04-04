@@ -97,34 +97,35 @@ export function PlayerStatus({
       {/* Separador */}
       <div className="border-t border-slate-600" />
 
-      {/* Pool de dados (iniciativa) */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-xs text-slate-500 tracking-wide">Iniciativa</span>
-        <div className="flex flex-wrap items-center gap-1">
+      {/* Iniciativa */}
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className="min-w-0 flex-1 truncate text-left text-xs tracking-wide text-slate-500">
+          Iniciativa
+        </span>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
           {(classDef.initiativeDice ?? [6, 6, 6]).map((faces, i) => (
             <DiceIcon key={i} faces={faces} size="sm" />
           ))}
         </div>
       </div>
 
-      {/* Habilidades Inatas */}
+      {/* Habilidades Inatas (linha própria; só ícones) */}
       {classDef.innateAbilities.length > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-slate-500 tracking-wide">
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <span className="min-w-0 flex-1 truncate text-left text-xs tracking-wide text-slate-500">
             Habilidades Inatas
           </span>
-          <div className="flex flex-col gap-1">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
             {classDef.innateAbilities.map((ability, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => setInnateDetail(ability)}
-                className="flex w-full min-w-0 items-center gap-2 rounded bg-slate-700/50 px-2 py-1.5 text-left text-xs transition-colors hover:bg-slate-700"
+                title={ability.name}
+                aria-label={`Habilidade inata: ${ability.name}`}
+                className="flex size-7 items-center justify-center rounded-md border border-slate-600 bg-slate-700/80 text-sm leading-none transition-colors hover:border-amber-500/50 hover:bg-slate-600"
               >
-                <span className="shrink-0">{ability.emoji}</span>
-                <span className="min-w-0 truncate font-medium text-amber-300">
-                  {ability.name}
-                </span>
+                {ability.emoji}
               </button>
             ))}
           </div>
