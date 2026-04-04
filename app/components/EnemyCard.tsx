@@ -75,25 +75,22 @@ export function EnemyCard({
     <div
       onClick={isTargetable ? onClick : undefined}
       className={`
-        relative p-3 rounded-xl 
+        relative w-full rounded-xl border-2 p-3 shadow-lg
         bg-linear-to-r from-slate-800 to-slate-900
-        border-2 
+        transition-colors duration-200
         ${
           isTargetable
-            ? "border-yellow-400 shadow-yellow-400/50 hover:bg-slate-700 cursor-pointer animate-pulse ring-2 ring-yellow-400"
+            ? "cursor-pointer border-yellow-400 hover:border-amber-300 hover:bg-slate-700/40"
             : isTargeted
-              ? "border-yellow-400 shadow-yellow-400/50"
+              ? "border-yellow-400"
               : "border-slate-600"
         }
-        shadow-lg transition-all duration-200
-        w-full
-        ${isTargetable ? "hover:scale-105" : ""}
       `}
     >
       {/* Target indicator */}
       {isTargetable && (
-        <div className="absolute -top-2 -left-2 px-2 py-1 rounded-full bg-yellow-500 text-black text-xs font-bold">
-          🎯 Alvo
+        <div className="absolute -top-2 -left-2 rounded-full bg-yellow-500 px-2 py-1 text-xs font-bold text-black">
+          🎯 Atacar alvo
         </div>
       )}
 
@@ -101,7 +98,7 @@ export function EnemyCard({
         {/* Duas metades com mesma largura + divisor vertical */}
         <div className="flex w-full min-w-0 items-stretch gap-3">
           <div
-            className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5 ${isTargetable ? "pt-0.5" : ""}`}
+            className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1.5"
           >
             <h3 className="w-full min-w-0 px-0.5 text-center text-xs font-bold leading-tight text-white sm:text-sm">
               <span className="line-clamp-3 wrap-break-word">{enemy.name}</span>
@@ -174,9 +171,9 @@ export function EnemyCard({
           </div>
         </div>
 
-        {/* Dados de iniciativa (sem rótulo) */}
+        {/* Dados de iniciativa (sem rótulo); min-h reserva altura dos dados com valor */}
         {isInitiativePhase && (
-          <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 border-t border-slate-600 pt-2">
+          <div className="flex min-h-14 w-full flex-wrap items-center justify-center gap-x-1 gap-y-0.5 border-t border-slate-600 pt-2">
             {initiativeDice ? (
               <>
                 {initiativeDice.dice.map((d, di) => (
@@ -208,10 +205,10 @@ export function EnemyCard({
           </div>
         )}
 
-        {/* Ícones de intenção (sem rótulo; fora da fase de iniciativa) */}
+        {/* Ícones de intenção; mesma min-h da faixa de iniciativa para altura estável */}
         {!isInitiativePhase && actionCard && (
           <div
-            className="flex flex-wrap items-center justify-center gap-2 border-t border-slate-600 pt-2"
+            className="flex min-h-14 w-full flex-wrap items-center justify-center gap-2 border-t border-slate-600 pt-2"
             title={actionCard.name}
           >
             {actionCard.actions.map((action, index) => {
@@ -230,13 +227,6 @@ export function EnemyCard({
           </div>
         )}
       </div>
-
-      {/* Click hint when targetable */}
-      {isTargetable && (
-        <div className="mt-1 text-center text-yellow-400 text-xs font-bold">
-          Clique para atacar!
-        </div>
-      )}
     </div>
   );
 }
