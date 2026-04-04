@@ -221,13 +221,6 @@ export default function GamePage() {
               <span className="hidden sm:inline">📖 Como Jogar</span>
               <span className="sm:hidden">📖</span>
             </button>
-            <button
-              onClick={() => setShowAbandonModal(true)}
-              className="px-3 py-1 rounded text-sm font-medium bg-slate-700 hover:bg-red-600 text-slate-300 hover:text-white transition-colors"
-            >
-              <span className="hidden sm:inline">Abandonar</span>
-              <span className="sm:hidden">❌</span>
-            </button>
           </div>
         </div>
       </header>
@@ -528,7 +521,7 @@ export default function GamePage() {
           )}
         </div>
 
-        {/* Mão / iniciativa em linha inteira; barra de ações em 2 linhas (Começar turno ocupa as duas) */}
+        {/* Mão / iniciativa; barra de ações em 2 linhas de 5 colunas */}
         <div className="flex flex-col gap-2 md:gap-4 w-full min-w-0">
           <div className="w-full min-w-0 bg-slate-900/50 rounded-2xl border border-slate-700 backdrop-blur-sm min-h-40 md:min-h-52 flex items-center justify-center px-1">
             {phase === "rollingInitiative" ? (
@@ -550,151 +543,152 @@ export default function GamePage() {
             )}
           </div>
 
-          <div className="grid w-full min-w-0 grid-cols-5 grid-rows-[auto_auto] gap-2">
-            {defaultHand.map((entry, index) => (
-              <div
-                key={entry.id}
-                className="min-h-11 min-w-0 h-full flex [&>button]:h-full [&>button]:min-h-11"
-                style={{ gridColumn: index + 1, gridRow: 1 }}
-              >
-                <SmallDefaultCard
-                  entry={entry}
-                  currentEnergy={player.energy}
-                  disabled={defaultActionsDisabled}
-                  selected={
-                    selectedCard?.id === entry.card.id && !!selectedCardIsDefault
-                  }
-                  onClick={() => selectDefaultCard(entry.id)}
-                />
+          <div className="flex flex-col gap-2 w-full min-w-0">
+            {/* Linha 1: Log | ações padrão (ataque/defesa/movimento) | Começar/Finalizar turno */}
+            <div className="grid w-full min-w-0 grid-cols-5 gap-2">
+              <div className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11">
+                <button
+                  type="button"
+                  title="Log de batalha"
+                  onClick={() => setShowLogModal(true)}
+                  className={`${pileButtonClass} h-full min-h-11 hover:text-white`}
+                >
+                  <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                    <span className="text-base leading-none md:text-sm">📜</span>
+                    <span className="hidden md:inline truncate">Log</span>
+                  </span>
+                </button>
               </div>
-            ))}
-
-            <div
-              className="min-h-11 min-w-0 h-full flex"
-              style={{ gridColumn: 4, gridRow: 1 }}
-            >
-              <button
-                type="button"
-                title="Log de jogo"
-                onClick={() => setShowLogModal(true)}
-                className={`${pileButtonClass} h-full min-h-11 hover:text-white`}
-              >
-                <span className="flex min-w-0 items-center gap-1 md:gap-2">
-                  <span className="text-base leading-none md:text-sm">📜</span>
-                  <span className="hidden md:inline truncate">Log</span>
-                </span>
-              </button>
+              {defaultHand.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11"
+                >
+                  <SmallDefaultCard
+                    entry={entry}
+                    currentEnergy={player.energy}
+                    disabled={defaultActionsDisabled}
+                    selected={
+                      selectedCard?.id === entry.card.id &&
+                      !!selectedCardIsDefault
+                    }
+                    onClick={() => selectDefaultCard(entry.id)}
+                  />
+                </div>
+              ))}
+              <div className="min-h-11 min-w-0 flex">
+                <button
+                  type="button"
+                  title={
+                    phase === "rollingInitiative" ||
+                    phase === "viewingInitiative"
+                      ? "Começar turno"
+                      : "Finalizar turno"
+                  }
+                  onClick={
+                    phase === "viewingInitiative"
+                      ? confirmInitiativeModal
+                      : endTurn
+                  }
+                  disabled={
+                    phase !== "playerTurn" && phase !== "viewingInitiative"
+                  }
+                  className={`flex h-full min-h-11 w-full flex-col items-center justify-center gap-0 rounded-lg border-2 px-0.5 py-1 text-center leading-tight font-bold text-[10px] sm:text-xs ${
+                    phase === "playerTurn" || phase === "viewingInitiative"
+                      ? "border-amber-400 bg-amber-500 text-black hover:bg-amber-400"
+                      : "cursor-not-allowed border-gray-500 bg-gray-600 text-gray-400"
+                  }`}
+                >
+                  <span>
+                    {phase === "rollingInitiative" ||
+                    phase === "viewingInitiative"
+                      ? "Começar"
+                      : "Finalizar"}
+                  </span>
+                  <span className="opacity-90">turno</span>
+                </button>
+              </div>
             </div>
 
-            <div
-              className="min-w-0 flex"
-              style={{ gridColumn: 5, gridRow: "1 / span 2" }}
-            >
-              <button
-                type="button"
-                title={
-                  phase === "rollingInitiative" || phase === "viewingInitiative"
-                    ? "Começar turno"
-                    : "Finalizar turno"
-                }
-                onClick={
-                  phase === "viewingInitiative"
-                    ? confirmInitiativeModal
-                    : endTurn
-                }
-                disabled={
-                  phase !== "playerTurn" && phase !== "viewingInitiative"
-                }
-                className={`flex h-full min-h-22 w-full flex-col items-center justify-center gap-0.5 rounded-lg border-2 px-1 py-2 text-center leading-tight font-bold text-[10px] sm:text-sm ${
-                  phase === "playerTurn" || phase === "viewingInitiative"
-                    ? "border-amber-400 bg-amber-500 text-black hover:bg-amber-400"
-                    : "cursor-not-allowed border-gray-500 bg-gray-600 text-gray-400"
-                }`}
-              >
-                <span>
-                  {phase === "rollingInitiative" || phase === "viewingInitiative"
-                    ? "Começar"
-                    : "Finalizar"}
-                </span>
-                <span className="opacity-90">turno</span>
-              </button>
-            </div>
-
-            <div
-              className="min-h-11 min-w-0 h-full flex"
-              style={{ gridColumn: 1, gridRow: 2 }}
-            >
-              <button
-                type="button"
-                title="Pilha de compra"
-                onClick={() => setShowDrawPileModal(true)}
-                className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
-              >
-                <span className="flex min-w-0 items-center gap-1 md:gap-2">
-                  <span className="text-base leading-none md:text-sm">🗂️</span>
-                  <span className="hidden md:inline truncate">Compra</span>
-                </span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
-                  {drawPile.length}
-                </span>
-              </button>
-            </div>
-            <div
-              className="min-h-11 min-w-0 h-full flex"
-              style={{ gridColumn: 2, gridRow: 2 }}
-            >
-              <button
-                type="button"
-                title="Deck completo"
-                onClick={() => setShowDeckModal(true)}
-                className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
-              >
-                <span className="flex min-w-0 items-center gap-1 md:gap-2">
-                  <span className="text-base leading-none md:text-sm">📚</span>
-                  <span className="hidden md:inline truncate">Deck</span>
-                </span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
-                  {deck.length}
-                </span>
-              </button>
-            </div>
-            <div
-              className="min-h-11 min-w-0 h-full flex"
-              style={{ gridColumn: 3, gridRow: 2 }}
-            >
-              <button
-                type="button"
-                title="Descarte"
-                onClick={() => setShowDiscardModal(true)}
-                className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
-              >
-                <span className="flex min-w-0 items-center gap-1 md:gap-2">
-                  <span className="text-base leading-none md:text-sm">🗑️</span>
-                  <span className="hidden md:inline truncate">Descarte</span>
-                </span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
-                  {discardPile.length}
-                </span>
-              </button>
-            </div>
-            <div
-              className="min-h-11 min-w-0 h-full flex"
-              style={{ gridColumn: 4, gridRow: 2 }}
-            >
-              <button
-                type="button"
-                title="Cartas queimadas"
-                onClick={() => setShowBurnedModal(true)}
-                className={`${pileButtonClass} h-full min-h-11 hover:text-orange-500`}
-              >
-                <span className="flex min-w-0 items-center gap-1 md:gap-2">
-                  <span className="text-base leading-none md:text-sm">🔥</span>
-                  <span className="hidden md:inline truncate">Queimadas</span>
-                </span>
-                <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums text-orange-400 md:px-2">
-                  {burnedPile.length}
-                </span>
-              </button>
+            {/* Linha 2: Abandonar | Compra | Deck | Descarte | Queimadas */}
+            <div className="grid w-full min-w-0 grid-cols-5 gap-2">
+              <div className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11">
+                <button
+                  type="button"
+                  title="Abandonar missão"
+                  onClick={() => setShowAbandonModal(true)}
+                  className={`${pileButtonClass} h-full min-h-11 hover:bg-red-600 hover:text-white`}
+                >
+                  <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                    <span className="text-base leading-none md:text-sm">❌</span>
+                    <span className="hidden md:inline truncate">Abandonar</span>
+                  </span>
+                </button>
+              </div>
+              <div className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11">
+                <button
+                  type="button"
+                  title="Pilha de compra"
+                  onClick={() => setShowDrawPileModal(true)}
+                  className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
+                >
+                  <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                    <span className="text-base leading-none md:text-sm">🗂️</span>
+                    <span className="hidden md:inline truncate">Compra</span>
+                  </span>
+                  <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
+                    {drawPile.length}
+                  </span>
+                </button>
+              </div>
+              <div className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11">
+                <button
+                  type="button"
+                  title="Deck completo"
+                  onClick={() => setShowDeckModal(true)}
+                  className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
+                >
+                  <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                    <span className="text-base leading-none md:text-sm">📚</span>
+                    <span className="hidden md:inline truncate">Deck</span>
+                  </span>
+                  <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
+                    {deck.length}
+                  </span>
+                </button>
+              </div>
+              <div className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11">
+                <button
+                  type="button"
+                  title="Descarte"
+                  onClick={() => setShowDiscardModal(true)}
+                  className={`${pileButtonClass} h-full min-h-11 hover:text-amber-400`}
+                >
+                  <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                    <span className="text-base leading-none md:text-sm">🗑️</span>
+                    <span className="hidden md:inline truncate">Descarte</span>
+                  </span>
+                  <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums md:px-2">
+                    {discardPile.length}
+                  </span>
+                </button>
+              </div>
+              <div className="min-h-11 min-w-0 flex [&>button]:h-full [&>button]:min-h-11">
+                <button
+                  type="button"
+                  title="Cartas queimadas"
+                  onClick={() => setShowBurnedModal(true)}
+                  className={`${pileButtonClass} h-full min-h-11 hover:text-orange-500`}
+                >
+                  <span className="flex min-w-0 items-center gap-1 md:gap-2">
+                    <span className="text-base leading-none md:text-sm">🔥</span>
+                    <span className="hidden md:inline truncate">Queimadas</span>
+                  </span>
+                  <span className="shrink-0 text-[10px] font-bold bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums text-orange-400 md:px-2">
+                    {burnedPile.length}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
