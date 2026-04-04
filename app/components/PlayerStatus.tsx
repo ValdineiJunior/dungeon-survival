@@ -43,51 +43,47 @@ export function PlayerStatus({
       <div className="border-t border-slate-600" />
 
       {/* HP */}
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center justify-between gap-3 text-sm">
         <span className="text-red-400 shrink-0">❤️ Vida</span>
-        <div className="flex-1 min-w-0 h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
-          <div
-            className={`h-full transition-all duration-300 ${
-              hpPercentage > 50
-                ? "bg-red-500"
+        <span
+          className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
+            player.hp <= 0
+              ? "border-gray-600 bg-gray-600 text-slate-300"
+              : hpPercentage > 50
+                ? "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30"
                 : hpPercentage > 25
-                  ? "bg-orange-500"
-                  : "bg-red-700"
-            }`}
-            style={{ width: `${hpPercentage}%` }}
-          />
-        </div>
-        <span className="text-white shrink-0 tabular-nums">
+                  ? "border-orange-600 bg-orange-500 text-slate-900 shadow-md shadow-orange-500/25"
+                  : "border-red-800 bg-red-700 text-white shadow-md shadow-red-900/40"
+          }`}
+        >
           {player.hp}/{player.maxHp}
         </span>
       </div>
 
-      {/* Block */}
-      {player.block > 0 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-blue-400">🛡️ Bloqueio</span>
-          <span className="px-2 py-0.5 bg-blue-600 rounded text-white font-bold">
-            {player.block}
-          </span>
-        </div>
-      )}
+      {/* Bloqueio */}
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <span className="text-blue-400 shrink-0">🛡️ Bloqueio</span>
+        <span
+          className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
+            player.block > 0
+              ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/30"
+              : "border-gray-600 bg-gray-600 text-slate-300"
+          }`}
+        >
+          {player.block}
+        </span>
+      </div>
 
       {/* Energia */}
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center justify-between gap-3 text-sm">
         <span className="text-amber-400 shrink-0">⚡ Energia</span>
-        <div className="flex-1 flex gap-1 justify-center min-w-0">
-          {Array.from({ length: player.maxEnergy }).map((_, i) => (
-            <div
-              key={i}
-              className={`w-5 h-5 rounded-full border-2 transition-all shrink-0 ${
-                i < player.energy
-                  ? "bg-amber-400 border-amber-500 shadow-amber-400/50 shadow-md"
-                  : "bg-gray-700 border-gray-600"
-              }`}
-            />
-          ))}
-        </div>
-        <span className="text-white shrink-0 tabular-nums">
+        <span
+          className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
+            player.energy > 0
+              ? "border-amber-500 bg-amber-400 text-slate-900 shadow-md shadow-amber-400/35"
+              : "border-gray-600 bg-gray-600 text-slate-300"
+          }`}
+        >
           {player.energy}/{player.maxEnergy}
         </span>
       </div>
