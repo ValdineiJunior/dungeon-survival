@@ -42,6 +42,14 @@ export function EnemyCard({
   initiativeDice,
 }: EnemyCardProps) {
   const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
+  const hpPillClass =
+    enemy.hp <= 0
+      ? "border-gray-600 bg-gray-600 text-slate-300"
+      : hpPercentage > 50
+        ? "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30"
+        : hpPercentage > 25
+          ? "border-orange-600 bg-orange-500 text-slate-900 shadow-md shadow-orange-500/25"
+          : "border-red-800 bg-red-700 text-white shadow-md shadow-red-900/40";
   const actionCard = enemy.currentActionCard;
   const isInitiativePhase =
     phase === "rollingInitiative" || phase === "viewingInitiative";
@@ -49,6 +57,19 @@ export function EnemyCard({
   const initiativeMin = initiativeDiceFaces.length;
   const initiativeMax = initiativeDiceFaces.reduce((a, b) => a + b, 0);
   const initiativeRange = `${initiativeMin}-${initiativeMax}`;
+
+  const blockPillClass =
+    enemy.block > 0
+      ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/30"
+      : "border-gray-600 bg-gray-600 text-slate-300";
+
+  const rangePillClass =
+    enemy.attackRange > 1
+      ? "border-amber-500 bg-amber-400 text-slate-900 shadow-md shadow-amber-400/35"
+      : "border-gray-600 bg-gray-600 text-slate-300";
+
+  const pillBase =
+    "inline-flex min-w-[2.75rem] items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
 
   return (
     <div
@@ -76,152 +97,139 @@ export function EnemyCard({
         </div>
       )}
 
-      <div className="flex items-center gap-2">
-        {/* Monster avatar with order number */}
-        <div className="shrink-0 w-12 h-12 relative rounded border-2 border-slate-600 bg-slate-800 overflow-hidden">
-          {ENEMY_IMAGE_FILES[enemy.name] ? (
-            <img
-              src={`/enemies/${ENEMY_IMAGE_FILES[enemy.name]}`}
-              alt={enemy.name}
-              className="w-full h-full object-cover object-top"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-2xl">
-              {enemy.emoji}
-            </div>
-          )}
-          <span
-            className="absolute -bottom-0 -right-0 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[10px] font-bold rounded-full border border-amber-600 z-10"
-            title={`Ordem de turno: ${orderNumber}`}
+      <div className="flex flex-col gap-2">
+        {/* Coluna esquerda: nome acima da imagem; direita: pills */}
+        <div className="flex items-stretch gap-3">
+          <div
+            className={`flex w-16 shrink-0 flex-col items-center gap-1.5 ${isTargetable ? "pt-0.5" : ""}`}
           >
-            {orderNumber}
-          </span>
-        </div>
-
-        {/* Center: Enemy info */}
-        <div className="flex-1 min-w-0">
-          {/* Name and position */}
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-white font-bold text-sm truncate">
-              {enemy.name}
-            </span>
-            {enemy.block > 0 && (
-              <span
-                className="text-blue-400 text-xs"
-                title={`Bloqueio: ${enemy.block} - Reduz o dano recebido`}
-              >
-                🛡️{enemy.block}
-              </span>
-            )}
-          </div>
-
-          {/* HP bar */}
-          <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden border border-gray-600 mt-1">
-            <div
-              className={`h-full transition-all duration-300 ${
-                hpPercentage > 50
-                  ? "bg-green-500"
-                  : hpPercentage > 25
-                    ? "bg-yellow-500"
-                    : "bg-red-500"
-              }`}
-              style={{ width: `${hpPercentage}%` }}
-            />
-          </div>
-
-          {/* HP text and range */}
-          <div className="flex items-center justify-between text-xs text-gray-300 mt-0.5">
-            <span title={`Vida: ${enemy.hp} de ${enemy.maxHp}`}>
-              ❤️ {enemy.hp}/{enemy.maxHp}
-            </span>
-            {enemy.attackRange > 1 && (
-              <span
-                className="text-orange-400"
-                title={`Alcance: ${enemy.attackRange} hexes - Pode atacar à distância!`}
-              >
-                📏{enemy.attackRange}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Right side: Dice pool during initiative, or intent icons otherwise */}
-        <div className="flex flex-col items-center gap-1 pl-2 border-l border-slate-600 w-28">
-          {isInitiativePhase ? (
-            /* Dice pool: 3 dice per enemy, configurable faces per enemy type */
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-[10px] text-slate-500 font-bold">
-                Iniciativa
-              </div>
-              {initiativeDice ? (
-                /* Viewing phase: show rolled dice with icons */
-                <div className="flex flex-col items-center gap-0.5">
-                  <div className="flex items-center gap-0.5 flex-wrap justify-center">
-                    {initiativeDice.dice.map((d, di) => (
-                      <DiceIcon
-                        key={di}
-                        faces={initiativeDice.diceFaces?.[di] ?? 6}
-                        value={d}
-                        size="sm"
-                        highlighted={d === initiativeDice.highestDie}
-                      />
-                    ))}
-                    <span className="ml-0.5 text-xs font-bold text-red-400">
-                      ={initiativeDice.total}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-500">
-                    {initiativeRange}
-                  </span>
-                </div>
+            <h3 className="w-full min-w-0 text-center text-[11px] font-bold leading-tight text-white sm:text-xs">
+              <span className="line-clamp-3 wrap-break-word">{enemy.name}</span>
+            </h3>
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded border-2 border-slate-600 bg-slate-800">
+              {ENEMY_IMAGE_FILES[enemy.name] ? (
+                <img
+                  src={`/enemies/${ENEMY_IMAGE_FILES[enemy.name]}`}
+                  alt={enemy.name}
+                  className="h-full w-full object-cover object-top"
+                />
               ) : (
-                /* Rolling phase: show pool (e.g. 3 dice with enemy's config) */
-                <div className="flex flex-col items-center gap-0.5">
-                  <div
-                    className="flex items-center gap-0.5 flex-wrap justify-center"
-                    title={`${initiativeDiceFaces.map((f) => `d${f}`).join(" + ")} - Aguardando rolagem`}
-                  >
-                    {initiativeDiceFaces.map((faces, i) => (
-                      <DiceIcon key={i} faces={faces} size="sm" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-slate-500">
-                    {initiativeRange}
-                  </span>
+                <div className="flex h-full w-full items-center justify-center text-2xl">
+                  {enemy.emoji}
                 </div>
               )}
+              <span
+                className="absolute bottom-0 right-0 z-10 flex h-4 w-4 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[10px] font-bold text-black"
+                title={`Ordem de turno: ${orderNumber}`}
+              >
+                {orderNumber}
+              </span>
             </div>
-          ) : (
-            /* Normal gameplay: label + action icons */
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-[10px] text-slate-500 font-bold">
-                Intenção
-              </div>
-              {actionCard && (
-                <div
-                  className="flex items-center gap-1"
-                  title={actionCard.name}
-                >
-                  {actionCard.actions.map((action, index) => {
-                    const info = actionIcons[action.type];
-                    return (
-                      <span
-                        key={index}
-                        className={`text-sm ${info.color}`}
-                        title={`${info.label}: ${action.value}`}
-                      >
-                        {info.icon}
-                        <span className="text-xs font-bold">
-                          {action.value}
-                        </span>
-                      </span>
-                    );
-                  })}
-                </div>
-              )}
+          </div>
+
+          <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="shrink-0 text-xs text-red-400" aria-hidden>
+                ❤️
+              </span>
+              <span
+                className={`${pillBase} ${hpPillClass}`}
+                title={`Vida: ${enemy.hp} de ${enemy.maxHp}`}
+              >
+                {enemy.hp}/{enemy.maxHp}
+              </span>
             </div>
-          )}
+            <div className="flex items-center justify-between gap-2">
+              <span className="shrink-0 text-xs text-blue-400" aria-hidden>
+                🛡️
+              </span>
+              <span
+                className={`${pillBase} ${blockPillClass}`}
+                title={`Bloqueio: ${enemy.block}`}
+              >
+                {enemy.block}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="shrink-0 text-xs text-amber-400" aria-hidden>
+                📏
+              </span>
+              <span
+                className={`${pillBase} ${rangePillClass}`}
+                title={
+                  enemy.attackRange > 1
+                    ? `Alcance: ${enemy.attackRange} hexes (ataque à distância)`
+                    : `Alcance: ${enemy.attackRange} (corpo a corpo)`
+                }
+              >
+                {enemy.attackRange}
+              </span>
+            </div>
+          </div>
         </div>
+
+        {/* Dados de iniciativa (sem rótulo) */}
+        {isInitiativePhase && (
+          <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 border-t border-slate-600 pt-2">
+            {initiativeDice ? (
+              <>
+                {initiativeDice.dice.map((d, di) => (
+                  <DiceIcon
+                    key={di}
+                    faces={initiativeDice.diceFaces?.[di] ?? 6}
+                    value={d}
+                    size="sm"
+                    highlighted={d === initiativeDice.highestDie}
+                  />
+                ))}
+                <span className="text-xs font-bold text-red-400">
+                  ={initiativeDice.total}
+                </span>
+                <span className="text-[10px] font-bold tabular-nums text-slate-500">
+                  {initiativeRange}
+                </span>
+              </>
+            ) : (
+              <>
+                {initiativeDiceFaces.map((faces, i) => (
+                  <DiceIcon key={i} faces={faces} size="sm" />
+                ))}
+                <span className="text-[10px] font-bold tabular-nums text-slate-500">
+                  {initiativeRange}
+                </span>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Intenção (fora da fase de iniciativa) */}
+        {!isInitiativePhase && (
+          <div className="flex flex-col gap-1 border-t border-slate-600 pt-2">
+            <div className="text-center text-[10px] font-bold text-slate-500">
+              Intenção
+            </div>
+            {actionCard && (
+              <div
+                className="flex flex-wrap items-center justify-center gap-2"
+                title={actionCard.name}
+              >
+                {actionCard.actions.map((action, index) => {
+                  const info = actionIcons[action.type];
+                  return (
+                    <span
+                      key={index}
+                      className={`text-sm ${info.color}`}
+                      title={`${info.label}: ${action.value}`}
+                    >
+                      {info.icon}
+                      <span className="text-xs font-bold">{action.value}</span>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Click hint when targetable */}
