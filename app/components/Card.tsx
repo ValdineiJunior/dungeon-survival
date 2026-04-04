@@ -36,68 +36,72 @@ export function Card({
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative w-36 h-48 rounded-lg border-2 
+        flex h-48 w-36 flex-col rounded-lg border-2 p-1.5 shadow-lg
         bg-linear-to-b ${typeColors[card.type]}
-        flex flex-col p-1
-        transform transition-all duration-200
+        transition-colors duration-150
         ${
           disabled
-            ? "opacity-50 cursor-not-allowed"
-            : "hover:scale-110 hover:-translate-y-2 hover:shadow-xl hover:shadow-black/50 cursor-pointer"
+            ? "cursor-not-allowed opacity-50"
+            : "cursor-pointer hover:border-amber-100"
         }
         ${shouldGrayscale ? "grayscale" : ""}
-        ${selected ? "ring-4 ring-yellow-400 scale-110 -translate-y-2" : ""}
-        shadow-lg
+        ${selected ? "border-yellow-400!" : ""}
       `}
     >
-      {/* Custo de energia */}
-      <div className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-amber-400 border-2 border-amber-600 flex items-center justify-center text-black font-bold text-lg shadow-md">
-        {card.cost}
+      {/* Faixa superior: largura total, custo à esquerda */}
+      <div className="flex w-full shrink-0 items-center gap-2">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-amber-600 bg-amber-400 text-sm font-bold text-black shadow-sm">
+          {card.cost}
+        </div>
+        <div className="min-h-7 flex-1" aria-hidden />
       </div>
 
-      {/* Tipo */}
-      <div className="text-2xl text-center mt-3 mb-1">
-        {typeIcons[card.type]}
-      </div>
+      {/* Corpo do cartão */}
+      <div className="flex min-h-0 flex-1 flex-col px-0.5 pt-1.5">
+        {/* Tipo */}
+        <div className="mb-0.5 text-center text-2xl leading-none">
+          {typeIcons[card.type]}
+        </div>
 
-      {/* Nome */}
-      <div className="text-center font-bold text-white text-sm px-1 leading-tight">
-        {card.name}
-      </div>
+        {/* Nome */}
+        <div className="px-0.5 text-center text-sm font-bold leading-tight text-white">
+          {card.name}
+        </div>
 
-      {/* Linha decorativa */}
-      <div className="w-full h-px bg-white/30 my-2" />
+        {/* Linha decorativa */}
+        <div className="my-1.5 h-px w-full bg-white/30" />
 
-      {/* Descrição */}
-      <div className="flex-1 text-center text-white/90 text-xs px-1">
-        {card.description}
-      </div>
+        {/* Descrição */}
+        <div className="min-h-0 flex-1 text-center text-xs text-white/90">
+          {card.description}
+        </div>
 
-      {/* Valores */}
-      <div className="flex flex-wrap justify-center gap-2 text-sm">
-        {card.damage && (
-          <span className="text-red-300 font-bold">🗡️ {card.damage}</span>
-        )}
-        {card.block && (
-          <span className="text-blue-300 font-bold">🛡️ {card.block}</span>
-        )}
-        {card.movement && (
-          <span className="text-green-300 font-bold">👟 {card.movement}</span>
-        )}
-        {card.range && card.range > 1 && (
-          <span className="font-bold text-purple-300">
-            🏹 {card.range}
-          </span>
-        )}
-        {card.energy && (
-          <span className="text-amber-300 font-bold">⚡ +{card.energy}</span>
-        )}
-        {card.loseHp && (
-          <span className="text-red-400 font-bold">❤️ -{card.loseHp}</span>
-        )}
-        {card.exhaust && (
-          <span className="text-orange-400/90 text-[10px] font-medium">Esgota</span>
-        )}
+        {/* Valores */}
+        <div className="mt-1 flex flex-wrap justify-center gap-2 text-sm">
+          {card.damage && (
+            <span className="font-bold text-red-300">🗡️ {card.damage}</span>
+          )}
+          {card.block && (
+            <span className="font-bold text-blue-300">🛡️ {card.block}</span>
+          )}
+          {card.movement && (
+            <span className="font-bold text-green-300">👟 {card.movement}</span>
+          )}
+          {card.range && card.range > 1 && (
+            <span className="font-bold text-purple-300">🏹 {card.range}</span>
+          )}
+          {card.energy && (
+            <span className="font-bold text-amber-300">⚡ +{card.energy}</span>
+          )}
+          {card.loseHp && (
+            <span className="font-bold text-red-400">❤️ -{card.loseHp}</span>
+          )}
+          {card.exhaust && (
+            <span className="text-[10px] font-medium text-orange-400/90">
+              Esgota
+            </span>
+          )}
+        </div>
       </div>
     </button>
   );

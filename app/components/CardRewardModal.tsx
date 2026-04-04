@@ -25,26 +25,16 @@ export function CardRewardModal({
 
         {/* Cards Display */}
         <div className="flex justify-center gap-8 mb-8">
-          <div
+          <CardComponent
+            card={cards[0]}
+            selected={selected?.id === cards[0].id}
             onClick={() => setSelected(cards[0])}
-            className={`cursor-pointer transform transition-all ${
-              selected?.id === cards[0].id
-                ? "scale-105 ring-4 ring-yellow-400 rounded-lg"
-                : "hover:scale-105"
-            }`}
-          >
-            <CardComponent card={cards[0]} />
-          </div>
-          <div
+          />
+          <CardComponent
+            card={cards[1]}
+            selected={selected?.id === cards[1].id}
             onClick={() => setSelected(cards[1])}
-            className={`cursor-pointer transform transition-all ${
-              selected?.id === cards[1].id
-                ? "scale-105 ring-4 ring-yellow-400 rounded-lg"
-                : "hover:scale-105"
-            }`}
-          >
-            <CardComponent card={cards[1]} />
-          </div>
+          />
         </div>
 
         {/* Buttons */}

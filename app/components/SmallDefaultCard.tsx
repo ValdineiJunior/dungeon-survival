@@ -43,18 +43,18 @@ export function SmallDefaultCard({
       onClick={onClick}
       disabled={effectivelyDisabled}
       className={`
-        relative w-full min-h-0 rounded-md md:rounded-lg border-2 px-1 py-1 md:px-2 md:py-1.5
+        relative w-full min-h-0 rounded-md border-2 px-1 py-1 shadow-md transition-colors duration-150
+        md:rounded-lg md:px-2 md:py-1.5
         bg-linear-to-r ${typeColors[card.type]}
         flex items-center max-md:justify-center max-md:gap-1 md:justify-start md:gap-2
-        transform transition-all duration-200
+        text-left max-md:overflow-hidden
         ${
           effectivelyDisabled
-            ? "opacity-50 cursor-not-allowed"
-            : "max-md:hover:scale-[1.02] md:hover:scale-105 hover:shadow-lg hover:shadow-black/50 cursor-pointer hover:border-white"
+            ? "cursor-not-allowed opacity-50"
+            : "cursor-pointer hover:border-amber-100"
         }
         ${shouldGrayscale ? "grayscale" : ""}
-        ${selected ? "ring-1 ring-yellow-400 max-md:scale-[1.02] md:ring-2 md:scale-105 border-yellow-400" : ""}
-        shadow-md text-left max-md:overflow-hidden
+        ${selected ? "border-yellow-400!" : ""}
       `}
       title={
         noEnergy
