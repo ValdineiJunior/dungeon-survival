@@ -528,7 +528,7 @@ export default function GamePage() {
 
         {/* Mão / iniciativa; barra de ações em 2 linhas de 5 colunas */}
         <div className="flex flex-col gap-2 md:gap-4 w-full min-w-0">
-          <div className="w-full min-w-0 bg-slate-900/50 rounded-md md:rounded-2xl border border-slate-700 backdrop-blur-sm min-h-40 md:min-h-52 flex items-center justify-center px-1">
+          <div className="flex h-fit min-h-0 w-full min-w-0 items-center justify-center rounded-md border border-slate-700 bg-slate-900/50 px-0.5 py-px backdrop-blur-sm md:rounded-2xl md:px-1 md:py-0.5">
             {phase === "rollingInitiative" ? (
               <InitiativeRollModal
                 turn={turn}

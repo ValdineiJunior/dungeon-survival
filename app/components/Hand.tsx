@@ -24,9 +24,9 @@ export function Hand({
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
   return (
-    <div className="flex w-full min-w-0 justify-center p-1 md:p-4 min-h-52">
-      <div className="max-w-full overflow-x-auto overflow-y-visible scroll-smooth pb-1">
-        <div className="mx-auto flex w-max flex-nowrap items-end justify-center gap-2 px-1 py-1">
+    <div className="flex h-fit min-h-0 w-full min-w-0 justify-center px-1 py-0.5 md:px-1.5 md:py-1">
+      <div className="max-w-full overflow-x-auto overflow-y-visible scroll-smooth [-webkit-overflow-scrolling:touch] touch-pan-x">
+        <div className="mx-auto flex w-max flex-nowrap items-end justify-center gap-1 px-0.5 py-px sm:gap-1.5 md:gap-2.5 md:px-1 md:py-px">
           {cards.map((card, index) => {
             const canPlay = card.cost <= energy && !disabled;
             const isSelected =
@@ -53,7 +53,7 @@ export function Hand({
           })}
 
           {cards.length === 0 && (
-            <div className="flex min-h-40 min-w-48 items-center justify-center text-gray-500 italic">
+            <div className="flex h-32 min-w-44 items-center justify-center px-2 text-center text-xs italic text-gray-500 md:h-40 md:text-sm">
               Sua mão está vazia
             </div>
           )}

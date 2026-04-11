@@ -16,15 +16,17 @@ export function CardRewardModal({
   const [selected, setSelected] = useState<Card | null>(null);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-40">
-      <div className="text-center p-1 md:p-8 bg-slate-800 rounded-md md:rounded-2xl border-2 border-amber-600 shadow-2xl max-w-2xl">
-        <div className="text-4xl mb-6 text-amber-400 font-bold">⭐ Recompensa do Andar!</div>
-        <p className="text-slate-300 mb-8 text-lg">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-2 backdrop-blur-sm sm:p-4">
+      <div className="max-h-[min(100dvh,40rem)] w-full max-w-2xl overflow-y-auto rounded-md border-2 border-amber-600 bg-slate-800 p-3 text-center shadow-2xl md:rounded-2xl md:p-8">
+        <div className="mb-4 text-2xl font-bold text-amber-400 md:mb-6 md:text-4xl">
+          ⭐ Recompensa do Andar!
+        </div>
+        <p className="mb-6 text-base text-slate-300 md:mb-8 md:text-lg">
           Escolha uma carta para adicionar ao seu deck:
         </p>
 
         {/* Cards Display */}
-        <div className="flex justify-center gap-8 mb-8">
+        <div className="mb-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-6 md:mb-8 md:gap-8">
           <CardComponent
             card={cards[0]}
             selected={selected?.id === cards[0].id}

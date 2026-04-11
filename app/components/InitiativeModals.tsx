@@ -52,37 +52,45 @@ export function InitiativeRollModal({
   };
 
   return (
-    <div className="w-full max-w-full min-w-0 h-full min-h-0 md:min-h-52 flex flex-col md:flex-row items-stretch md:items-center justify-center gap-3 md:gap-6 p-1 md:px-4 md:py-3 bg-slate-900/80 rounded-md md:rounded-2xl lg:rounded-3xl border border-amber-700/50 backdrop-blur-sm">
-      {/* Label */}
-      <div className="shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-0 text-center justify-center">
-        <div className="text-xl md:text-2xl">🎲</div>
+    <div
+      className={`
+        flex h-fit w-full max-w-full min-h-32 min-w-0 flex-row items-center justify-center gap-1.5
+        px-1 py-0.5 md:min-h-40 md:gap-4 md:px-1.5 md:py-1
+      `}
+    >
+      {/* Label — compact row, same vertical band as Hand */}
+      <div className="flex shrink-0 flex-row items-center gap-1 text-center md:flex-col md:gap-0">
+        <div className="text-lg leading-none md:text-2xl">🎲</div>
         <div>
-          <div className="text-amber-400 font-bold text-xs md:text-sm leading-tight">
+          <div className="text-[10px] font-bold leading-tight text-amber-400 md:text-sm">
             Iniciativa
           </div>
-          <div className="text-slate-500 text-[10px] md:text-xs">
-            Turno {turn}
-          </div>
+          <div className="text-[9px] text-slate-500 md:text-xs">Turno {turn}</div>
         </div>
       </div>
 
-      <div className="hidden md:block shrink-0 text-slate-600 text-lg">—</div>
+      <div className="hidden shrink-0 text-lg text-slate-600 md:block">—</div>
 
-      {/* Pool: dados pequenos (como EnemyCard), uma linha no mobile */}
-      <div className="flex flex-col items-center gap-1.5 md:gap-2 flex-1 min-w-0 w-full">
-        <p className="text-slate-400 text-[10px] md:text-xs text-center hidden sm:block px-1">
+      {/* Pool — one horizontal scroller like the hand */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-0 md:gap-2">
+        <p className="hidden px-1 text-center text-[10px] text-slate-400 md:block md:text-xs">
           Selecione os dados que quer rolar. Clique para marcar/desmarcar.
         </p>
-        <div className="flex flex-row flex-nowrap items-center justify-center gap-1 sm:gap-2 w-full max-w-full overflow-x-auto py-0.5">
+        <div
+          className={`
+            flex max-w-full flex-nowrap items-center justify-center gap-1 overflow-x-auto py-px
+            [-webkit-overflow-scrolling:touch] touch-pan-x sm:gap-2
+          `}
+        >
           {pool.map((faces, i) => (
             <button
               key={i}
               type="button"
               onClick={() => toggle(i)}
-              className={`shrink-0 rounded-md md:rounded-lg border-2 transition-all duration-200 ${
+              className={`shrink-0 rounded-md border-2 transition-all duration-200 md:rounded-lg ${
                 selected[i]
-                  ? "border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50 scale-100"
-                  : "border-slate-600 bg-slate-800/50 opacity-50 scale-95"
+                  ? "scale-100 border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50"
+                  : "scale-95 border-slate-600 bg-slate-800/50 opacity-50"
               }`}
               title={
                 selected[i]
@@ -94,22 +102,29 @@ export function InitiativeRollModal({
             </button>
           ))}
         </div>
-        <p className="text-amber-400/80 text-[9px] md:text-[10px] text-center max-w-[220px] px-1">
+        <p className="hidden max-w-[220px] px-1 text-center text-[9px] text-amber-400/80 md:block md:text-[10px]">
           Menos dados = tende a agir depois. Mais dados = tende a agir primeiro.
         </p>
       </div>
 
-      <div className="hidden md:block shrink-0 text-slate-600 text-lg">—</div>
+      <div className="hidden shrink-0 text-lg text-slate-600 md:block">—</div>
 
       <button
+        type="button"
         onClick={handleRoll}
         disabled={!canRoll}
-        className="group flex flex-col items-center gap-1 md:gap-2 px-1 py-1 md:px-5 md:py-3 w-full md:w-auto shrink-0 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-md md:rounded-xl lg:rounded-2xl transition-all duration-200 hover:scale-[1.02] md:hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        title={`Total possível: ${minTotal}–${maxTotal}. Pelo menos 1 dado.`}
+        className={`
+          group flex shrink-0 flex-col items-center gap-0.5 rounded-md border-2 border-blue-600 bg-blue-900/40 px-2 py-1
+          transition-all duration-200 hover:border-blue-400 hover:bg-blue-800/60 hover:shadow-lg hover:shadow-blue-500/20
+          disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100
+          md:gap-2 md:rounded-xl md:px-5 md:py-3 md:hover:scale-105
+        `}
       >
-        <div className="text-xs md:text-sm font-bold text-blue-300 group-hover:text-white text-center">
+        <div className="text-center text-[10px] font-bold text-blue-300 group-hover:text-white md:text-sm">
           Rolar {diceLabel}
         </div>
-        <div className="text-[9px] md:text-[10px] text-slate-400 text-center">
+        <div className="hidden text-center text-[9px] text-slate-400 md:block md:text-[10px]">
           {minTotal} – {maxTotal} · Pelo menos 1 dado
         </div>
       </button>
@@ -129,7 +144,7 @@ export function InitiativeOrderModal({
   turn,
 }: InitiativeOrderModalProps) {
   return (
-    <div className="w-full max-w-full min-w-0 h-full min-h-36 md:min-h-52 flex items-center gap-2 md:gap-3 p-1 md:px-4 md:py-3 bg-slate-900/80 rounded-md md:rounded-2xl lg:rounded-3xl border border-amber-700/50 backdrop-blur-sm overflow-hidden">
+    <div className="flex h-fit min-h-32 w-full max-w-full min-w-0 items-center gap-1.5 overflow-hidden px-1 py-0.5 md:min-h-40 md:gap-3 md:px-1.5 md:py-1">
       {/* Label */}
       <div className="shrink-0 text-center">
         <div className="text-xl md:text-2xl mb-0.5">⚔️</div>

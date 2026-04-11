@@ -44,7 +44,7 @@ export function SmallDefaultCard({
       disabled={effectivelyDisabled}
       className={`
         relative w-full min-h-0 rounded-md border-2 px-1 py-1 shadow-md transition-colors duration-150
-        md:rounded-lg md:px-2 md:py-1.5
+        md:rounded-lg md:px-1.5 md:py-1
         bg-linear-to-r ${typeColors[card.type]}
         flex items-center max-md:justify-center max-md:gap-1 md:justify-start md:gap-2
         text-left max-md:overflow-hidden
@@ -62,15 +62,15 @@ export function SmallDefaultCard({
           : card.description
       }
     >
-      <div className="flex shrink-0 items-center justify-center rounded-full border border-amber-600 bg-amber-400 w-4 h-4 text-[10px] font-bold text-black md:w-5 md:h-5 md:text-xs">
+      <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[10px] font-bold text-black md:h-4.5 md:w-4.5 md:text-[11px]">
         {card.cost}
       </div>
       {/* Mobile: display:contents → custo, ícone e valor centralizados na linha. Desktop: grupo à direita. */}
       <div className="max-md:contents md:flex md:min-w-0 md:flex-1 md:items-center md:justify-end md:gap-1">
-        <div className="shrink-0 text-xs leading-none md:text-sm">
+        <div className="shrink-0 text-xs leading-none md:text-xs">
           {typeIcons[card.type]}
         </div>
-        <div className="min-w-0 truncate text-[11px] font-bold text-white tabular-nums md:text-right md:text-sm">
+        <div className="min-w-0 truncate text-[11px] font-bold text-white tabular-nums md:text-right md:text-xs">
           {card.damage || card.block || card.movement || card.range || ""}
         </div>
       </div>

@@ -36,7 +36,8 @@ export function Card({
       onClick={onClick}
       disabled={disabled}
       className={`
-        flex h-48 w-36 flex-col rounded-md md:rounded-lg border-2 p-1 md:p-1.5 shadow-lg
+        flex h-32 w-24 flex-col rounded-md border-2 p-0.5 shadow-md
+        md:h-40 md:w-28 md:rounded-lg md:p-1 md:shadow-lg
         bg-linear-to-b ${typeColors[card.type]}
         transition-colors duration-150
         ${
@@ -49,35 +50,35 @@ export function Card({
       `}
     >
       {/* Faixa superior: largura total, custo à esquerda */}
-      <div className="flex w-full shrink-0 items-center gap-2">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-amber-600 bg-amber-400 text-sm font-bold text-black shadow-sm">
+      <div className="flex w-full shrink-0 items-center gap-0.5 md:gap-1.5">
+        <div className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[9px] font-bold text-black shadow-sm md:h-6 md:w-6 md:border-2 md:text-xs">
           {card.cost}
         </div>
-        <div className="min-h-7 flex-1" aria-hidden />
+        <div className="min-h-4 flex-1 md:min-h-6" aria-hidden />
       </div>
 
       {/* Corpo do cartão */}
-      <div className="flex min-h-0 flex-1 flex-col px-0.5 pt-1.5">
+      <div className="flex min-h-0 flex-1 flex-col px-0.5 pt-px md:pt-1">
         {/* Tipo */}
-        <div className="mb-0.5 text-center text-2xl leading-none">
+        <div className="mb-0 text-center text-base leading-none md:mb-0.5 md:text-xl">
           {typeIcons[card.type]}
         </div>
 
         {/* Nome */}
-        <div className="px-0.5 text-center text-sm font-bold leading-tight text-white">
+        <div className="px-0.5 text-center text-[10px] font-bold leading-tight text-white md:text-[11px]">
           {card.name}
         </div>
 
         {/* Linha decorativa */}
-        <div className="my-1.5 h-px w-full bg-white/30" />
+        <div className="my-px h-px w-full bg-white/30 md:my-1" />
 
         {/* Descrição */}
-        <div className="min-h-0 flex-1 text-center text-xs text-white/90">
+        <div className="min-h-0 flex-1 text-center text-[9px] leading-tight text-white/90 md:text-[10px] md:leading-normal">
           {card.description}
         </div>
 
         {/* Valores */}
-        <div className="mt-1 flex flex-wrap justify-center gap-2 text-sm">
+        <div className="mt-px flex flex-wrap justify-center gap-0.5 text-[9px] md:mt-0.5 md:gap-1.5 md:text-[11px]">
           {card.damage && (
             <span className="font-bold text-red-300">🗡️ {card.damage}</span>
           )}
@@ -97,7 +98,7 @@ export function Card({
             <span className="font-bold text-red-400">❤️ -{card.loseHp}</span>
           )}
           {card.exhaust && (
-            <span className="text-[10px] font-medium text-orange-400/90">
+            <span className="text-[9px] font-medium text-orange-400/90 md:text-[10px]">
               Esgota
             </span>
           )}
