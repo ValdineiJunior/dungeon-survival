@@ -432,25 +432,13 @@ export default function GamePage() {
                     <div className="min-w-0 flex-1 bg-blue-600/50 px-1 py-0.5 sm:px-2 md:rounded-md md:py-1">
                       {remainingMovement > 0 ? (
                         <span>
-                          <span className="hidden sm:inline">
-                            ⬡ Passo {movementPath.length + 1}/
-                            {selectedCard?.movement} • Clique em um hexágono
-                            verde
-                          </span>
-                          <span className="sm:hidden">
-                            ⬡ {movementPath.length + 1}/{selectedCard?.movement}{" "}
-                            · hex verde
-                          </span>
+                          ⬡ Passo {movementPath.length + 1}/
+                          {selectedCard?.movement} • Clique em um hexágono verde
                         </span>
                       ) : (
                         <span>
-                          <span className="hidden sm:inline">
-                            ⬡ Movimento completo! Clique em
-                            &quot;Confirmar&quot; para aplicar
-                          </span>
-                          <span className="sm:hidden">
-                            ⬡ Pronto · &quot;Confirmar&quot;
-                          </span>
+                          ⬡ Movimento completo! Clique em &quot;Confirmar&quot;
+                          para aplicar
                         </span>
                       )}
                     </div>
@@ -461,16 +449,14 @@ export default function GamePage() {
                           onClick={undoMovementStep}
                           className="shrink-0 rounded-md bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white hover:bg-orange-500 sm:px-2 sm:text-xs"
                         >
-                          <span className="sm:hidden">↶</span>
-                          <span className="hidden sm:inline">↶ Desfazer</span>
+                          ↶ Desfazer
                         </button>
                         <button
                           type="button"
                           onClick={completeMovement}
                           className="shrink-0 rounded-md bg-green-600 px-1.5 py-0.5 text-[10px] font-bold text-white hover:bg-green-500 sm:px-2 sm:text-xs"
                         >
-                          <span className="sm:hidden">✓</span>
-                          <span className="hidden sm:inline">✓ Confirmar</span>
+                          ✓ Confirmar
                         </button>
                       </>
                     )}
@@ -496,18 +482,11 @@ export default function GamePage() {
                     }
                   >
                     <span className="min-w-0 flex-1 bg-yellow-600/50 px-1 py-0.5 sm:px-2 md:rounded-md md:py-1">
-                      <span className="hidden sm:inline">
-                        🎯 Clique em um inimigo para atacar com{" "}
-                        <strong>{selectedCard?.name}</strong> (
-                        {selectedCard?.damage} dano)
-                      </span>
-                      <span className="sm:hidden">
-                        🎯 Toque no inimigo ·{" "}
-                        <strong className="truncate">{selectedCard?.name}</strong>{" "}
-                        ({selectedCard?.damage})
-                      </span>
+                      🎯 Clique em um inimigo para atacar com{" "}
+                      <strong>{selectedCard?.name}</strong> (
+                      {selectedCard?.damage} dano)
                       {selectedCard?.range != null && selectedCard.range > 1 && (
-                        <span className="hidden text-amber-200/90 md:inline md:text-xs">
+                        <span className="text-amber-200/90">
                           {" "}
                           • Ataque à distância (alcance {selectedCard.range}).
                           Se o alvo estiver adjacente: role 1d6 — 1 ou 2 = erra,
@@ -541,8 +520,7 @@ export default function GamePage() {
                       onClick={confirmSkill}
                       className="shrink-0 rounded-md bg-cyan-500 px-1.5 py-0.5 text-[10px] font-bold text-black hover:bg-cyan-400 sm:px-2 sm:text-xs"
                     >
-                      <span className="sm:hidden">OK</span>
-                      <span className="hidden sm:inline">Confirmar</span>
+                      Confirmar
                     </button>
                     <button
                       type="button"
