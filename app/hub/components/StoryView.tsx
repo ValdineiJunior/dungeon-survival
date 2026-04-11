@@ -14,13 +14,13 @@ function DialogueAvatar({ speakerId }: { speakerId: StorySpeakerId }) {
   const src = getSpeakerAvatarSrc(speakerId);
   if (failed) {
     return (
-      <div className="shrink-0 w-12 h-12 rounded-lg border border-amber-500/40 bg-slate-800 flex items-center justify-center text-amber-500/80 text-xs font-bold">
+      <div className="shrink-0 w-12 h-12 rounded-md md:rounded-lg border border-amber-500/40 bg-slate-800 flex items-center justify-center text-amber-500/80 text-xs font-bold">
         ?
       </div>
     );
   }
   return (
-    <div className="shrink-0 w-12 h-12 rounded-lg border border-amber-500/40 bg-slate-800 overflow-hidden">
+    <div className="shrink-0 w-12 h-12 rounded-md md:rounded-lg border border-amber-500/40 bg-slate-800 overflow-hidden">
       <img
         src={src}
         alt=""
@@ -49,7 +49,7 @@ function StorySectionImage({ src, alt }: { src: string; alt: string }) {
   const [failed, setFailed] = useState(false);
   if (failed) {
     return (
-      <figure className="rounded-lg overflow-hidden border border-amber-500/30 bg-slate-800/50">
+      <figure className="rounded-md md:rounded-lg overflow-hidden border border-amber-500/30 bg-slate-800/50">
         <div className="w-full aspect-video flex items-center justify-center text-slate-500 text-sm">
           {alt || "Imagem"}
         </div>
@@ -57,7 +57,7 @@ function StorySectionImage({ src, alt }: { src: string; alt: string }) {
     );
   }
   return (
-    <figure className="rounded-lg overflow-hidden border border-amber-500/30 bg-slate-800/50">
+    <figure className="rounded-md md:rounded-lg overflow-hidden border border-amber-500/30 bg-slate-800/50">
       <img
         src={src}
         alt={alt}

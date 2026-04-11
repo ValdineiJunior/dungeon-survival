@@ -35,13 +35,13 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
           {([4, 6, 8, 10, 12, 20] as const).map((faces) => (
             <span
               key={faces}
-              className="inline-flex items-center gap-1.5 bg-slate-700/60 text-slate-300 text-xs px-2 py-1 rounded"
+              className="inline-flex items-center gap-1.5 bg-slate-700/60 text-slate-300 text-xs px-1 py-1 rounded-md"
             >
               <DiceIcon faces={faces} size="sm" />d{faces} = {faces} faces
             </span>
           ))}
         </div>
-        <div className="bg-slate-700/50 rounded-lg p-3 border border-slate-600 mb-2">
+        <div className="bg-slate-700/50 rounded-md md:rounded-lg p-1 md:p-3 border border-slate-600 mb-2">
           <p className="text-slate-200 text-sm font-medium mb-2">
             Seus dados por classe:
           </p>
@@ -82,7 +82,7 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
           🃏 Tipos de Cartas
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="bg-slate-700/50 rounded-lg p-3 border-l-4 border-red-500">
+          <div className="bg-slate-700/50 rounded-md md:rounded-lg p-1 md:p-3 border-l-4 border-red-500">
             <div className="flex items-center gap-2 mb-1">
               <span>⚔️</span>
               <span className="font-bold text-red-400">Ataque</span>
@@ -91,7 +91,7 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
               Causa dano aos inimigos no alcance
             </p>
           </div>
-          <div className="bg-slate-700/50 rounded-lg p-3 border-l-4 border-blue-500">
+          <div className="bg-slate-700/50 rounded-md md:rounded-lg p-1 md:p-3 border-l-4 border-blue-500">
             <div className="flex items-center gap-2 mb-1">
               <span>🛡️</span>
               <span className="font-bold text-blue-400">Habilidade</span>
@@ -100,14 +100,14 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
               Ganha bloqueio para reduzir dano recebido
             </p>
           </div>
-          <div className="bg-slate-700/50 rounded-lg p-3 border-l-4 border-green-500">
+          <div className="bg-slate-700/50 rounded-md md:rounded-lg p-1 md:p-3 border-l-4 border-green-500">
             <div className="flex items-center gap-2 mb-1">
               <span>👟</span>
               <span className="font-bold text-green-400">Movimento</span>
             </div>
             <p className="text-slate-400 text-xs">Move seu personagem pelo mapa</p>
           </div>
-          <div className="bg-slate-700/50 rounded-lg p-3 border-l-4 border-yellow-500">
+          <div className="bg-slate-700/50 rounded-md md:rounded-lg p-1 md:p-3 border-l-4 border-yellow-500">
             <div className="flex items-center gap-2 mb-1">
               <span>✨</span>
               <span className="font-bold text-yellow-400">Poder</span>
@@ -122,27 +122,27 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
           📊 Ícones e Atributos
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span>❤️</span>
             <span className="text-slate-300">Vida (HP)</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span>🛡️</span>
             <span className="text-slate-300">Bloqueio</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span>⚡</span>
             <span className="text-slate-300">Energia</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span>🗡️</span>
             <span className="text-slate-300">Dano</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span>🏹</span>
             <span className="text-slate-300">Alcance</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span>⬡</span>
             <span className="text-slate-300">Posição Hex</span>
           </div>
@@ -157,23 +157,23 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
           Os inimigos mostram o que pretendem fazer no próximo turno:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span className="text-red-400">⚔️</span>
             <span className="text-slate-300">Vai atacar</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span className="text-blue-400">🛡️</span>
             <span className="text-slate-300">Vai defender</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span className="text-green-400">👟</span>
             <span className="text-slate-300">Vai mover</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span className="text-yellow-400">⬆️</span>
             <span className="text-slate-300">Vai buffar</span>
           </div>
-          <div className="flex items-center gap-2 bg-slate-700/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-slate-700/30 rounded-md px-1 py-1">
             <span className="text-purple-400">⬇️</span>
             <span className="text-slate-300">Vai debuffar</span>
           </div>
@@ -188,7 +188,7 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
           Alguns inimigos podem atacar à distância! Fique atento ao indicador de
           alcance:
         </p>
-        <div className="bg-orange-900/20 border border-orange-700/50 rounded-lg p-3">
+        <div className="bg-orange-900/20 border border-orange-700/50 rounded-md md:rounded-lg p-1 md:p-3">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-orange-400">🏹</span>
             <span className="text-orange-300 font-bold">Alcance</span>
@@ -210,19 +210,19 @@ export function HowToPlayContent({ className = "" }: HowToPlayContentProps) {
           🗺️ Mapa Hexagonal
         </h3>
         <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex items-center gap-2 bg-blue-900/30 rounded px-2 py-1 border border-blue-800">
+          <div className="flex items-center gap-2 bg-blue-900/30 rounded-md px-1 py-1 border border-blue-800">
             <span className="text-blue-500">⬡</span>
             <span className="text-slate-300">Você</span>
           </div>
-          <div className="flex items-center gap-2 bg-red-900/30 rounded px-2 py-1 border border-red-800">
+          <div className="flex items-center gap-2 bg-red-900/30 rounded-md px-1 py-1 border border-red-800">
             <span className="text-red-500">⬡</span>
             <span className="text-slate-300">Inimigo</span>
           </div>
-          <div className="flex items-center gap-2 bg-green-900/30 rounded px-2 py-1 border border-green-800">
+          <div className="flex items-center gap-2 bg-green-900/30 rounded-md px-1 py-1 border border-green-800">
             <span className="text-green-500">⬡</span>
             <span className="text-slate-300">Movimento válido</span>
           </div>
-          <div className="flex items-center gap-2 bg-orange-900/30 rounded px-2 py-1 border border-orange-800">
+          <div className="flex items-center gap-2 bg-orange-900/30 rounded-md px-1 py-1 border border-orange-800">
             <span className="text-yellow-400">🎯</span>
             <span className="text-slate-300">Alvo selecionável</span>
           </div>

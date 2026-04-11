@@ -79,7 +79,7 @@ export function EnemyCard({
     <div
       onClick={isTargetable ? onClick : undefined}
       className={`
-        relative min-w-0 max-w-full w-full rounded-xl border-2 p-3 shadow-lg
+        relative min-w-0 max-w-full w-full rounded-md md:rounded-xl border-2 p-1 md:p-3 shadow-lg
         bg-linear-to-r from-slate-800 to-slate-900
         transition-colors duration-200
         ${
@@ -106,7 +106,7 @@ export function EnemyCard({
           >
             {enemy.name}
           </h3>
-          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded border-2 border-slate-600 bg-slate-800">
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border-2 border-slate-600 bg-slate-800">
             {ENEMY_IMAGE_FILES[enemy.name] ? (
               <img
                 src={`/enemies/${ENEMY_IMAGE_FILES[enemy.name]}`}

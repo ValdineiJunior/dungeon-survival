@@ -52,7 +52,7 @@ export function InitiativeRollModal({
   };
 
   return (
-    <div className="w-full max-w-full min-w-0 h-full min-h-0 md:min-h-52 flex flex-col md:flex-row items-stretch md:items-center justify-center gap-3 md:gap-6 px-2 py-2 sm:px-4 sm:py-3 bg-slate-900/80 rounded-2xl md:rounded-3xl border border-amber-700/50 backdrop-blur-sm">
+    <div className="w-full max-w-full min-w-0 h-full min-h-0 md:min-h-52 flex flex-col md:flex-row items-stretch md:items-center justify-center gap-3 md:gap-6 p-1 md:px-4 md:py-3 bg-slate-900/80 rounded-md md:rounded-2xl lg:rounded-3xl border border-amber-700/50 backdrop-blur-sm">
       {/* Label */}
       <div className="shrink-0 flex flex-row md:flex-col items-center gap-2 md:gap-0 text-center justify-center">
         <div className="text-xl md:text-2xl">🎲</div>
@@ -79,7 +79,7 @@ export function InitiativeRollModal({
               key={i}
               type="button"
               onClick={() => toggle(i)}
-              className={`shrink-0 rounded-lg border-2 transition-all duration-200 ${
+              className={`shrink-0 rounded-md md:rounded-lg border-2 transition-all duration-200 ${
                 selected[i]
                   ? "border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50 scale-100"
                   : "border-slate-600 bg-slate-800/50 opacity-50 scale-95"
@@ -104,7 +104,7 @@ export function InitiativeRollModal({
       <button
         onClick={handleRoll}
         disabled={!canRoll}
-        className="group flex flex-col items-center gap-1 md:gap-2 px-4 py-2 md:px-5 md:py-3 w-full md:w-auto shrink-0 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-xl md:rounded-2xl transition-all duration-200 hover:scale-[1.02] md:hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        className="group flex flex-col items-center gap-1 md:gap-2 px-1 py-1 md:px-5 md:py-3 w-full md:w-auto shrink-0 bg-blue-900/40 hover:bg-blue-800/60 border-2 border-blue-600 hover:border-blue-400 rounded-md md:rounded-xl lg:rounded-2xl transition-all duration-200 hover:scale-[1.02] md:hover:scale-105 hover:shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         <div className="text-xs md:text-sm font-bold text-blue-300 group-hover:text-white text-center">
           Rolar {diceLabel}
@@ -129,7 +129,7 @@ export function InitiativeOrderModal({
   turn,
 }: InitiativeOrderModalProps) {
   return (
-    <div className="w-full max-w-full min-w-0 h-full min-h-36 md:min-h-52 flex items-center gap-2 md:gap-3 px-2 py-2 md:px-4 md:py-3 bg-slate-900/80 rounded-2xl md:rounded-3xl border border-amber-700/50 backdrop-blur-sm overflow-hidden">
+    <div className="w-full max-w-full min-w-0 h-full min-h-36 md:min-h-52 flex items-center gap-2 md:gap-3 p-1 md:px-4 md:py-3 bg-slate-900/80 rounded-md md:rounded-2xl lg:rounded-3xl border border-amber-700/50 backdrop-blur-sm overflow-hidden">
       {/* Label */}
       <div className="shrink-0 text-center">
         <div className="text-xl md:text-2xl mb-0.5">⚔️</div>
@@ -144,7 +144,7 @@ export function InitiativeOrderModal({
         {turnOrder.map((entry, i) => (
           <div
             key={entry.id}
-            className={`shrink-0 flex flex-col items-center gap-0.5 md:gap-1 px-2 py-1.5 md:px-3 md:py-2 rounded-xl border min-w-[60px] md:min-w-[72px] ${
+            className={`shrink-0 flex flex-col items-center gap-0.5 md:gap-1 px-1 py-1 md:px-3 md:py-2 rounded-md md:rounded-xl border min-w-[60px] md:min-w-[72px] ${
               entry.entityType === "player"
                 ? "bg-emerald-900/40 border-emerald-700/60"
                 : "bg-red-900/20 border-red-800/40"

@@ -178,7 +178,7 @@ export default function GamePage() {
     phase !== "confirmingSkill";
 
   const pileButtonClass =
-    "min-h-11 w-full min-w-0 px-1 py-2 md:px-1.5 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg text-xs md:text-sm transition-colors flex flex-row items-center justify-center gap-1 md:justify-between md:gap-2 whitespace-nowrap";
+    "min-h-11 w-full min-w-0 px-1 py-2 md:px-1.5 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-md md:rounded-lg text-xs md:text-sm transition-colors flex flex-row items-center justify-center gap-1 md:justify-between md:gap-2 whitespace-nowrap";
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col">
@@ -190,9 +190,9 @@ export default function GamePage() {
       </div>
 
       {/* Combat area */}
-      <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-4">
+      <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-1 md:p-4">
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
-        <div className="flex min-w-0 w-full flex-1 flex-col gap-4 py-4 lg:flex-row">
+        <div className="flex min-w-0 w-full flex-1 flex-col gap-2 py-1 md:gap-4 md:py-4 lg:flex-row">
           {/* Mobile: 2 colunas com gap sem estourar 100% (evita w-1/2 + gap > largura) */}
           <div className="grid min-w-0 w-full grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 lg:w-72 lg:shrink-0">
             <div className="min-w-0">
@@ -252,7 +252,7 @@ export default function GamePage() {
           {/* Centro: status em uma linha + mapa hex */}
           <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col gap-2">
             <div
-              className="shrink-0 w-full overflow-x-auto rounded-lg border border-slate-600/80 bg-slate-900/70 px-2 py-1.5 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="shrink-0 w-full overflow-x-auto rounded-md md:rounded-lg border border-slate-600/80 bg-slate-900/70 px-1 py-1 md:px-2 md:py-1.5 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               role="status"
               aria-live="polite"
             >
@@ -284,7 +284,7 @@ export default function GamePage() {
                   |
                 </span>
                 <span
-                  className={`shrink-0 rounded px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
+                  className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
                 >
                   {getPhaseLabel()}
                 </span>
@@ -348,7 +348,7 @@ export default function GamePage() {
         {/* Floor Complete screen */}
         {phase === "floorComplete" && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20">
-            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-emerald-600 shadow-2xl max-w-md">
+            <div className="text-center p-1 md:p-8 bg-slate-800 rounded-md md:rounded-2xl border-2 border-emerald-600 shadow-2xl max-w-md">
               <div className="text-6xl mb-4">🏆</div>
               <h2 className="text-3xl font-bold text-emerald-400 mb-2">
                 Andar {floor} Completo!
@@ -360,7 +360,7 @@ export default function GamePage() {
               <p className="text-amber-400 mb-6">
                 Preparado para o próximo desafio?
               </p>
-              <div className="bg-slate-900/50 rounded-lg p-4 mb-6">
+              <div className="bg-slate-900/50 rounded-md md:rounded-lg p-1 md:p-4 mb-6">
                 <p className="text-slate-400 text-sm mb-2">Próximo andar:</p>
                 <p className="text-lg font-bold text-amber-300">
                   {getFloorConfig(floor + 1).name}
@@ -372,13 +372,13 @@ export default function GamePage() {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={handleRestart}
-                  className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
+                  className="px-2 py-1 md:px-4 md:py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-md md:rounded-lg transition-colors"
                 >
                   Desistir
                 </button>
                 <button
                   onClick={advanceFloor}
-                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
+                  className="px-2 py-1 md:px-6 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-md md:rounded-lg transition-colors"
                 >
                   Avançar ao Andar {floor + 1} →
                 </button>
@@ -390,7 +390,7 @@ export default function GamePage() {
         {/* End game screen */}
         {(phase === "victory" || phase === "defeat") && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-20">
-            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
+            <div className="text-center p-1 md:p-8 bg-slate-800 rounded-md md:rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
               <div className="text-6xl mb-4">
                 {phase === "victory" ? "🐉" : "💀"}
               </div>
@@ -408,7 +408,7 @@ export default function GamePage() {
               </p>
               <button
                 onClick={handleRestart}
-                className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg transition-colors"
+                className="px-2 py-1 md:px-6 md:py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-md md:rounded-lg transition-colors"
               >
                 Jogar Novamente
               </button>
@@ -419,7 +419,7 @@ export default function GamePage() {
         {/* Abandon Quest Confirmation Modal */}
         {showAbandonModal && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-30">
-            <div className="text-center p-8 bg-slate-800 rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
+            <div className="text-center p-1 md:p-8 bg-slate-800 rounded-md md:rounded-2xl border-2 border-slate-600 shadow-2xl max-w-md">
               <div className="text-5xl mb-4">⚠️</div>
               <h2 className="text-2xl font-bold text-amber-400 mb-4">
                 Abandonar Missão?
@@ -431,13 +431,13 @@ export default function GamePage() {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => setShowAbandonModal(false)}
-                  className="px-6 py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-lg transition-colors"
+                  className="px-2 py-1 md:px-6 md:py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-md md:rounded-lg transition-colors"
                 >
                   Continuar Jogando
                 </button>
                 <button
                   onClick={handleAbandonQuest}
-                  className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-colors"
+                  className="px-2 py-1 md:px-6 md:py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-md md:rounded-lg transition-colors"
                 >
                   Abandonar
                 </button>
@@ -449,7 +449,7 @@ export default function GamePage() {
         {/* Selection instructions - fixed height to prevent layout shift */}
         <div className="h-10 flex items-center justify-center">
           {phase === "selectingMovement" && (
-            <div className="px-4 py-2 bg-blue-600/50 rounded-lg text-blue-200 text-sm flex items-center gap-3">
+            <div className="px-1 py-1 md:px-4 md:py-2 bg-blue-600/50 rounded-md md:rounded-lg text-blue-200 text-sm flex items-center gap-3">
               {remainingMovement > 0 ? (
                 <span>
                   ⬡ Passo {movementPath.length + 1}/{selectedCard?.movement} •
@@ -465,13 +465,13 @@ export default function GamePage() {
                 <>
                   <button
                     onClick={undoMovementStep}
-                    className="px-2 py-0.5 bg-orange-600 hover:bg-orange-500 text-white rounded font-bold text-xs"
+                    className="px-2 py-0.5 bg-orange-600 hover:bg-orange-500 text-white rounded-md font-bold text-xs"
                   >
                     ↶ Desfazer
                   </button>
                   <button
                     onClick={completeMovement}
-                    className="px-2 py-0.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs"
+                    className="px-2 py-0.5 bg-green-600 hover:bg-green-500 text-white rounded-md font-bold text-xs"
                   >
                     ✓ Confirmar
                   </button>
@@ -487,7 +487,7 @@ export default function GamePage() {
           )}
 
           {phase === "selectingTarget" && (
-            <span className="px-4 py-2 bg-yellow-600/50 rounded-lg text-yellow-200 text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="px-1 py-1 md:px-4 md:py-2 bg-yellow-600/50 rounded-md md:rounded-lg text-yellow-200 text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
               🎯 Clique em um inimigo para atacar com{" "}
               <strong>{selectedCard?.name}</strong> ({selectedCard?.damage}{" "}
               dano)
@@ -507,12 +507,12 @@ export default function GamePage() {
           )}
 
           {phase === "confirmingSkill" && (
-            <span className="px-4 py-2 bg-cyan-600/50 rounded-lg text-cyan-200 text-sm">
+            <span className="px-1 py-1 md:px-4 md:py-2 bg-cyan-600/50 rounded-md md:rounded-lg text-cyan-200 text-sm">
               🛡️ Usar <strong>{selectedCard?.name}</strong> (+
               {selectedCard?.block} bloqueio)?
               <button
                 onClick={confirmSkill}
-                className="ml-2 px-2 py-0.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded font-bold"
+                className="ml-2 px-2 py-0.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-md font-bold"
               >
                 Confirmar
               </button>
@@ -528,7 +528,7 @@ export default function GamePage() {
 
         {/* Mão / iniciativa; barra de ações em 2 linhas de 5 colunas */}
         <div className="flex flex-col gap-2 md:gap-4 w-full min-w-0">
-          <div className="w-full min-w-0 bg-slate-900/50 rounded-2xl border border-slate-700 backdrop-blur-sm min-h-40 md:min-h-52 flex items-center justify-center px-1">
+          <div className="w-full min-w-0 bg-slate-900/50 rounded-md md:rounded-2xl border border-slate-700 backdrop-blur-sm min-h-40 md:min-h-52 flex items-center justify-center px-1">
             {phase === "rollingInitiative" ? (
               <InitiativeRollModal
                 turn={turn}
@@ -598,7 +598,7 @@ export default function GamePage() {
                   disabled={
                     phase !== "playerTurn" && phase !== "viewingInitiative"
                   }
-                  className={`flex h-full min-h-11 w-full flex-col items-center justify-center gap-0 rounded-lg border-2 px-0.5 py-1 text-center leading-tight font-bold text-[10px] sm:text-xs ${
+                  className={`flex h-full min-h-11 w-full flex-col items-center justify-center gap-0 rounded-md md:rounded-lg border-2 px-0.5 py-1 text-center leading-tight font-bold text-[10px] sm:text-xs ${
                     phase === "playerTurn" || phase === "viewingInitiative"
                       ? "border-amber-400 bg-amber-500 text-black hover:bg-amber-400"
                       : "cursor-not-allowed border-gray-500 bg-gray-600 text-gray-400"

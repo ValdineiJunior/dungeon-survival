@@ -25,7 +25,7 @@ interface CardRowProps {
 
 function CardRow({ title, icon, cards, emptyMessage, bgColor, borderColor, textColor, isCurrentSection }: CardRowProps) {
   return (
-    <div className={`rounded-lg border ${borderColor} ${bgColor} p-3`}>
+    <div className={`rounded-md md:rounded-lg border ${borderColor} ${bgColor} p-1 md:p-3`}>
       <div className={`flex items-center gap-2 mb-3 ${textColor}`}>
         <span className="text-lg">{icon}</span>
         <span className="font-bold">{title}</span>
@@ -76,11 +76,11 @@ export function EnemyActionsModal({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
-      <div className="bg-slate-800 rounded-2xl border-2 border-red-800 shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col pt-2 relative">
+      <div className="bg-slate-800 rounded-md md:rounded-2xl border-2 border-red-800 shadow-2xl max-w-3xl w-full mx-4 max-h-[85vh] flex flex-col pt-2 relative">
         {/* Header */}
-        <div className="flex items-center gap-4 p-4 border-b border-red-800 bg-red-950/30">
+        <div className="flex items-center gap-4 p-1 md:p-4 border-b border-red-800 bg-red-950/30">
           {/* Square Enemy Avatar */}
-          <div className="shrink-0 w-24 h-24 relative rounded-lg border-2 border-red-900 bg-slate-900 overflow-hidden shadow-lg">
+          <div className="shrink-0 w-24 h-24 relative rounded-md md:rounded-lg border-2 border-red-900 bg-slate-900 overflow-hidden shadow-lg">
             {enemyImages[enemyName] ? (
               <img
                 src={`/enemies/${enemyImages[enemyName]}`}
@@ -108,7 +108,7 @@ export function EnemyActionsModal({
         </div>
 
         {/* Card Sections */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-1 md:p-4 space-y-4">
           {/* Current Action */}
           <CardRow
             title="Ação Atual"
@@ -145,7 +145,7 @@ export function EnemyActionsModal({
         </div>
 
         {/* Legend */}
-        <div className="p-3 border-t border-red-800 bg-red-950/20">
+        <div className="p-1 md:p-3 border-t border-red-800 bg-red-950/20">
           <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-400">
             <span className="flex items-center gap-1">
               <span className="text-red-400">⚔️</span> Ataque
@@ -163,10 +163,10 @@ export function EnemyActionsModal({
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-red-800 text-center">
+        <div className="p-1 md:p-3 border-t border-red-800 text-center">
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-red-900 hover:bg-red-800 text-white rounded-lg transition-colors"
+            className="px-2 py-1 md:px-6 md:py-2 bg-red-900 hover:bg-red-800 text-white rounded-md md:rounded-lg transition-colors"
           >
             Fechar
           </button>

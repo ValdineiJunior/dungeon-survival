@@ -13,7 +13,7 @@ export default function Home() {
       </div>
 
       {/* Conteúdo principal */}
-      <main className="relative z-10 text-center px-4">
+      <main className="relative z-10 text-center px-1 md:px-4">
         {/* Logo / Título */}
         <div className="mb-8">
           <div className="text-7xl mb-4">⚔️</div>
@@ -30,11 +30,11 @@ export default function Home() {
           <Link
             href="/hub"
             className="
-              px-12 py-4 
+              px-2 py-1 md:px-12 md:py-4
               bg-linear-to-r from-amber-500 to-amber-600 
               hover:from-amber-400 hover:to-amber-500
               text-black font-bold text-xl
-              rounded-lg
+              rounded-md md:rounded-lg
               transform transition-all duration-200
               hover:scale-105 hover:shadow-xl hover:shadow-amber-500/30
               glow-pulse
@@ -46,10 +46,10 @@ export default function Home() {
           <button
             disabled
             className="
-              px-8 py-3 
+              px-2 py-1 md:px-8 md:py-3
               bg-slate-700/50
               text-slate-400
-              rounded-lg
+              rounded-md md:rounded-lg
               cursor-not-allowed
             "
           >
@@ -59,7 +59,7 @@ export default function Home() {
 
         {/* Info cards */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
-          <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
+          <div className="p-1 md:p-6 bg-slate-800/50 rounded-md md:rounded-xl border border-slate-700 backdrop-blur-sm">
             <div className="text-4xl mb-3">🃏</div>
             <h3 className="text-lg font-bold text-amber-400 mb-2">
               Deck Building
@@ -69,7 +69,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
+          <div className="p-1 md:p-6 bg-slate-800/50 rounded-md md:rounded-xl border border-slate-700 backdrop-blur-sm">
             <div className="text-4xl mb-3">⚔️</div>
             <h3 className="text-lg font-bold text-amber-400 mb-2">
               Combate Tático
@@ -79,7 +79,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 backdrop-blur-sm">
+          <div className="p-1 md:p-6 bg-slate-800/50 rounded-md md:rounded-xl border border-slate-700 backdrop-blur-sm">
             <div className="text-4xl mb-3">💀</div>
             <h3 className="text-lg font-bold text-amber-400 mb-2">Roguelike</h3>
             <p className="text-slate-400 text-sm">

@@ -30,13 +30,13 @@ export function PlayerStatus({
   const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
 
   return (
-    <div className="flex h-full min-w-0 max-w-full flex-col gap-4 rounded-xl border border-slate-600 bg-slate-800/80 p-3 backdrop-blur-sm sm:p-4">
+    <div className="flex h-full min-w-0 max-w-full flex-col gap-4 rounded-md md:rounded-xl border border-slate-600 bg-slate-800/80 p-1 backdrop-blur-sm md:p-3 lg:p-4">
       {/* Nome + avatar */}
       <div className="text-center">
         <h3 className="mb-2 text-amber-400 font-bold lg:mb-3">
           {classDef.name}
         </h3>
-        <div className="mx-auto size-14 shrink-0 overflow-hidden rounded border-2 border-amber-500/50 bg-slate-700 lg:size-32 lg:rounded-lg">
+        <div className="mx-auto size-14 shrink-0 overflow-hidden rounded-md border-2 border-amber-500/50 bg-slate-700 lg:size-32 lg:rounded-lg">
           <img
             src={classDef.imageUrl}
             alt={classDef.name}
@@ -133,7 +133,7 @@ export function PlayerStatus({
             role="presentation"
           >
             <div
-              className="mx-4 w-full max-w-md rounded-2xl border-2 border-slate-600 bg-slate-800 p-8 shadow-2xl"
+              className="mx-4 w-full max-w-md rounded-md md:rounded-2xl border-2 border-slate-600 bg-slate-800 p-1 md:p-8 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-modal="true"

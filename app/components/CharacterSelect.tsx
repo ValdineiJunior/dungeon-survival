@@ -74,7 +74,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
     return [];
   };
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-1 md:p-8">
       {/* Background decorativo */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/30 rounded-full blur-3xl" />
@@ -104,13 +104,13 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
             <div
               key={classId}
               onClick={() => onSelect(classId)}
-              className="group relative w-80 p-6 bg-slate-800/80 rounded-2xl border-2 border-slate-600 
+              className="group relative w-80 p-1 md:p-6 bg-slate-800/80 rounded-md md:rounded-2xl border-2 border-slate-600 
                          hover:border-amber-500 hover:bg-slate-700/80 
                          transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/20
                          backdrop-blur-sm text-left cursor-pointer"
             >
               {/* Imagem do herói */}
-              <div className="mb-4 overflow-hidden rounded-lg border-2 border-slate-600 group-hover:border-amber-500 transition-colors h-56 bg-slate-700/50">
+              <div className="mb-4 overflow-hidden rounded-md md:rounded-lg border-2 border-slate-600 group-hover:border-amber-500 transition-colors h-56 bg-slate-700/50">
                 <img
                   src={classDef.imageUrl}
                   alt={classDef.name}
@@ -195,7 +195,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                     setSelectedClass(classId);
                     setCardType("initial");
                   }}
-                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white rounded transition-colors"
+                  className="w-full py-1 px-1 md:py-2 md:px-3 text-xs font-medium bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white rounded-md transition-colors"
                 >
                   📋 Cartas Iniciais
                 </button>
@@ -205,7 +205,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                     setSelectedClass(classId);
                     setCardType("default");
                   }}
-                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-emerald-600 text-slate-300 hover:text-white rounded transition-colors"
+                  className="w-full py-1 px-1 md:py-2 md:px-3 text-xs font-medium bg-slate-700 hover:bg-emerald-600 text-slate-300 hover:text-white rounded-md transition-colors"
                 >
                   🔰 Cartas Padrão
                 </button>
@@ -215,7 +215,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                     setSelectedClass(classId);
                     setCardType("normal");
                   }}
-                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white rounded transition-colors"
+                  className="w-full py-1 px-1 md:py-2 md:px-3 text-xs font-medium bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white rounded-md transition-colors"
                 >
                   💎 Cartas Normais
                 </button>
@@ -225,14 +225,14 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                     setSelectedClass(classId);
                     setCardType("rare");
                   }}
-                  className="w-full py-2 px-3 text-xs font-medium bg-slate-700 hover:bg-purple-600 text-slate-300 hover:text-white rounded transition-colors"
+                  className="w-full py-1 px-1 md:py-2 md:px-3 text-xs font-medium bg-slate-700 hover:bg-purple-600 text-slate-300 hover:text-white rounded-md transition-colors"
                 >
                   ✨ Cartas Raras
                 </button>
               </div>
 
               {/* Hover effect border */}
-              <div className="absolute inset-0 rounded-2xl border-2 border-amber-400/0 group-hover:border-amber-400/50 transition-colors pointer-events-none" />
+              <div className="absolute inset-0 rounded-md md:rounded-2xl border-2 border-amber-400/0 group-hover:border-amber-400/50 transition-colors pointer-events-none" />
             </div>
           );
         })}

@@ -24,7 +24,7 @@ export function Hand({
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
   return (
-    <div className="flex w-full min-w-0 justify-center p-4 min-h-52">
+    <div className="flex w-full min-w-0 justify-center p-1 md:p-4 min-h-52">
       <div className="max-w-full overflow-x-auto overflow-y-visible scroll-smooth pb-1">
         <div className="mx-auto flex w-max flex-nowrap items-end justify-center gap-2 px-1 py-1">
           {cards.map((card, index) => {
