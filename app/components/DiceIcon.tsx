@@ -57,13 +57,15 @@ interface DiceIconProps {
   /** Optional rolled value to show on or next to the die */
   value?: number;
   /** Size in pixels or Tailwind class (e.g. "w-8 h-8") */
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   /** Highlight (e.g. for highest die) */
   highlighted?: boolean;
 }
 
 const sizeClasses = {
+  /** Inline-emoji scale (~15–16px) for compact rows (e.g. h-6) */
+  xs: "h-3.5 w-3.5",
   /** No mobile (< sm) menor que o sm padrão para colunas estreitas */
   sm: "h-4 w-4 sm:h-5 sm:w-5",
   md: "h-8 w-8",
@@ -71,9 +73,24 @@ const sizeClasses = {
 };
 
 const paddingBySize = {
+  xs: "p-0",
   sm: "p-0.5",
   md: "p-1",
   lg: "p-1.5",
+};
+
+const borderBySize = {
+  xs: "border",
+  sm: "border-2",
+  md: "border-2",
+  lg: "border-2",
+};
+
+const roundedBySize = {
+  xs: "rounded-sm",
+  sm: "rounded-md",
+  md: "rounded-md",
+  lg: "rounded-md",
 };
 
 export function DiceIcon({
@@ -86,11 +103,13 @@ export function DiceIcon({
   const src = diceImageSrc(faces);
   const sizeClass = sizeClasses[size];
   const padding = paddingBySize[size];
+  const borderClass = borderBySize[size];
+  const roundedClass = roundedBySize[size];
   const rarity = getRarityClasses(faces);
 
   return (
     <div
-      className={`relative shrink-0 flex flex-col items-center gap-0 rounded-md border-2 ${rarity.bg} ${highlighted ? "border-amber-400" : rarity.border} ${padding} ${className}`}
+      className={`relative shrink-0 flex flex-col items-center justify-center gap-0 ${roundedClass} ${borderClass} ${rarity.bg} ${highlighted ? "border-amber-400" : rarity.border} ${padding} ${className}`}
       title={value != null ? `d${faces} = ${value}` : `d${faces}`}
     >
       <img
@@ -100,7 +119,7 @@ export function DiceIcon({
       />
       {value != null && (
         <span
-          className={`text-[10px] font-mono font-bold leading-tight ${rarity.valueColor} ${highlighted ? "text-amber-300" : ""}`}
+          className={`font-mono font-bold leading-none ${size === "xs" ? "text-[8px]" : "text-[10px] leading-tight"} ${rarity.valueColor} ${highlighted ? "text-amber-300" : ""}`}
         >
           {value}
         </span>
