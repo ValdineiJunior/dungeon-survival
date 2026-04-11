@@ -39,6 +39,10 @@ export function HexGrid({
   onEnemyClick,
   movementPath = [],
 }: HexGridProps) {
+  /** Position hex hitbox (w-14 = 56px) on grid from hexToPixel; tuned for pointy-top clip-path. */
+  const HEX_OFFSET_X = -30;
+  const HEX_OFFSET_Y = -33;
+
   const bounds = getMapBounds(map);
   const width = bounds.maxX - bounds.minX + 4;
   const height = bounds.maxY - bounds.minY + 4;
@@ -180,7 +184,7 @@ export function HexGrid({
                   bgColor = "bg-orange-700/80";
                   hoverClass = "hover:bg-orange-600 cursor-pointer";
                   extraClasses =
-                    "animate-pulse ring-2 ring-yellow-400 ring-offset-2 ring-offset-stone-900";
+                    "animate-pulse ring-2 ring-yellow-400 ring-offset-1 ring-offset-stone-900";
                 } else {
                   bgColor = "bg-red-900/70";
                   hoverClass = "";
@@ -213,15 +217,15 @@ export function HexGrid({
                   }
                   className={`
                 absolute
-                w-16 h-16
+                h-14 w-14
                 flex items-center justify-center
                 ${bgColor} ${hoverClass} ${extraClasses}
                 transition-all duration-150
-                text-lg
+                text-base
               `}
                   style={{
-                    left: pixel.x + offsetX - 34 + "px",
-                    top: pixel.y + offsetY - 38 + "px",
+                    left: pixel.x + offsetX + HEX_OFFSET_X + "px",
+                    top: pixel.y + offsetY + HEX_OFFSET_Y + "px",
                     clipPath:
                       "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
                   }}
@@ -244,11 +248,11 @@ export function HexGrid({
                           className="w-full h-full object-cover object-top"
                         />
                       ) : (
-                        <span className="text-lg">{content.emoji}</span>
+                        <span className="text-base">{content.emoji}</span>
                       )}
                       <span
-                        className="absolute bottom-3 right-1 z-10 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[9px] font-bold rounded-full border border-amber-600 shadow-sm"
-                        style={{ minWidth: "1rem", minHeight: "1rem" }}
+                        className="absolute bottom-2 right-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[8px] font-bold text-black shadow-sm"
+                        style={{ minWidth: "0.875rem", minHeight: "0.875rem" }}
                       >
                         {content.orderNumber}
                       </span>
@@ -262,11 +266,11 @@ export function HexGrid({
                           className="w-full h-full object-cover object-top"
                         />
                       ) : (
-                        <span className="text-lg">{content.emoji}</span>
+                        <span className="text-base">{content.emoji}</span>
                       )}
                     </span>
                   ) : isInPath ? (
-                    <span className="text-cyan-300 font-bold text-sm">
+                    <span className="text-xs font-bold text-cyan-300">
                       {pathPosition}
                     </span>
                   ) : (
