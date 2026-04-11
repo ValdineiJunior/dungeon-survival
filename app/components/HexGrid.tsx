@@ -11,7 +11,7 @@ import {
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
 /** Slightly smaller than “fit” so the map doesn’t dominate the center column. */
-const HEX_GRID_DISPLAY_SCALE = 0.8;
+const HEX_GRID_DISPLAY_SCALE = 1;
 
 interface HexGridProps {
   map: HexMap;
@@ -40,10 +40,10 @@ export function HexGrid({
   movementPath = [],
 }: HexGridProps) {
   const bounds = getMapBounds(map);
-  const width = bounds.maxX - bounds.minX + 30;
-  const height = bounds.maxY - bounds.minY + 30;
-  const offsetX = -bounds.minX + 15;
-  const offsetY = -bounds.minY + 15;
+  const width = bounds.maxX - bounds.minX + 4;
+  const height = bounds.maxY - bounds.minY + 4;
+  const offsetX = -bounds.minX + 0;
+  const offsetY = -bounds.minY + 4;
 
   // Check if position is in the current movement path
   const isInMovementPath = (pos: HexPosition, pathIndex: number) => {
