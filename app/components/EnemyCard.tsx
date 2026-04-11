@@ -37,7 +37,8 @@ const actionPillByIntent: Record<EnemyIntent, string> = {
   attack: "border-red-500 bg-red-700 text-white shadow-md shadow-red-600/30",
   defend: "border-blue-500 bg-blue-700 text-white shadow-md shadow-blue-600/30",
   buff: "border-yellow-500 bg-yellow-600 text-slate-900 shadow-md shadow-yellow-500/35",
-  debuff: "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-600/30",
+  debuff:
+    "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-600/30",
   move: "border-green-500 bg-green-700 text-white shadow-md shadow-green-600/30",
 };
 

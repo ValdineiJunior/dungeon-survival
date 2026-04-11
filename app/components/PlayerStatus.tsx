@@ -30,10 +30,10 @@ export function PlayerStatus({
   const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
 
   return (
-    <div className="flex h-full min-w-0 max-w-full flex-col gap-4 rounded-md md:rounded-xl border border-slate-600 bg-slate-800/80 p-1 backdrop-blur-sm md:p-3 lg:p-4">
+    <div className="flex h-full min-w-0 max-w-full flex-col gap-3 rounded-md md:rounded-xl border border-slate-600 bg-slate-800/80 p-1 backdrop-blur-sm md:p-3 lg:p-4">
       {/* Nome + avatar */}
       <div className="text-center">
-        <h3 className="mb-2 text-amber-400 font-bold lg:mb-3">
+        <h3 className="mb-1.5 text-amber-400 font-bold lg:mb-2">
           {classDef.name}
         </h3>
         <div className="mx-auto size-14 shrink-0 overflow-hidden rounded-md border-2 border-amber-500/50 bg-slate-700 lg:size-32 lg:rounded-lg">
@@ -48,8 +48,9 @@ export function PlayerStatus({
       {/* Separador */}
       <div className="border-t border-slate-600" />
 
+      <div className="flex min-h-0 flex-col gap-1.5">
       {/* HP */}
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-2 text-sm">
         <span className="text-red-400 shrink-0">❤️ Vida</span>
         <span
           className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
@@ -67,7 +68,7 @@ export function PlayerStatus({
       </div>
 
       {/* Bloqueio */}
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-2 text-sm">
         <span className="text-blue-400 shrink-0">🛡️ Bloqueio</span>
         <span
           className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
@@ -81,7 +82,7 @@ export function PlayerStatus({
       </div>
 
       {/* Energia */}
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-2 text-sm">
         <span className="text-amber-400 shrink-0">⚡ Energia</span>
         <span
           className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
@@ -95,7 +96,7 @@ export function PlayerStatus({
       </div>
 
       {/* Iniciativa */}
-      <div className="flex items-center justify-between gap-3 text-sm">
+      <div className="flex items-center justify-between gap-2 text-sm">
         <span className="shrink-0 text-violet-400">🎲 Iniciativa</span>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
           {(classDef.initiativeDice ?? [6, 6, 6]).map((faces, i) => (
@@ -106,7 +107,7 @@ export function PlayerStatus({
 
       {/* Habilidades inatas */}
       {classDef.innateAbilities.length > 0 && (
-        <div className="flex items-center justify-between gap-3 text-sm">
+        <div className="flex items-center justify-between gap-2 text-sm">
           <span className="shrink-0 text-teal-400">✨ Habilidade</span>
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
             {classDef.innateAbilities.map((ability, idx) => (
@@ -124,6 +125,7 @@ export function PlayerStatus({
           </div>
         </div>
       )}
+      </div>
 
       {innateDetail &&
         createPortal(
