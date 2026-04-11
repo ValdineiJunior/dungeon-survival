@@ -27,9 +27,18 @@ const actionIcons: Record<
 > = {
   attack: { icon: "⚔️", color: "text-red-400", label: "Ataque" },
   defend: { icon: "🛡️", color: "text-blue-400", label: "Defesa" },
-  buff: { icon: "⬆️", color: "text-green-400", label: "Buff" },
+  buff: { icon: "⬆️", color: "text-yellow-400", label: "Buff" },
   debuff: { icon: "⬇️", color: "text-purple-400", label: "Debuff" },
-  move: { icon: "👟", color: "text-yellow-400", label: "Movimento" },
+  move: { icon: "👟", color: "text-green-400", label: "Movimento" },
+};
+
+/** Matches `Card` type colors: attack red, skill/block blue, movement green, power yellow */
+const actionPillByIntent: Record<EnemyIntent, string> = {
+  attack: "border-red-500 bg-red-700 text-white shadow-md shadow-red-600/30",
+  defend: "border-blue-500 bg-blue-700 text-white shadow-md shadow-blue-600/30",
+  buff: "border-yellow-500 bg-yellow-600 text-slate-900 shadow-md shadow-yellow-500/35",
+  debuff: "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-600/30",
+  move: "border-green-500 bg-green-700 text-white shadow-md shadow-green-600/30",
 };
 
 export function EnemyCard({
@@ -206,7 +215,7 @@ export function EnemyCard({
 
           {!isInitiativePhase && actionCard && (
             <div
-              className="flex flex-wrap items-center justify-end gap-2 pt-0.5"
+              className="flex min-w-0 flex-nowrap items-center justify-end gap-1 overflow-x-auto pt-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               title={actionCard.name}
             >
               {actionCard.actions.map((action, index) => {
@@ -214,11 +223,15 @@ export function EnemyCard({
                 return (
                   <span
                     key={index}
-                    className={`text-sm ${info.color}`}
+                    className={`inline-flex shrink-0 items-center gap-1 text-sm ${info.color}`}
                     title={`${info.label}: ${action.value}`}
                   >
                     {info.icon}
-                    <span className="text-xs font-bold">{action.value}</span>
+                    <span
+                      className={`${pillBase} shrink-0 ${actionPillByIntent[action.type]}`}
+                    >
+                      {action.value}
+                    </span>
                   </span>
                 );
               })}
