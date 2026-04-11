@@ -17,8 +17,8 @@ export function EnemyCardsContainer({
       className={`
         flex min-h-0 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain
         pr-0.5 [-webkit-overflow-scrolling:touch]
-        max-h-[min(50dvh,20rem)] sm:max-h-[min(52dvh,22rem)]
-        lg:max-h-[min(85vh,42rem)]
+        max-h-[min(42dvh,16rem)] sm:max-h-[min(44dvh,18rem)]
+        lg:max-h-[min(72vh,32rem)]
         ${className}
       `}
     >
