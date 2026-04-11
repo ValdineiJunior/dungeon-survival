@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/app/lib/gameStore";
 import { Hand } from "@/app/components/Hand";
 import { EnemyCard } from "@/app/components/EnemyCard";
+import { EnemyCardsContainer } from "@/app/components/EnemyCardsContainer";
 import { PlayerStatus } from "@/app/components/PlayerStatus";
 import { HexGrid } from "@/app/components/HexGrid";
 import { CharacterSelect } from "@/app/components/CharacterSelect";
@@ -207,8 +208,8 @@ export default function GamePage() {
 
             {/* Inimigos ao lado do status só no mobile */}
             <div className="min-w-0 lg:hidden">
-              <div className="flex flex-col gap-3 h-full">
-                <div className="flex flex-col gap-3">
+              <div className="flex h-full min-h-0 flex-col gap-3">
+                <EnemyCardsContainer>
                   {enemies.map((enemy, index) => {
                     const initiativeEntry = turnOrder.find(
                       (e) => e.id === enemy.id,
@@ -234,7 +235,7 @@ export default function GamePage() {
                       />
                     );
                   })}
-                </div>
+                </EnemyCardsContainer>
 
                 {enemies.length === 0 &&
                   phase !== "victory" &&
@@ -306,8 +307,8 @@ export default function GamePage() {
           </div>
 
           {/* Right panel - Enemies (for large screens) */}
-          <div className="w-72 hidden lg:flex flex-col gap-3">
-            <div className="flex flex-col gap-3">
+          <div className="hidden min-h-0 w-72 flex-col gap-3 lg:flex">
+            <EnemyCardsContainer>
               {enemies.map((enemy, index) => {
                 const initiativeEntry = turnOrder.find(
                   (e) => e.id === enemy.id,
@@ -333,7 +334,7 @@ export default function GamePage() {
                   />
                 );
               })}
-            </div>
+            </EnemyCardsContainer>
 
             {enemies.length === 0 &&
               phase !== "victory" &&
