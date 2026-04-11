@@ -177,6 +177,11 @@ export default function GamePage() {
     phase !== "selectingTarget" &&
     phase !== "confirmingSkill";
 
+  const isSelectionInstructionPhase =
+    phase === "selectingMovement" ||
+    phase === "selectingTarget" ||
+    phase === "confirmingSkill";
+
   const pileButtonClass =
     "min-h-11 w-full min-w-0 px-1 py-2 md:px-1.5 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-md md:rounded-lg text-xs md:text-sm transition-colors flex flex-row items-center justify-center gap-1 md:justify-between md:gap-2 whitespace-nowrap";
 
@@ -249,47 +254,8 @@ export default function GamePage() {
             </div>
           </div>
 
-          {/* Centro: status em uma linha + mapa hex */}
+          {/* Centro: mapa hex */}
           <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col gap-2">
-            <div
-              className="shrink-0 w-full overflow-x-auto rounded-md md:rounded-lg border border-slate-600/80 bg-slate-900/70 px-1 py-1 md:px-2 md:py-1.5 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              role="status"
-              aria-live="polite"
-            >
-              <div className="flex min-w-max items-center justify-center gap-x-2 sm:gap-x-4 text-[11px] leading-tight sm:text-sm">
-                <span className="shrink-0 font-bold tracking-wide text-amber-400">
-                  <span className="sm:hidden">⬡</span>
-                  <span className="hidden sm:inline">⬡ Dungeon Survival</span>
-                </span>
-                <span className="shrink-0 text-slate-600" aria-hidden>
-                  |
-                </span>
-                <span
-                  className="shrink-0 text-slate-300"
-                  title={`${floorConfig.name} — andar ${floor} de 4`}
-                >
-                  <span className="text-slate-500">Andar </span>
-                  <span className="font-bold text-amber-400">{floor}/4</span>
-                  <span className="ml-1 hidden text-slate-500 md:inline">
-                    · {floorConfig.name}
-                  </span>
-                </span>
-                <span className="shrink-0 text-slate-600" aria-hidden>
-                  |
-                </span>
-                <span className="shrink-0 tabular-nums text-slate-400">
-                  Turno {turn}
-                </span>
-                <span className="shrink-0 text-slate-600" aria-hidden>
-                  |
-                </span>
-                <span
-                  className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
-                >
-                  {getPhaseLabel()}
-                </span>
-              </div>
-            </div>
             <div className="flex min-h-0 min-w-0 flex-1 justify-center">
               <HexGrid
                 map={hexMap}
@@ -446,84 +412,188 @@ export default function GamePage() {
           </div>
         )}
 
-        {/* Selection instructions - fixed height to prevent layout shift */}
-        <div className="h-10 flex items-center justify-center">
-          {phase === "selectingMovement" && (
-            <div className="px-1 py-1 md:px-4 md:py-2 bg-blue-600/50 rounded-md md:rounded-lg text-blue-200 text-sm flex items-center gap-3">
-              {remainingMovement > 0 ? (
-                <span>
-                  ⬡ Passo {movementPath.length + 1}/{selectedCard?.movement} •
-                  Clique em um hexágono verde
-                </span>
-              ) : (
-                <span>
-                  ⬡ Movimento completo! Clique em &quot;Confirmar&quot; para
-                  aplicar
-                </span>
-              )}
-              {movementPath.length > 0 && (
-                <>
-                  <button
-                    onClick={undoMovementStep}
-                    className="px-2 py-0.5 bg-orange-600 hover:bg-orange-500 text-white rounded-md font-bold text-xs"
+        {/* Status ou instruções de seleção — acima da mão, altura fixa (ex-instruções) */}
+        <div className="flex h-10 w-full shrink-0 items-stretch justify-center px-0.5 md:px-1">
+          <div
+            className={`
+              flex h-full min-h-0 w-full max-w-full items-center overflow-x-auto overflow-y-hidden rounded-md border border-slate-600/80 bg-slate-900/70 px-1 py-0 backdrop-blur-sm
+              md:rounded-lg md:px-2 md:py-0.5
+              [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+            `}
+          >
+            {isSelectionInstructionPhase ? (
+              <>
+                {phase === "selectingMovement" && (
+                  <div
+                    role="region"
+                    aria-label="Movimento"
+                    className="flex h-full min-h-0 w-full min-w-0 items-center gap-1 overflow-x-auto px-0.5 py-0.5 text-[10px] leading-tight text-blue-200 sm:gap-2 sm:text-sm md:px-2 md:py-1"
                   >
-                    ↶ Desfazer
-                  </button>
-                  <button
-                    onClick={completeMovement}
-                    className="px-2 py-0.5 bg-green-600 hover:bg-green-500 text-white rounded-md font-bold text-xs"
+                    <div className="min-w-0 flex-1 bg-blue-600/50 px-1 py-0.5 sm:px-2 md:rounded-md md:py-1">
+                      {remainingMovement > 0 ? (
+                        <span>
+                          <span className="hidden sm:inline">
+                            ⬡ Passo {movementPath.length + 1}/
+                            {selectedCard?.movement} • Clique em um hexágono
+                            verde
+                          </span>
+                          <span className="sm:hidden">
+                            ⬡ {movementPath.length + 1}/{selectedCard?.movement}{" "}
+                            · hex verde
+                          </span>
+                        </span>
+                      ) : (
+                        <span>
+                          <span className="hidden sm:inline">
+                            ⬡ Movimento completo! Clique em
+                            &quot;Confirmar&quot; para aplicar
+                          </span>
+                          <span className="sm:hidden">
+                            ⬡ Pronto · &quot;Confirmar&quot;
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    {movementPath.length > 0 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={undoMovementStep}
+                          className="shrink-0 rounded-md bg-orange-600 px-1.5 py-0.5 text-[10px] font-bold text-white hover:bg-orange-500 sm:px-2 sm:text-xs"
+                        >
+                          <span className="sm:hidden">↶</span>
+                          <span className="hidden sm:inline">↶ Desfazer</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={completeMovement}
+                          className="shrink-0 rounded-md bg-green-600 px-1.5 py-0.5 text-[10px] font-bold text-white hover:bg-green-500 sm:px-2 sm:text-xs"
+                        >
+                          <span className="sm:hidden">✓</span>
+                          <span className="hidden sm:inline">✓ Confirmar</span>
+                        </button>
+                      </>
+                    )}
+                    <button
+                      type="button"
+                      onClick={cancelSelection}
+                      className="ml-auto shrink-0 text-[10px] underline hover:text-white sm:text-xs"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+
+                {phase === "selectingTarget" && (
+                  <div
+                    role="region"
+                    aria-label="Selecionar alvo"
+                    className="flex h-full min-h-0 w-full min-w-0 items-center gap-1 overflow-x-auto px-0.5 py-0.5 text-[10px] leading-tight text-yellow-200 sm:gap-2 sm:text-sm md:px-2 md:py-1"
+                    title={
+                      selectedCard?.range != null && selectedCard.range > 1
+                        ? `Ataque à distância (alcance ${selectedCard.range}). Adjacente: role 1d6 — 1–2 erra, 3–6 acerta.`
+                        : undefined
+                    }
                   >
-                    ✓ Confirmar
-                  </button>
-                </>
-              )}
-              <button
-                onClick={cancelSelection}
-                className="ml-auto underline hover:text-white text-xs"
-              >
-                Cancelar
-              </button>
-            </div>
-          )}
+                    <span className="min-w-0 flex-1 bg-yellow-600/50 px-1 py-0.5 sm:px-2 md:rounded-md md:py-1">
+                      <span className="hidden sm:inline">
+                        🎯 Clique em um inimigo para atacar com{" "}
+                        <strong>{selectedCard?.name}</strong> (
+                        {selectedCard?.damage} dano)
+                      </span>
+                      <span className="sm:hidden">
+                        🎯 Toque no inimigo ·{" "}
+                        <strong className="truncate">{selectedCard?.name}</strong>{" "}
+                        ({selectedCard?.damage})
+                      </span>
+                      {selectedCard?.range != null && selectedCard.range > 1 && (
+                        <span className="hidden text-amber-200/90 md:inline md:text-xs">
+                          {" "}
+                          • Ataque à distância (alcance {selectedCard.range}).
+                          Se o alvo estiver adjacente: role 1d6 — 1 ou 2 = erra,
+                          3–6 = acerta.
+                        </span>
+                      )}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={cancelSelection}
+                      className="ml-auto shrink-0 text-[10px] underline hover:text-white sm:text-xs"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
 
-          {phase === "selectingTarget" && (
-            <span className="px-1 py-1 md:px-4 md:py-2 bg-yellow-600/50 rounded-md md:rounded-lg text-yellow-200 text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
-              🎯 Clique em um inimigo para atacar com{" "}
-              <strong>{selectedCard?.name}</strong> ({selectedCard?.damage}{" "}
-              dano)
-              {selectedCard?.range != null && selectedCard.range > 1 && (
-                <span className="text-amber-200/90 text-xs">
-                  • Ataque à distância (alcance {selectedCard.range}). Se o alvo
-                  estiver adjacente: role 1d6 — 1 ou 2 = erra, 3–6 = acerta.
+                {phase === "confirmingSkill" && (
+                  <div
+                    role="region"
+                    aria-label="Confirmar habilidade"
+                    className="flex h-full min-h-0 w-full min-w-0 items-center gap-1 overflow-x-auto px-0.5 py-0.5 text-[10px] leading-tight text-cyan-200 sm:gap-2 sm:text-sm md:px-2 md:py-1"
+                  >
+                    <span className="min-w-0 flex-1 bg-cyan-600/50 px-1 py-0.5 sm:px-2 md:rounded-md md:py-1">
+                      🛡️ Usar <strong>{selectedCard?.name}</strong> (+
+                      {selectedCard?.block} bloqueio)?
+                    </span>
+                    <button
+                      type="button"
+                      title="Confirmar"
+                      onClick={confirmSkill}
+                      className="shrink-0 rounded-md bg-cyan-500 px-1.5 py-0.5 text-[10px] font-bold text-black hover:bg-cyan-400 sm:px-2 sm:text-xs"
+                    >
+                      <span className="sm:hidden">OK</span>
+                      <span className="hidden sm:inline">Confirmar</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelSelection}
+                      className="ml-auto shrink-0 text-[10px] underline hover:text-white sm:text-xs"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex min-w-max items-center justify-center gap-x-2 sm:gap-x-4 text-[11px] leading-tight sm:text-sm"
+              >
+                <span className="shrink-0 font-bold tracking-wide text-amber-400">
+                  <span className="sm:hidden">⬡</span>
+                  <span className="hidden sm:inline">⬡ Dungeon Survival</span>
                 </span>
-              )}
-              <button
-                onClick={cancelSelection}
-                className="ml-1 underline hover:text-white"
-              >
-                Cancelar
-              </button>
-            </span>
-          )}
-
-          {phase === "confirmingSkill" && (
-            <span className="px-1 py-1 md:px-4 md:py-2 bg-cyan-600/50 rounded-md md:rounded-lg text-cyan-200 text-sm">
-              🛡️ Usar <strong>{selectedCard?.name}</strong> (+
-              {selectedCard?.block} bloqueio)?
-              <button
-                onClick={confirmSkill}
-                className="ml-2 px-2 py-0.5 bg-cyan-500 hover:bg-cyan-400 text-black rounded-md font-bold"
-              >
-                Confirmar
-              </button>
-              <button
-                onClick={cancelSelection}
-                className="ml-2 underline hover:text-white"
-              >
-                Cancelar
-              </button>
-            </span>
-          )}
+                <span className="shrink-0 text-slate-600" aria-hidden>
+                  |
+                </span>
+                <span
+                  className="shrink-0 text-slate-300"
+                  title={`${floorConfig.name} — andar ${floor} de 4`}
+                >
+                  <span className="text-slate-500">Andar </span>
+                  <span className="font-bold text-amber-400">{floor}/4</span>
+                  <span className="ml-1 hidden text-slate-500 md:inline">
+                    · {floorConfig.name}
+                  </span>
+                </span>
+                <span className="shrink-0 text-slate-600" aria-hidden>
+                  |
+                </span>
+                <span className="shrink-0 tabular-nums text-slate-400">
+                  Turno {turn}
+                </span>
+                <span className="shrink-0 text-slate-600" aria-hidden>
+                  |
+                </span>
+                <span
+                  className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
+                >
+                  {getPhaseLabel()}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mão / iniciativa; barra de ações em 2 linhas de 5 colunas */}
