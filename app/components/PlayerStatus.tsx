@@ -94,14 +94,9 @@ export function PlayerStatus({
         </span>
       </div>
 
-      {/* Separador */}
-      <div className="border-t border-slate-600" />
-
       {/* Iniciativa */}
-      <div className="flex min-w-0 items-center justify-between gap-2">
-        <span className="min-w-0 flex-1 truncate text-left text-xs tracking-wide text-slate-500">
-          Iniciativa
-        </span>
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <span className="shrink-0 text-violet-400">🎲 Iniciativa</span>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
           {(classDef.initiativeDice ?? [6, 6, 6]).map((faces, i) => (
             <DiceIcon key={i} faces={faces} size="sm" />
@@ -109,12 +104,10 @@ export function PlayerStatus({
         </div>
       </div>
 
-      {/* Habilidades Inatas (linha própria; só ícones) */}
+      {/* Habilidades inatas */}
       {classDef.innateAbilities.length > 0 && (
-        <div className="flex min-w-0 items-center justify-between gap-2">
-          <span className="min-w-0 flex-1 truncate text-left text-xs tracking-wide text-slate-500">
-            Habilidades Inatas
-          </span>
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <span className="shrink-0 text-teal-400">✨ Habilidade</span>
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
             {classDef.innateAbilities.map((ability, idx) => (
               <button
@@ -123,7 +116,7 @@ export function PlayerStatus({
                 onClick={() => setInnateDetail(ability)}
                 title={ability.name}
                 aria-label={`Habilidade inata: ${ability.name}`}
-                className="flex size-7 items-center justify-center rounded-md border border-slate-600 bg-slate-700/80 text-sm leading-none transition-colors hover:border-amber-500/50 hover:bg-slate-600"
+                className="flex size-6 shrink-0 items-center justify-center rounded-md border border-slate-600 bg-slate-700/80 text-xs leading-none transition-colors hover:border-amber-500/50 hover:bg-slate-600"
               >
                 {ability.emoji}
               </button>

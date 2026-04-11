@@ -64,12 +64,12 @@ interface DiceIconProps {
 }
 
 const sizeClasses = {
-  /** Inline-emoji scale (~15–16px) for compact rows (e.g. h-6) */
-  xs: "h-3.5 w-3.5",
+  /** Inline-emoji scale; image slightly inset vs outer box */
+  xs: "h-3 w-3",
   /** No mobile (< sm) menor que o sm padrão para colunas estreitas */
-  sm: "h-4 w-4 sm:h-5 sm:w-5",
-  md: "h-8 w-8",
-  lg: "h-10 w-10",
+  sm: "h-3.5 w-3.5 sm:h-4 sm:w-4",
+  md: "h-7 w-7",
+  lg: "h-9 w-9",
 };
 
 const paddingBySize = {
