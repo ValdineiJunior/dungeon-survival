@@ -54,13 +54,13 @@ export function InitiativeRollModal({
   return (
     <div
       className={`
-        flex h-fit w-full max-w-full min-h-32 min-w-0 flex-row items-center justify-center gap-1.5
+        flex h-fit w-full max-w-full min-h-30 min-w-0 flex-row items-center justify-center gap-1.5
         px-1 py-0.5 md:min-h-40 md:gap-4 md:px-1.5 md:py-1
       `}
     >
       {/* Label — compact row, same vertical band as Hand */}
       <div className="flex shrink-0 flex-row items-center gap-1 text-center md:flex-col md:gap-0">
-        <div className="text-lg leading-none md:text-2xl">🎲</div>
+        <div className="text-base leading-none md:text-2xl">🎲</div>
         <div>
           <div className="text-[10px] font-bold leading-tight text-amber-400 md:text-sm">
             Iniciativa
@@ -144,7 +144,7 @@ export function InitiativeOrderModal({
   turn,
 }: InitiativeOrderModalProps) {
   return (
-    <div className="flex h-fit min-h-32 w-full max-w-full min-w-0 items-center gap-1.5 overflow-hidden px-1 py-0.5 md:min-h-40 md:gap-3 md:px-1.5 md:py-1">
+    <div className="flex h-fit min-h-30 w-full max-w-full min-w-0 items-center gap-1.5 overflow-hidden px-1 py-0.5 md:min-h-40 md:gap-3 md:px-1.5 md:py-1">
       {/* Label */}
       <div className="shrink-0 text-center">
         <div className="text-xl md:text-2xl mb-0.5">⚔️</div>
@@ -155,11 +155,11 @@ export function InitiativeOrderModal({
       </div>
 
       {/* Lista horizontal */}
-      <div className="flex-1 min-w-0 flex items-center gap-1.5 md:gap-2 overflow-x-auto py-1">
+      <div className="flex min-h-0 min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 md:gap-2 md:py-1">
         {turnOrder.map((entry, i) => (
           <div
             key={entry.id}
-            className={`shrink-0 flex flex-col items-center gap-0.5 md:gap-1 px-1 py-1 md:px-3 md:py-2 rounded-md md:rounded-xl border min-w-[60px] md:min-w-[72px] ${
+            className={`flex min-h-0 min-w-[56px] shrink-0 flex-col items-center gap-0.5 rounded-md border px-1 py-0.5 md:min-w-[72px] md:gap-1 md:rounded-xl md:px-3 md:py-2 ${
               entry.entityType === "player"
                 ? "bg-emerald-900/40 border-emerald-700/60"
                 : "bg-red-900/20 border-red-800/40"

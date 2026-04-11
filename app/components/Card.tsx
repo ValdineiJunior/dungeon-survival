@@ -36,7 +36,7 @@ export function Card({
       onClick={onClick}
       disabled={disabled}
       className={`
-        flex h-32 w-24 flex-col rounded-md border-2 p-0.5 shadow-md
+        flex h-30 w-24 flex-col rounded-md border-2 p-0.5 shadow-md
         md:h-40 md:w-28 md:rounded-lg md:p-1 md:shadow-lg
         bg-linear-to-b ${typeColors[card.type]}
         transition-colors duration-150
@@ -60,7 +60,7 @@ export function Card({
       {/* Corpo do cartão */}
       <div className="flex min-h-0 flex-1 flex-col px-0.5 pt-px md:pt-1">
         {/* Tipo */}
-        <div className="mb-0 text-center text-base leading-none md:mb-0.5 md:text-xl">
+        <div className="mb-0 text-center text-sm leading-none md:mb-0.5 md:text-xl">
           {typeIcons[card.type]}
         </div>
 

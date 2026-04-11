@@ -53,7 +53,7 @@ export function Hand({
           })}
 
           {cards.length === 0 && (
-            <div className="flex h-32 min-w-44 items-center justify-center px-2 text-center text-xs italic text-gray-500 md:h-40 md:text-sm">
+            <div className="flex h-30 min-w-44 items-center justify-center px-2 text-center text-xs italic text-gray-500 md:h-40 md:text-sm">
               Sua mão está vazia
             </div>
           )}
