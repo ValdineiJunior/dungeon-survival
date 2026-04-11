@@ -10,6 +10,9 @@ import {
 } from "@/app/lib/hexUtils";
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
+/** Slightly smaller than “fit” so the map doesn’t dominate the center column. */
+const HEX_GRID_DISPLAY_SCALE = 0.8;
+
 interface HexGridProps {
   map: HexMap;
   player: Player;
@@ -102,15 +105,13 @@ export function HexGrid({
 
       const vh =
         typeof window !== "undefined"
-          ? window.visualViewport?.height ?? window.innerHeight
+          ? (window.visualViewport?.height ?? window.innerHeight)
           : height;
       const horizontalPad = 8;
       const maxDisplayH = vh * 0.52;
-      const s = Math.min(
-        1,
-        (cw - horizontalPad) / width,
-        maxDisplayH / height,
-      );
+      const s =
+        Math.min(1, (cw - horizontalPad) / width, maxDisplayH / height) *
+        HEX_GRID_DISPLAY_SCALE;
       setScale((prev) => (Math.abs(prev - s) < 0.0005 ? prev : s));
     };
 
@@ -155,59 +156,62 @@ export function HexGrid({
             className="relative border-4 border-stone-600 rounded-md md:rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
             style={{ width: width + "px", height: height + "px" }}
           >
-        {tiles.map((tile) => {
-          const pixel = hexToPixel({ q: tile.q, r: tile.r });
-          const content = getHexContent({ q: tile.q, r: tile.r });
-          const isValid = isValidMove({ q: tile.q, r: tile.r });
-          const isPlayer = content.type === "player";
-          const isEnemy = content.type === "enemy";
-          const isTargetable = content.type === "enemy" && content.isTargetable;
-          const pathPosition = getPathPosition({ q: tile.q, r: tile.r });
-          const isInPath = pathPosition !== null;
+            {tiles.map((tile) => {
+              const pixel = hexToPixel({ q: tile.q, r: tile.r });
+              const content = getHexContent({ q: tile.q, r: tile.r });
+              const isValid = isValidMove({ q: tile.q, r: tile.r });
+              const isPlayer = content.type === "player";
+              const isEnemy = content.type === "enemy";
+              const isTargetable =
+                content.type === "enemy" && content.isTargetable;
+              const pathPosition = getPathPosition({ q: tile.q, r: tile.r });
+              const isInPath = pathPosition !== null;
 
-          // Colors based on state
-          let bgColor = "bg-stone-800";
-          let hoverClass = "hover:bg-stone-700";
-          let extraClasses = "";
+              // Colors based on state
+              let bgColor = "bg-stone-800";
+              let hoverClass = "hover:bg-stone-700";
+              let extraClasses = "";
 
-          if (isPlayer) {
-            bgColor = "bg-blue-900/70";
-            hoverClass = "";
-          } else if (isEnemy) {
-            if (isTargetable) {
-              bgColor = "bg-orange-700/80";
-              hoverClass = "hover:bg-orange-600 cursor-pointer";
-              extraClasses =
-                "animate-pulse ring-2 ring-yellow-400 ring-offset-2 ring-offset-stone-900";
-            } else {
-              bgColor = "bg-red-900/70";
-              hoverClass = "";
-            }
-          } else if (isInPath) {
-            // Hex is in the movement path
-            bgColor = "bg-cyan-600/70";
-            hoverClass = "";
-            extraClasses = "ring-2 ring-cyan-400";
-          } else if (isValid) {
-            bgColor = "bg-green-700/60";
-            hoverClass = "hover:bg-green-600/80 cursor-pointer";
-            extraClasses = "animate-pulse";
-          }
+              if (isPlayer) {
+                bgColor = "bg-blue-900/70";
+                hoverClass = "";
+              } else if (isEnemy) {
+                if (isTargetable) {
+                  bgColor = "bg-orange-700/80";
+                  hoverClass = "hover:bg-orange-600 cursor-pointer";
+                  extraClasses =
+                    "animate-pulse ring-2 ring-yellow-400 ring-offset-2 ring-offset-stone-900";
+                } else {
+                  bgColor = "bg-red-900/70";
+                  hoverClass = "";
+                }
+              } else if (isInPath) {
+                // Hex is in the movement path
+                bgColor = "bg-cyan-600/70";
+                hoverClass = "";
+                extraClasses = "ring-2 ring-cyan-400";
+              } else if (isValid) {
+                bgColor = "bg-green-700/60";
+                hoverClass = "hover:bg-green-600/80 cursor-pointer";
+                extraClasses = "animate-pulse";
+              }
 
-          const handleClick = () => {
-            if (isTargetable && content.enemy) {
-              onEnemyClick(content.enemy.id);
-            } else {
-              onHexClick({ q: tile.q, r: tile.r });
-            }
-          };
+              const handleClick = () => {
+                if (isTargetable && content.enemy) {
+                  onEnemyClick(content.enemy.id);
+                } else {
+                  onHexClick({ q: tile.q, r: tile.r });
+                }
+              };
 
-          return (
-            <button
-              key={hexKey({ q: tile.q, r: tile.r })}
-              onClick={handleClick}
-              disabled={!isValid && !isTargetable && content.type === "empty"}
-              className={`
+              return (
+                <button
+                  key={hexKey({ q: tile.q, r: tile.r })}
+                  onClick={handleClick}
+                  disabled={
+                    !isValid && !isTargetable && content.type === "empty"
+                  }
+                  className={`
                 absolute
                 w-16 h-16
                 flex items-center justify-center
@@ -215,62 +219,62 @@ export function HexGrid({
                 transition-all duration-150
                 text-lg
               `}
-              style={{
-                left: pixel.x + offsetX - 34 + "px",
-                top: pixel.y + offsetY - 38 + "px",
-                clipPath:
-                  "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-              }}
-              title={
-                isTargetable
-                  ? `🎯 Atacar ${content.enemy?.name}`
-                  : isEnemy && content.enemy
-                    ? `${content.enemy.name} (#${content.orderNumber})`
-                    : isInPath
-                      ? `Passo ${pathPosition}`
-                      : `(${tile.q}, ${tile.r})`
-              }
-            >
-              {isEnemy && content.enemy ? (
-                <span className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-[inherit]">
-                  {ENEMY_IMAGE_FILES[content.enemy.name] ? (
-                    <img
-                      src={`/enemies/${ENEMY_IMAGE_FILES[content.enemy.name]}`}
-                      alt={content.enemy.name}
-                      className="w-full h-full object-cover object-top"
-                    />
+                  style={{
+                    left: pixel.x + offsetX - 34 + "px",
+                    top: pixel.y + offsetY - 38 + "px",
+                    clipPath:
+                      "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                  }}
+                  title={
+                    isTargetable
+                      ? `🎯 Atacar ${content.enemy?.name}`
+                      : isEnemy && content.enemy
+                        ? `${content.enemy.name} (#${content.orderNumber})`
+                        : isInPath
+                          ? `Passo ${pathPosition}`
+                          : `(${tile.q}, ${tile.r})`
+                  }
+                >
+                  {isEnemy && content.enemy ? (
+                    <span className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-[inherit]">
+                      {ENEMY_IMAGE_FILES[content.enemy.name] ? (
+                        <img
+                          src={`/enemies/${ENEMY_IMAGE_FILES[content.enemy.name]}`}
+                          alt={content.enemy.name}
+                          className="w-full h-full object-cover object-top"
+                        />
+                      ) : (
+                        <span className="text-lg">{content.emoji}</span>
+                      )}
+                      <span
+                        className="absolute bottom-3 right-1 z-10 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[9px] font-bold rounded-full border border-amber-600 shadow-sm"
+                        style={{ minWidth: "1rem", minHeight: "1rem" }}
+                      >
+                        {content.orderNumber}
+                      </span>
+                    </span>
+                  ) : isPlayer ? (
+                    <span className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-[inherit]">
+                      {playerImageUrl ? (
+                        <img
+                          src={playerImageUrl}
+                          alt="Hero"
+                          className="w-full h-full object-cover object-top"
+                        />
+                      ) : (
+                        <span className="text-lg">{content.emoji}</span>
+                      )}
+                    </span>
+                  ) : isInPath ? (
+                    <span className="text-cyan-300 font-bold text-sm">
+                      {pathPosition}
+                    </span>
                   ) : (
-                    <span className="text-lg">{content.emoji}</span>
+                    content.emoji || (isValid ? "•" : "")
                   )}
-                  <span
-                    className="absolute bottom-3 right-1 z-10 w-4 h-4 flex items-center justify-center bg-amber-400 text-black text-[9px] font-bold rounded-full border border-amber-600 shadow-sm"
-                    style={{ minWidth: "1rem", minHeight: "1rem" }}
-                  >
-                    {content.orderNumber}
-                  </span>
-                </span>
-              ) : isPlayer ? (
-                <span className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-[inherit]">
-                  {playerImageUrl ? (
-                    <img
-                      src={playerImageUrl}
-                      alt="Hero"
-                      className="w-full h-full object-cover object-top"
-                    />
-                  ) : (
-                    <span className="text-lg">{content.emoji}</span>
-                  )}
-                </span>
-              ) : isInPath ? (
-                <span className="text-cyan-300 font-bold text-sm">
-                  {pathPosition}
-                </span>
-              ) : (
-                content.emoji || (isValid ? "•" : "")
-              )}
-            </button>
-          );
-        })}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
