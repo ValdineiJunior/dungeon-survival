@@ -54,8 +54,13 @@ function getRarityClasses(faces: number) {
 interface DiceIconProps {
   /** Number of faces (4, 6, 8, 10, 12, 20) */
   faces: number;
-  /** Optional rolled value to show on or next to the die */
-  value?: number;
+  /** Rolled value on the die, or `"?"` in value-only mode before rolling */
+  value?: number | string;
+  /**
+   * When `false`, the SVG is omitted and only the value is shown in the same framed style
+   * (for formulas like `3 + 6 = 9`). Omit `value` to show `?` in that frame.
+   */
+  showImage?: boolean;
   /** Size in pixels or Tailwind class (e.g. "w-8 h-8") */
   size?: "xs" | "sm" | "md" | "lg";
   className?: string;
@@ -93,9 +98,17 @@ const roundedBySize = {
   lg: "rounded-md",
 };
 
+const valueOnlyMinSize: Record<keyof typeof sizeClasses, string> = {
+  xs: "min-h-[1.125rem] min-w-[1.125rem] px-0.5",
+  sm: "min-h-[1.375rem] min-w-[1.375rem] px-0.5 sm:min-h-[1.5rem] sm:min-w-[1.5rem]",
+  md: "min-h-8 min-w-8 px-1",
+  lg: "min-h-10 min-w-10 px-1.5",
+};
+
 export function DiceIcon({
   faces,
   value,
+  showImage = true,
   size = "md",
   className = "",
   highlighted = false,
@@ -107,22 +120,43 @@ export function DiceIcon({
   const roundedClass = roundedBySize[size];
   const rarity = getRarityClasses(faces);
 
+  const valueTextClass = `font-mono font-bold leading-none ${size === "xs" ? "text-[8px]" : "text-[10px] leading-tight"} ${rarity.valueColor} ${highlighted ? "text-amber-300" : ""}`;
+
+  if (!showImage) {
+    const display = value == null ? "?" : value;
+    const valueTitle =
+      display === "?"
+        ? `d${faces} — ainda não rolado`
+        : `d${faces} = ${display}`;
+    return (
+      <div
+        className={`relative shrink-0 flex items-center justify-center ${roundedClass} ${borderClass} ${rarity.bg} ${highlighted ? "border-amber-400" : rarity.border} ${valueOnlyMinSize[size]} ${className}`}
+        title={valueTitle}
+      >
+        <span className={valueTextClass}>{display}</span>
+      </div>
+    );
+  }
+
+  const numericUnderImage =
+    typeof value === "number" ? value : undefined;
+
   return (
     <div
       className={`relative shrink-0 flex flex-col items-center justify-center gap-0 ${roundedClass} ${borderClass} ${rarity.bg} ${highlighted ? "border-amber-400" : rarity.border} ${padding} ${className}`}
-      title={value != null ? `d${faces} = ${value}` : `d${faces}`}
+      title={
+        numericUnderImage != null
+          ? `d${faces} = ${numericUnderImage}`
+          : `d${faces}`
+      }
     >
       <img
         src={src}
         alt={`d${faces}`}
         className={`${sizeClass} object-contain ${highlighted ? "opacity-100" : "opacity-95"}`}
       />
-      {value != null && (
-        <span
-          className={`font-mono font-bold leading-none ${size === "xs" ? "text-[8px]" : "text-[10px] leading-tight"} ${rarity.valueColor} ${highlighted ? "text-amber-300" : ""}`}
-        >
-          {value}
-        </span>
+      {numericUnderImage != null && (
+        <span className={valueTextClass}>{numericUnderImage}</span>
       )}
     </div>
   );

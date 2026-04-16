@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { Enemy, EnemyIntent, GamePhase } from "@/app/types/game";
 import { DiceIcon } from "@/app/components/DiceIcon";
 import { GamePill } from "@/app/components/GamePill";
@@ -171,15 +172,39 @@ export function EnemyCard({
               </div>
 
               {showInitiativeRow && (
-                <div className="flex items-center justify-between gap-2">
-                  <div
-                    className="flex min-w-0 flex-1 flex-wrap items-center gap-1"
-                    title="Iniciativa"
+                <div
+                  className="flex min-w-0 flex-wrap items-center gap-1"
+                  title="Iniciativa"
+                >
+                  {initiativeDiceFaces.map((faces, i) => {
+                    const roll = initiativeDice?.dice?.[i];
+                    const faceForColor =
+                      initiativeDice?.diceFaces?.[i] ?? faces;
+                    return (
+                      <Fragment key={i}>
+                        {i > 0 && (
+                          <span
+                            className="shrink-0 text-[11px] font-bold text-slate-400"
+                            aria-hidden
+                          >
+                            +
+                          </span>
+                        )}
+                        <DiceIcon
+                          faces={faceForColor}
+                          value={roll !== undefined ? roll : "?"}
+                          size="sm"
+                          showImage={false}
+                        />
+                      </Fragment>
+                    );
+                  })}
+                  <span
+                    className="shrink-0 px-0.5 text-[11px] font-bold text-slate-400"
+                    aria-hidden
                   >
-                    {initiativeDiceFaces.map((faces, i) => (
-                      <DiceIcon key={i} faces={faces} size="sm" />
-                    ))}
-                  </div>
+                    =
+                  </span>
                   <GamePill
                     variant="initiative"
                     initiativeRange={initiativeRange}
