@@ -8,6 +8,7 @@ import {
   InnateAbility,
 } from "@/app/types/game";
 import { DiceIcon } from "./DiceIcon";
+import { GamePill } from "./GamePill";
 
 interface PlayerStatusProps {
   player: Player;
@@ -26,7 +27,6 @@ export function PlayerStatus({
   onViewDeck,
   onViewDiscard,
 }: PlayerStatusProps) {
-  const hpPercentage = (player.hp / player.maxHp) * 100;
   const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
 
   return (
@@ -52,47 +52,24 @@ export function PlayerStatus({
       {/* HP */}
       <div className="flex items-center justify-between gap-2 text-sm">
         <span className="text-red-400 shrink-0">❤️ Vida</span>
-        <span
-          className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
-            player.hp <= 0
-              ? "border-gray-600 bg-gray-600 text-slate-300"
-              : hpPercentage > 50
-                ? "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30"
-                : hpPercentage > 25
-                  ? "border-orange-600 bg-orange-500 text-slate-900 shadow-md shadow-orange-500/25"
-                  : "border-red-800 bg-red-700 text-white shadow-md shadow-red-900/40"
-          }`}
-        >
-          {player.hp}/{player.maxHp}
-        </span>
+        <GamePill variant="hp" hp={player.hp} maxHp={player.maxHp} shrink />
       </div>
 
       {/* Bloqueio */}
       <div className="flex items-center justify-between gap-2 text-sm">
         <span className="text-blue-400 shrink-0">🛡️ Bloqueio</span>
-        <span
-          className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
-            player.block > 0
-              ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/30"
-              : "border-gray-600 bg-gray-600 text-slate-300"
-          }`}
-        >
-          {player.block}
-        </span>
+        <GamePill variant="block" block={player.block} shrink />
       </div>
 
       {/* Energia */}
       <div className="flex items-center justify-between gap-2 text-sm">
         <span className="text-amber-400 shrink-0">⚡ Energia</span>
-        <span
-          className={`inline-flex min-w-0 shrink-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-xs font-bold tabular-nums transition-colors ${
-            player.energy > 0
-              ? "border-amber-500 bg-amber-400 text-slate-900 shadow-md shadow-amber-400/35"
-              : "border-gray-600 bg-gray-600 text-slate-300"
-          }`}
-        >
-          {player.energy}/{player.maxEnergy}
-        </span>
+        <GamePill
+          variant="energy"
+          energy={player.energy}
+          maxEnergy={player.maxEnergy}
+          shrink
+        />
       </div>
 
       {/* Iniciativa */}

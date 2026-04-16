@@ -2,6 +2,7 @@
 
 import { Enemy, EnemyIntent, GamePhase } from "@/app/types/game";
 import { DiceIcon } from "@/app/components/DiceIcon";
+import { GamePill } from "@/app/components/GamePill";
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
 interface InitiativeDice {
@@ -32,16 +33,6 @@ const actionIcons: Record<
   move: { icon: "👟", color: "text-green-400", label: "Movimento" },
 };
 
-/** Matches `Card` type colors: attack red, skill/block blue, movement green, power yellow */
-const actionPillByIntent: Record<EnemyIntent, string> = {
-  attack: "border-red-500 bg-red-700 text-white shadow-md shadow-red-600/30",
-  defend: "border-blue-500 bg-blue-700 text-white shadow-md shadow-blue-600/30",
-  buff: "border-yellow-500 bg-yellow-600 text-slate-900 shadow-md shadow-yellow-500/35",
-  debuff:
-    "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-600/30",
-  move: "border-green-500 bg-green-700 text-white shadow-md shadow-green-600/30",
-};
-
 export function EnemyCard({
   enemy,
   orderNumber,
@@ -51,15 +42,6 @@ export function EnemyCard({
   phase,
   initiativeDice,
 }: EnemyCardProps) {
-  const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
-  const hpPillClass =
-    enemy.hp <= 0
-      ? "border-gray-600 bg-gray-600 text-slate-300"
-      : hpPercentage > 50
-        ? "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30"
-        : hpPercentage > 25
-          ? "border-orange-600 bg-orange-500 text-slate-900 shadow-md shadow-orange-500/25"
-          : "border-red-800 bg-red-700 text-white shadow-md shadow-red-900/40";
   const actionCard = enemy.currentActionCard;
   const isInitiativePhase =
     phase === "rollingInitiative" || phase === "viewingInitiative";
@@ -67,23 +49,6 @@ export function EnemyCard({
   const initiativeMin = initiativeDiceFaces.length;
   const initiativeMax = initiativeDiceFaces.reduce((a, b) => a + b, 0);
   const initiativeRange = `${initiativeMin}-${initiativeMax}`;
-
-  const blockPillClass =
-    enemy.block > 0
-      ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/30"
-      : "border-gray-600 bg-gray-600 text-slate-300";
-
-  const rangePillClass =
-    enemy.attackRange > 1
-      ? "border-amber-500 bg-amber-400 text-slate-900 shadow-md shadow-amber-400/35"
-      : "border-gray-600 bg-gray-600 text-slate-300";
-
-  const initiativeTotalPillClass = initiativeDice
-    ? "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30"
-    : "border-gray-600 bg-gray-600 text-slate-300";
-
-  const pillBase =
-    "inline-flex min-w-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
 
   return (
     <div
@@ -158,38 +123,19 @@ export function EnemyCard({
             <span className="shrink-0 text-xs text-red-400" aria-hidden>
               ❤️
             </span>
-            <span
-              className={`${pillBase} ${hpPillClass}`}
-              title={`Vida: ${enemy.hp} de ${enemy.maxHp}`}
-            >
-              {enemy.hp}/{enemy.maxHp}
-            </span>
+            <GamePill variant="hp" hp={enemy.hp} maxHp={enemy.maxHp} />
           </div>
           <div className="flex items-center justify-between gap-2">
             <span className="shrink-0 text-xs text-blue-400" aria-hidden>
               🛡️
             </span>
-            <span
-              className={`${pillBase} ${blockPillClass}`}
-              title={`Bloqueio: ${enemy.block}`}
-            >
-              {enemy.block}
-            </span>
+            <GamePill variant="block" block={enemy.block} />
           </div>
           <div className="flex items-center justify-between gap-2">
             <span className="shrink-0 text-sm leading-none" title="Alcance">
               🏹
             </span>
-            <span
-              className={`${pillBase} ${rangePillClass}`}
-              title={
-                enemy.attackRange > 1
-                  ? `Alcance: ${enemy.attackRange} hexes (ataque à distância)`
-                  : `Alcance: ${enemy.attackRange} (corpo a corpo)`
-              }
-            >
-              {enemy.attackRange}
-            </span>
+            <GamePill variant="range" attackRange={enemy.attackRange} />
           </div>
 
           {isInitiativePhase && (
@@ -201,8 +147,10 @@ export function EnemyCard({
               >
                 🎲
               </span>
-              <span
-                className={`${pillBase} ${initiativeTotalPillClass} shrink-0`}
+              <GamePill
+                variant="initiative"
+                rolled={!!initiativeDice}
+                shrink
                 title={
                   initiativeDice
                     ? `Iniciativa: ${initiativeDice.total}`
@@ -210,7 +158,7 @@ export function EnemyCard({
                 }
               >
                 {initiativeDice ? initiativeDice.total : "?"}
-              </span>
+              </GamePill>
             </div>
           )}
 
@@ -228,11 +176,14 @@ export function EnemyCard({
                     title={`${info.label}: ${action.value}`}
                   >
                     {info.icon}
-                    <span
-                      className={`${pillBase} shrink-0 ${actionPillByIntent[action.type]}`}
+                    <GamePill
+                      variant="action"
+                      action={action.type}
+                      shrink
+                      title={`${info.label}: ${action.value}`}
                     >
                       {action.value}
-                    </span>
+                    </GamePill>
                   </span>
                 );
               })}
