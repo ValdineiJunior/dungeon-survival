@@ -6,14 +6,32 @@ export const gamePillBaseClasses =
   "inline-flex min-w-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
 
 /**
+ * Accent border + deeper fill + shadow — shared by attack actions and HP (red family).
+ */
+const attackLikePill =
+  "border-red-500 bg-red-700 text-white shadow-md shadow-red-600/30";
+
+/**
+ * Same pattern as defend actions — shared by block stat (always; value may be 0).
+ */
+const defendLikePill =
+  "border-blue-500 bg-blue-700 text-white shadow-md shadow-blue-600/30";
+
+/** Matches dice d12 rarity (orange) — range stat always uses this. */
+const rangeLikePill =
+  "border-orange-500 bg-orange-800 text-white shadow-md shadow-orange-600/30";
+
+/** Matches dice d10 rarity (purple) — initiative always uses this. */
+const initiativeLikePill =
+  "border-purple-500 bg-purple-800 text-white shadow-md shadow-purple-600/35";
+
+/**
  * Action pills: colors aligned with `Card` type accents —
  * attack (red), defend / skill (blue), move / movement (green), power (buff yellow), debuff (purple).
  */
 const actionPillClasses: Record<EnemyIntent, string> = {
-  attack:
-    "border-red-500 bg-red-700 text-white shadow-md shadow-red-600/30",
-  defend:
-    "border-blue-500 bg-blue-700 text-white shadow-md shadow-blue-600/30",
+  attack: attackLikePill,
+  defend: defendLikePill,
   buff: "border-yellow-500 bg-yellow-600 text-slate-900 shadow-md shadow-yellow-500/35",
   debuff:
     "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-600/30",
@@ -23,20 +41,14 @@ const actionPillClasses: Record<EnemyIntent, string> = {
 const inactivePillClass =
   "border-gray-600 bg-gray-600 text-slate-300";
 
+/** HP tiers stay in the attack palette: lighter border, darker fill, red-only shadows. */
 function hpPillClass(hp: number, maxHp: number): string {
   if (hp <= 0) return inactivePillClass;
   const pct = (hp / maxHp) * 100;
-  if (pct > 50)
-    return "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30";
+  if (pct > 50) return attackLikePill;
   if (pct > 25)
-    return "border-orange-600 bg-orange-500 text-slate-900 shadow-md shadow-orange-500/25";
-  return "border-red-800 bg-red-700 text-white shadow-md shadow-red-900/40";
-}
-
-function blockPillClass(block: number): string {
-  return block > 0
-    ? "border-blue-500 bg-blue-500 text-white shadow-md shadow-blue-500/30"
-    : inactivePillClass;
+    return "border-red-500 bg-red-800 text-white shadow-md shadow-red-800/35";
+  return "border-red-600 bg-red-950 text-white shadow-md shadow-red-950/40";
 }
 
 function energyPillClass(energy: number): string {
@@ -45,17 +57,6 @@ function energyPillClass(energy: number): string {
     : inactivePillClass;
 }
 
-function rangePillClass(attackRange: number): string {
-  return attackRange > 1
-    ? "border-amber-500 bg-amber-400 text-slate-900 shadow-md shadow-amber-400/35"
-    : inactivePillClass;
-}
-
-function initiativePillClass(rolled: boolean): string {
-  return rolled
-    ? "border-red-600 bg-red-500 text-white shadow-md shadow-red-500/30"
-    : inactivePillClass;
-}
 
 type GamePillCommon = {
   className?: string;
@@ -143,13 +144,13 @@ function resolveColorClass(props: GamePillProps): string {
     case "hp":
       return hpPillClass(props.hp, props.maxHp);
     case "block":
-      return blockPillClass(props.block);
+      return defendLikePill;
     case "energy":
       return energyPillClass(props.energy);
     case "range":
-      return rangePillClass(props.attackRange);
+      return rangeLikePill;
     case "initiative":
-      return initiativePillClass(props.rolled);
+      return initiativeLikePill;
     default:
       return "";
   }
