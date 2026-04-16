@@ -60,6 +60,9 @@ export function EnemyCard({
       : "Variação de iniciativa"
     : "Ações";
 
+  /** Variação: show physical dice art; Resultado: value-only cells with rolls. */
+  const showDiceImagesInInitiativeRow = phase === "rollingInitiative";
+
   return (
     <div
       onClick={isTargetable ? onClick : undefined}
@@ -183,12 +186,16 @@ export function EnemyCard({
                           +
                         </span>
                       )}
-                      <DiceIcon
-                        faces={faceForColor}
-                        value={roll !== undefined ? roll : "?"}
-                        size="sm"
-                        showImage={false}
-                      />
+                      {showDiceImagesInInitiativeRow ? (
+                        <DiceIcon faces={faceForColor} size="sm" />
+                      ) : (
+                        <DiceIcon
+                          faces={faceForColor}
+                          value={roll !== undefined ? roll : "?"}
+                          size="sm"
+                          showImage={false}
+                        />
+                      )}
                     </Fragment>
                   );
                 })}
