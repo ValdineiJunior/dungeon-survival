@@ -10,8 +10,10 @@ import {
 } from "@/app/lib/hexUtils";
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
-/** Slightly smaller than “fit” so the map doesn’t dominate the center column. */
-const HEX_GRID_DISPLAY_SCALE = 1;
+/** Padding inside the scroll container before fitting the map (px). */
+const FIT_PADDING = 12;
+/** Shrinks the map slightly further than strict fit so borders don’t touch the frame. */
+const FIT_SCALE_SLACK = 0.96;
 
 interface HexGridProps {
   map: HexMap;
@@ -48,13 +50,6 @@ export function HexGrid({
   const height = bounds.maxY - bounds.minY + 4;
   const offsetX = -bounds.minX + 0;
   const offsetY = -bounds.minY + 4;
-
-  // Check if position is in the current movement path
-  const isInMovementPath = (pos: HexPosition, pathIndex: number) => {
-    return movementPath.some(
-      (p, index) => hexEquals(p, pos) && index === pathIndex,
-    );
-  };
 
   // Get the position in the movement path (for numbering)
   const getPathPosition = (pos: HexPosition): number | null => {
@@ -105,18 +100,18 @@ export function HexGrid({
 
     const computeScale = () => {
       const cw = el.clientWidth;
+      const ch = el.clientHeight;
       if (cw <= 0 || width <= 0 || height <= 0) return;
 
-      const vh =
-        typeof window !== "undefined"
-          ? (window.visualViewport?.height ?? window.innerHeight)
-          : height;
-      const horizontalPad = 8;
-      const maxDisplayH = vh * 0.52;
-      const s =
-        Math.min(1, (cw - horizontalPad) / width, maxDisplayH / height) *
-        HEX_GRID_DISPLAY_SCALE;
-      setScale((prev) => (Math.abs(prev - s) < 0.0005 ? prev : s));
+      const pad = FIT_PADDING * 2;
+      const wRoom = Math.max(0, cw - pad);
+      const hRoom = ch > 0 ? Math.max(0, ch - pad) : Number.POSITIVE_INFINITY;
+      const sW = wRoom / width;
+      const sH = hRoom / height;
+      let s = Math.min(1, sW, sH) * FIT_SCALE_SLACK;
+      if (!Number.isFinite(s) || s <= 0) s = 1;
+      s = Math.min(s, 1);
+      setScale((prev) => (Math.abs(prev - s) < 0.001 ? prev : s));
     };
 
     computeScale();
@@ -134,12 +129,8 @@ export function HexGrid({
   return (
     <div
       ref={wrapRef}
-      className="flex w-full max-w-full min-w-0 flex-col items-center gap-4"
+      className="flex h-full min-h-0 w-full min-w-0 items-center justify-center"
     >
-      {/*
-        Mapa em pixels fixos: em mobile ultrapassa a tela.
-        Viewport “caixa” = largura do pai × fração da altura da tela; escala uniforme.
-      */}
       <div
         className="relative mx-auto shrink-0"
         style={{
@@ -157,8 +148,8 @@ export function HexGrid({
           }}
         >
           <div
-            className="relative border-4 border-stone-600 rounded-md md:rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
-            style={{ width: width + "px", height: height + "px" }}
+            className="relative inline-block shrink-0 border-4 border-stone-600 rounded-md md:rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
+            style={{ width: `${width}px`, height: `${height}px` }}
           >
             {tiles.map((tile) => {
               const pixel = hexToPixel({ q: tile.q, r: tile.r });

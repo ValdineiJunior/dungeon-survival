@@ -186,7 +186,12 @@ export default function GamePage() {
     "min-h-9 md:min-h-11 w-full min-w-0 px-1 py-1 md:px-1.5 md:py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-md md:rounded-lg text-[11px] md:text-sm transition-colors flex flex-row items-center justify-center gap-1 md:justify-between md:gap-2 whitespace-nowrap";
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col">
+    <div
+      className={`
+        flex min-h-screen flex-col bg-linear-to-b from-slate-950 via-slate-900 to-slate-950
+        max-lg:h-[100dvh] max-lg:max-h-[100dvh] max-lg:min-h-0 max-lg:overflow-hidden
+      `}
+    >
       {/* Decorative background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl" />
@@ -194,12 +199,12 @@ export default function GamePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-lg h-lg bg-amber-900/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Combat area */}
-      <main className="relative z-10 flex-1 flex flex-col max-w-7xl mx-auto w-full p-1 md:p-4">
+      {/* Combat area — max-lg: encaixa no viewport; mapa rola por dentro */}
+      <main className="relative z-10 mx-auto flex w-full min-h-0 max-w-7xl flex-1 flex-col overflow-hidden p-1 md:p-4">
         {/* Main layout: PlayerStatus | HexGrid | EnemyCards */}
-        <div className="flex min-w-0 w-full flex-1 flex-col gap-2 py-1 md:gap-4 md:py-4 lg:flex-row">
+        <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-2 overflow-hidden py-1 md:gap-4 md:py-4 lg:flex-row lg:overflow-visible">
           {/* Mobile: 2 colunas com gap sem estourar 100% (evita w-1/2 + gap > largura) */}
-          <div className="grid min-w-0 w-full grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 lg:w-72 lg:shrink-0">
+          <div className="grid w-full min-w-0 shrink-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 lg:w-72 lg:shrink-0">
             <div className="min-w-0">
               <PlayerStatus
                 player={player}
@@ -254,21 +259,25 @@ export default function GamePage() {
             </div>
           </div>
 
-          {/* Centro: mapa hex */}
-          <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col gap-2">
-            <div className="flex min-h-0 min-w-0 flex-1 justify-center">
-              <HexGrid
-                map={hexMap}
-                player={player}
-                playerEmoji={CHARACTER_CLASSES[player.characterClass].emoji}
-                playerImageUrl={CHARACTER_CLASSES[player.characterClass].imageUrl}
-                enemies={enemies}
-                validMovePositions={validMovePositions}
-                targetableEnemyIds={targetableEnemyIds}
-                movementPath={movementPath}
-                onHexClick={handleHexClick}
-                onEnemyClick={handleEnemyClick}
-              />
+          {/* Centro: mapa hex (tamanho fixo em px; área rolável só aqui no mobile) */}
+          <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden">
+            <div className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border border-slate-600/50 bg-slate-900/30 [-webkit-overflow-scrolling:touch] max-lg:min-h-0">
+              <div className="flex h-full min-h-0 w-full min-w-0 items-center justify-center p-2 sm:p-3 md:p-4">
+                <HexGrid
+                  map={hexMap}
+                  player={player}
+                  playerEmoji={CHARACTER_CLASSES[player.characterClass].emoji}
+                  playerImageUrl={
+                    CHARACTER_CLASSES[player.characterClass].imageUrl
+                  }
+                  enemies={enemies}
+                  validMovePositions={validMovePositions}
+                  targetableEnemyIds={targetableEnemyIds}
+                  movementPath={movementPath}
+                  onHexClick={handleHexClick}
+                  onEnemyClick={handleEnemyClick}
+                />
+              </div>
             </div>
           </div>
 
@@ -575,7 +584,7 @@ export default function GamePage() {
         </div>
 
         {/* Mão / iniciativa; barra de ações em 2 linhas de 5 colunas */}
-        <div className="flex flex-col gap-2 md:gap-4 w-full min-w-0">
+        <div className="flex w-full min-w-0 shrink-0 flex-col gap-2 md:gap-4">
           <div className="flex h-fit min-h-0 w-full min-w-0 items-center justify-center rounded-md border border-slate-700 bg-slate-900/50 px-0.5 py-px backdrop-blur-sm md:rounded-2xl md:px-1 md:py-0.5">
             {phase === "rollingInitiative" ? (
               <InitiativeRollModal
