@@ -49,6 +49,15 @@ export function EnemyCard({
   const initiativeMin = initiativeDiceFaces.length;
   const initiativeMax = initiativeDiceFaces.reduce((a, b) => a + b, 0);
   const initiativeRange = `${initiativeMin}-${initiativeMax}`;
+  const showInitiativeRow = isInitiativePhase;
+  const showActionsRow = !isInitiativePhase && Boolean(actionCard);
+  const showSecondarySection = showInitiativeRow || showActionsRow;
+
+  const secondarySectionLabel = showInitiativeRow
+    ? phase === "viewingInitiative"
+      ? "Resultado da iniciativa"
+      : "Iniciativa"
+    : "Ações";
 
   return (
     <div
@@ -118,76 +127,101 @@ export function EnemyCard({
           aria-orientation="vertical"
         />
 
-        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="shrink-0 text-xs text-red-400" aria-hidden>
-              ❤️
-            </span>
-            <GamePill variant="hp" hp={enemy.hp} maxHp={enemy.maxHp} />
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="shrink-0 text-xs text-blue-400" aria-hidden>
-              🛡️
-            </span>
-            <GamePill variant="block" block={enemy.block} />
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="shrink-0 text-sm leading-none" title="Alcance">
-              🏹
-            </span>
-            <GamePill variant="range" attackRange={enemy.attackRange} />
-          </div>
-
-          {isInitiativePhase && (
+        <div className="flex min-w-0 flex-1 flex-col justify-center">
+          <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between gap-2">
-              <span
-                className="shrink-0 text-sm leading-none"
-                title="Iniciativa"
-                aria-hidden
-              >
-                🎲
+              <span className="shrink-0 text-xs text-red-400" aria-hidden>
+                ❤️
               </span>
-              <GamePill
-                variant="initiative"
-                rolled={!!initiativeDice}
-                shrink
-                title={
-                  initiativeDice
-                    ? `Iniciativa: ${initiativeDice.total}`
-                    : "Total da iniciativa (ainda não rolado)"
-                }
-              >
-                {initiativeDice ? initiativeDice.total : "?"}
-              </GamePill>
+              <GamePill variant="hp" hp={enemy.hp} maxHp={enemy.maxHp} />
             </div>
-          )}
+            <div className="flex items-center justify-between gap-2">
+              <span className="shrink-0 text-xs text-blue-400" aria-hidden>
+                🛡️
+              </span>
+              <GamePill variant="block" block={enemy.block} />
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="shrink-0 text-sm leading-none" title="Alcance">
+                🏹
+              </span>
+              <GamePill variant="range" attackRange={enemy.attackRange} />
+            </div>
+          </div>
 
-          {!isInitiativePhase && actionCard && (
-            <div
-              className="flex min-w-0 flex-nowrap items-center justify-end gap-1 overflow-x-auto pt-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              title={actionCard.name}
-            >
-              {actionCard.actions.map((action, index) => {
-                const info = actionIcons[action.type];
-                return (
+          {showSecondarySection && (
+            <>
+              <div
+                className="my-1.5 flex min-w-0 items-center gap-2"
+                role="separator"
+                aria-orientation="horizontal"
+                aria-label={secondarySectionLabel}
+              >
+                <span
+                  className="min-h-px min-w-0 flex-1 bg-slate-600"
+                  aria-hidden
+                />
+                <span className="max-w-[min(100%,12rem)] shrink-0 truncate text-center text-[9px] font-semibold tracking-wide text-slate-400 sm:text-[10px]">
+                  {secondarySectionLabel}
+                </span>
+                <span
+                  className="min-h-px min-w-0 flex-1 bg-slate-600"
+                  aria-hidden
+                />
+              </div>
+
+              {showInitiativeRow && (
+                <div className="flex items-center justify-between gap-2">
                   <span
-                    key={index}
-                    className={`inline-flex shrink-0 items-center gap-1 text-sm ${info.color}`}
-                    title={`${info.label}: ${action.value}`}
+                    className="shrink-0 text-sm leading-none"
+                    title="Iniciativa"
+                    aria-hidden
                   >
-                    {info.icon}
-                    <GamePill
-                      variant="action"
-                      action={action.type}
-                      shrink
-                      title={`${info.label}: ${action.value}`}
-                    >
-                      {action.value}
-                    </GamePill>
+                    🎲
                   </span>
-                );
-              })}
-            </div>
+                  <GamePill
+                    variant="initiative"
+                    rolled={!!initiativeDice}
+                    shrink
+                    title={
+                      initiativeDice
+                        ? `Iniciativa: ${initiativeDice.total}`
+                        : "Total da iniciativa (ainda não rolado)"
+                    }
+                  >
+                    {initiativeDice ? initiativeDice.total : "?"}
+                  </GamePill>
+                </div>
+              )}
+
+              {showActionsRow && actionCard && (
+                <div
+                  className="flex min-w-0 flex-nowrap items-center justify-end gap-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  title={actionCard.name}
+                >
+                  {actionCard.actions.map((action, index) => {
+                    const info = actionIcons[action.type];
+                    return (
+                      <span
+                        key={index}
+                        className={`inline-flex shrink-0 items-center gap-1 text-sm ${info.color}`}
+                        title={`${info.label}: ${action.value}`}
+                      >
+                        {info.icon}
+                        <GamePill
+                          variant="action"
+                          action={action.type}
+                          shrink
+                          title={`${info.label}: ${action.value}`}
+                        >
+                          {action.value}
+                        </GamePill>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
