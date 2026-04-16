@@ -11,9 +11,9 @@ import {
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
 /** Padding inside the scroll container before fitting the map (px). */
-const FIT_PADDING = 12;
+const FIT_PADDING = 0;
 /** Shrinks the map slightly further than strict fit so borders don’t touch the frame. */
-const FIT_SCALE_SLACK = 0.96;
+const FIT_SCALE_SLACK = 1;
 
 interface HexGridProps {
   map: HexMap;
