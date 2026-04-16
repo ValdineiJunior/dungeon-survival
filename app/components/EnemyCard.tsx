@@ -56,7 +56,7 @@ export function EnemyCard({
   const secondarySectionLabel = showInitiativeRow
     ? phase === "viewingInitiative"
       ? "Resultado da iniciativa"
-      : "Iniciativa"
+      : "Variação de iniciativa"
     : "Ações";
 
   return (
@@ -172,25 +172,20 @@ export function EnemyCard({
 
               {showInitiativeRow && (
                 <div className="flex items-center justify-between gap-2">
-                  <span
-                    className="shrink-0 text-sm leading-none"
+                  <div
+                    className="flex min-w-0 flex-1 flex-wrap items-center gap-1"
                     title="Iniciativa"
-                    aria-hidden
                   >
-                    🎲
-                  </span>
+                    {initiativeDiceFaces.map((faces, i) => (
+                      <DiceIcon key={i} faces={faces} size="sm" />
+                    ))}
+                  </div>
                   <GamePill
                     variant="initiative"
-                    rolled={!!initiativeDice}
+                    initiativeRange={initiativeRange}
+                    total={initiativeDice?.total}
                     shrink
-                    title={
-                      initiativeDice
-                        ? `Iniciativa: ${initiativeDice.total}`
-                        : "Total da iniciativa (ainda não rolado)"
-                    }
-                  >
-                    {initiativeDice ? initiativeDice.total : "?"}
-                  </GamePill>
+                  />
                 </div>
               )}
 

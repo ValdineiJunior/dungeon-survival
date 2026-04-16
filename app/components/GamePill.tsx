@@ -96,8 +96,10 @@ export type GamePillProps = GamePillCommon &
       }
     | {
         variant: "initiative";
-        rolled: boolean;
-        children: ReactNode;
+        /** Possible roll span before rolling, e.g. `"3-18"`. Shown alone until `total` is set. */
+        initiativeRange: string;
+        /** When rolled, the pill shows only this (e.g. `16`); otherwise shows `initiativeRange`. */
+        total?: number;
       }
   );
 
@@ -114,9 +116,9 @@ function defaultTitle(props: GamePillProps): string | undefined {
         ? `Alcance: ${props.attackRange} hexes (ataque à distância)`
         : `Alcance: ${props.attackRange} (corpo a corpo)`;
     case "initiative":
-      return props.rolled
-        ? `Iniciativa: ${props.children}`
-        : "Total da iniciativa (ainda não rolado)";
+      return props.total !== undefined
+        ? `Iniciativa: ${props.total} (intervalo possível ${props.initiativeRange})`
+        : `Intervalo possível da iniciativa: ${props.initiativeRange}. Lance os dados.`;
     default:
       return undefined;
   }
@@ -132,6 +134,10 @@ function resolveContent(props: GamePillProps): ReactNode {
       return props.children ?? `${props.energy}/${props.maxEnergy}`;
     case "range":
       return props.children ?? String(props.attackRange);
+    case "initiative":
+      return props.total !== undefined
+        ? String(props.total)
+        : props.initiativeRange;
     default:
       return props.children;
   }
