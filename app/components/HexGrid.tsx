@@ -148,7 +148,7 @@ export function HexGrid({
           }}
         >
           <div
-            className="relative inline-block shrink-0 border-4 border-stone-600 rounded-md md:rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
+            className="relative inline-block shrink-0 border-4 border-stone-600 rounded-2xl bg-stone-950/50 overflow-hidden shadow-2xl"
             style={{ width: `${width}px`, height: `${height}px` }}
           >
             {tiles.map((tile) => {

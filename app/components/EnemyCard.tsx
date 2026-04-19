@@ -67,7 +67,7 @@ export function EnemyCard({
     <div
       onClick={isTargetable ? onClick : undefined}
       className={`
-        relative min-w-0 max-w-full w-full rounded-md md:rounded-xl border-2 p-1 md:p-3 shadow-lg
+        relative min-w-0 max-w-full w-full rounded-xl border-2 p-3 shadow-lg
         bg-linear-to-r from-slate-800 to-slate-900
         transition-colors duration-200
         ${
@@ -81,7 +81,7 @@ export function EnemyCard({
     >
       {/* Target indicator */}
       {isTargetable && (
-        <div className="absolute left-1 top-1 z-20 max-w-[calc(100%-0.5rem)] truncate rounded-full bg-yellow-500 px-1.5 py-0.5 text-[10px] font-bold text-black sm:left-2 sm:top-2 sm:max-w-none sm:px-2 sm:py-1 sm:text-xs">
+        <div className="absolute left-2 top-2 z-20 max-w-[calc(100%-1rem)] truncate rounded-full bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-black sm:max-w-none sm:py-1 sm:text-xs">
           🎯 Atacar alvo
         </div>
       )}
@@ -174,8 +174,7 @@ export function EnemyCard({
               >
                 {initiativeDiceFaces.map((faces, i) => {
                   const roll = initiativeDice?.dice?.[i];
-                  const faceForColor =
-                    initiativeDice?.diceFaces?.[i] ?? faces;
+                  const faceForColor = initiativeDice?.diceFaces?.[i] ?? faces;
                   return (
                     <Fragment key={i}>
                       {i > 0 && (

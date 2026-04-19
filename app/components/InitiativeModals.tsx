@@ -159,7 +159,7 @@ export function InitiativeOrderModal({
         {turnOrder.map((entry, i) => (
           <div
             key={entry.id}
-            className={`flex min-h-0 min-w-[56px] shrink-0 flex-col items-center gap-0.5 rounded-md border px-1 py-0.5 md:min-w-[72px] md:gap-1 md:rounded-xl md:px-3 md:py-2 ${
+            className={`flex min-h-0 min-w-[56px] shrink-0 flex-col items-center gap-0.5 rounded-xl border px-2 py-1 md:min-w-[72px] md:gap-1 md:px-3 md:py-2 ${
               entry.entityType === "player"
                 ? "bg-emerald-900/40 border-emerald-700/60"
                 : "bg-red-900/20 border-red-800/40"

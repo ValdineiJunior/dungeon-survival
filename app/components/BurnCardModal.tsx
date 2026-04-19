@@ -11,7 +11,7 @@ interface BurnCardModalProps {
 export function BurnCardModal({ hand, cardsToBurn, onConfirm, onCancel }: BurnCardModalProps) {
     return (
         <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
-            <div className="bg-slate-900 border border-slate-700 rounded-md md:rounded-xl p-1 md:p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 md:p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto mx-3">
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h2 className="text-2xl font-bold text-orange-500">🔥 Queimar Cartas</h2>
@@ -30,10 +30,10 @@ export function BurnCardModal({ hand, cardsToBurn, onConfirm, onCancel }: BurnCa
                         <div key={card.id} className="relative group">
                             <CardComponent card={card} disabled={false} />
 
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md md:rounded-xl flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
                                 <button
                                     onClick={() => onConfirm(card.id)}
-                                    className="px-2 py-1 md:px-6 md:py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-md md:rounded-lg shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all"
+                                    className="px-4 py-2 md:px-6 md:py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all"
                                 >
                                     Queimar
                                 </button>

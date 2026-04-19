@@ -53,7 +53,7 @@ function ActionDisplay({ action, showDescription }: { action: EnemyAction; showD
 export function EnemyActionCardDisplay({ actionCard, isCurrentAction, compact }: EnemyActionCardDisplayProps) {
   if (compact) {
     return (
-      <div className="flex items-center gap-2 px-1 py-1 rounded-md bg-slate-700/50">
+      <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-slate-700/50">
         {actionCard.actions.map((action, index) => (
           <ActionDisplay key={index} action={action} />
         ))}
@@ -62,18 +62,18 @@ export function EnemyActionCardDisplay({ actionCard, isCurrentAction, compact }:
   }
 
   return (
-    <div className="w-48 rounded-md md:rounded-lg border-2 overflow-hidden border-slate-600 bg-linear-to-b from-slate-800 to-slate-900">
+    <div className="w-48 rounded-xl border-2 overflow-hidden border-slate-600 bg-linear-to-b from-slate-800 to-slate-900">
       {/* Card Header */}
       <div className="px-2 py-1.5 text-center text-sm font-bold truncate bg-slate-700 text-slate-300">
         {actionCard.name}
       </div>
 
       {/* Actions with descriptions */}
-      <div className="p-1 md:p-2 space-y-1.5">
+      <div className="p-2 space-y-1.5">
         {actionCard.actions.map((action, index) => (
           <div 
             key={index} 
-            className="flex items-center gap-2 px-1 py-1 rounded-md text-xs bg-slate-700/50"
+            className="flex items-center gap-2 px-2 py-1 rounded-lg text-xs bg-slate-700/50"
           >
             <span>{actionIcons[action.type]}</span>
             <span className={actionColors[action.type]}>

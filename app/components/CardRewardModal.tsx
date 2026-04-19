@@ -17,7 +17,7 @@ export function CardRewardModal({
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-2 backdrop-blur-sm sm:p-4">
-      <div className="max-h-[min(100dvh,40rem)] w-full max-w-2xl overflow-y-auto rounded-md border-2 border-amber-600 bg-slate-800 p-3 text-center shadow-2xl md:rounded-2xl md:p-8">
+      <div className="max-h-[min(100dvh,40rem)] w-full max-w-2xl overflow-y-auto rounded-2xl border-2 border-amber-600 bg-slate-800 p-5 text-center shadow-2xl md:p-8">
         <div className="mb-4 text-2xl font-bold text-amber-400 md:mb-6 md:text-4xl">
           ⭐ Recompensa do Andar!
         </div>
@@ -44,7 +44,7 @@ export function CardRewardModal({
           <button
             onClick={() => selected && onSelectCard(selected)}
             disabled={!selected}
-            className={`px-2 py-1 md:px-6 md:py-3 font-bold rounded-md md:rounded-lg transition-colors ${
+            className={`px-4 py-2.5 md:px-6 md:py-3 font-bold rounded-lg transition-colors ${
               selected
                 ? "bg-amber-500 hover:bg-amber-400 text-black"
                 : "bg-slate-500 text-slate-400 cursor-not-allowed"
