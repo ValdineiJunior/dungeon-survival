@@ -494,14 +494,15 @@ export default function GamePage() {
                       🎯 Clique em um inimigo para atacar com{" "}
                       <strong>{selectedCard?.name}</strong> (
                       {selectedCard?.damage} dano)
-                      {selectedCard?.range != null && selectedCard.range > 1 && (
-                        <span className="text-amber-200/90">
-                          {" "}
-                          • Ataque à distância (alcance {selectedCard.range}).
-                          Se o alvo estiver adjacente: role 1d6 — 1 ou 2 = erra,
-                          3–6 = acerta.
-                        </span>
-                      )}
+                      {selectedCard?.range != null &&
+                        selectedCard.range > 1 && (
+                          <span className="text-amber-200/90">
+                            {" "}
+                            • Ataque à distância (alcance {selectedCard.range}).
+                            Se o alvo estiver adjacente: role 1d6 — 1 ou 2 =
+                            erra, 3–6 = acerta.
+                          </span>
+                        )}
                     </span>
                     <button
                       type="button"
@@ -545,7 +546,7 @@ export default function GamePage() {
               <div
                 role="status"
                 aria-live="polite"
-                className="flex min-w-max items-center justify-center gap-x-2 sm:gap-x-4 text-[11px] leading-tight sm:text-sm"
+                className="mx-auto flex min-w-max max-w-full items-center justify-center gap-x-2 sm:gap-x-4 text-[11px] leading-tight sm:text-sm"
               >
                 <span className="shrink-0 font-bold tracking-wide text-amber-400">
                   <span className="sm:hidden">⬡</span>

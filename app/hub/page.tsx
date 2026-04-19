@@ -87,9 +87,7 @@ export default function HubPage() {
           <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
             <div className="rounded-xl border border-amber-500/40 bg-slate-900/90 p-6 md:p-8 max-w-md text-center">
               <span className="text-6xl mb-4 block">🎯</span>
-              <h2 className="text-2xl font-bold text-amber-400 mb-2">
-                Hunter
-              </h2>
+              <h2 className="text-2xl font-bold text-amber-400 mb-2">Hunter</h2>
               <p className="text-slate-400 mb-6">
                 O responsável pela seleção dos heróis. Em breve você poderá
                 conhecer novos aventureiros aqui.
