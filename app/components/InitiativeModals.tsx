@@ -64,18 +64,18 @@ function InitiativeOrderCard({
   return (
     <div
       className={`
-        flex h-28 w-22 shrink-0 flex-col rounded-md border-2 p-0.5 shadow-md
-        md:h-36 md:w-24 md:rounded-lg md:p-1 md:shadow-lg
+        flex h-[8.75rem] w-[7rem] shrink-0 flex-col rounded-md border-2 p-0.5 shadow-md
+        md:h-[10.75rem] md:w-32 md:rounded-lg md:p-1 md:shadow-lg
         ${frameClass}
       `}
     >
       {/* Primeiro / Segundo / Terceiro … acima do retrato */}
-      <div className="shrink-0 px-0.5 text-center text-[8px] font-semibold leading-tight text-amber-300 md:text-[9px]">
+      <div className="shrink-0 px-0.5 text-center text-[9px] font-semibold leading-tight text-amber-300 md:text-[10px]">
         {initiativeRankLabel(index)}
       </div>
 
       {/* Retrato quadrado (como nos cards de inimigo na mesa) + número só nos inimigos (ordem no combate) */}
-      <div className="relative mx-auto mt-0.5 h-14 w-14 shrink-0 overflow-hidden rounded-md border-2 border-slate-600 bg-slate-800 md:h-16 md:w-16 md:mt-1">
+      <div className="relative mx-auto mt-0.5 h-[4.75rem] w-[4.75rem] shrink-0 overflow-hidden rounded-md border-2 border-slate-600 bg-slate-800 md:mt-1 md:h-24 md:w-24">
         {showPortrait ? (
           <img
             src={src!}
@@ -98,11 +98,11 @@ function InitiativeOrderCard({
         )}
       </div>
 
-      <div className="shrink-0 px-0.5 pt-0.5 text-center text-[9px] font-bold leading-tight text-white md:pt-1 md:text-[10px]">
+      <div className="shrink-0 px-0.5 pt-0.5 text-center text-[9px] font-bold leading-tight text-white md:pt-1 md:text-[11px]">
         <span className="line-clamp-2">{entry.name}</span>
       </div>
 
-      <div className="flex shrink-0 flex-wrap items-center justify-center gap-0.5 px-0.5 pb-px pt-px md:gap-1">
+      <div className="flex min-h-0 shrink-0 flex-wrap items-center justify-center gap-0.5 px-0.5 pb-px pt-px md:gap-1">
         {entry.dice.map((d, di) => {
           const faces = entry.diceFaces?.[di] ?? 6;
           return (
@@ -175,8 +175,8 @@ export function InitiativeRollModal({
   return (
     <div
       className={`
-        flex h-fit w-full max-w-full min-h-32 min-w-0 flex-row items-center justify-center gap-1.5
-        px-1 py-0.5 md:min-h-40 md:gap-4 md:px-1.5 md:py-1
+        flex h-fit w-full max-w-full min-h-36 min-w-0 flex-row items-center justify-center gap-1.5
+        px-1 py-0.5 md:min-h-44 md:gap-4 md:px-1.5 md:py-1
       `}
     >
       {/* Label — compact row, same vertical band as Hand */}
@@ -269,7 +269,7 @@ export function InitiativeOrderModal({
   enemies,
 }: InitiativeOrderModalProps) {
   return (
-    <div className="flex h-32 min-h-32 w-full max-w-full min-w-0 items-stretch gap-1.5 px-1 md:h-40 md:min-h-40 md:gap-3 md:px-1.5">
+    <div className="flex h-36 min-h-36 w-full max-w-full min-w-0 items-stretch gap-1.5 px-1 md:h-44 md:min-h-44 md:gap-3 md:px-1.5">
       {/* Label */}
       <div className="flex shrink-0 flex-col items-center justify-center text-center">
         <div className="mb-0.5 text-xl md:text-2xl">⚔️</div>

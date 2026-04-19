@@ -36,8 +36,8 @@ export function Card({
       onClick={onClick}
       disabled={disabled}
       className={`
-        flex h-28 w-22 flex-col rounded-md border-2 p-0.5 shadow-md
-        md:h-36 md:w-24 md:rounded-lg md:p-1 md:shadow-lg
+        flex h-[8.75rem] w-[7rem] flex-col rounded-md border-2 p-0.5 shadow-md
+        md:h-[10.75rem] md:w-32 md:rounded-lg md:p-1 md:shadow-lg
         bg-linear-to-b ${typeColors[card.type]}
         transition-colors duration-150
         ${

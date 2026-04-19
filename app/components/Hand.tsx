@@ -24,7 +24,7 @@ export function Hand({
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
   return (
-    <div className="flex h-32 min-h-32 w-full min-w-0 justify-center px-1 md:h-40 md:min-h-40 md:px-1.5">
+    <div className="flex h-36 min-h-36 w-full min-w-0 justify-center px-1 md:h-44 md:min-h-44 md:px-1.5">
       {/* Fixed band height so horizontal scrollbar stays inside and does not grow the layout */}
       <div
         className={`
