@@ -24,9 +24,16 @@ export function Hand({
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
   return (
-    <div className="flex h-fit min-h-0 w-full min-w-0 justify-center px-1 py-0.5 md:px-1.5 md:py-1">
-      <div className="max-w-full overflow-x-auto overflow-y-visible scroll-smooth [-webkit-overflow-scrolling:touch] touch-pan-x">
-        <div className="mx-auto flex w-max flex-nowrap items-end justify-center gap-1 px-0.5 py-px sm:gap-1.5 md:gap-2.5 md:px-1 md:py-px">
+    <div className="flex h-32 min-h-32 w-full min-w-0 justify-center px-1 md:h-40 md:min-h-40 md:px-1.5">
+      {/* Fixed band height so horizontal scrollbar stays inside and does not grow the layout */}
+      <div
+        className={`
+          h-full max-w-full min-h-0 flex-1 overflow-x-auto overflow-y-hidden scroll-smooth
+          [-webkit-overflow-scrolling:touch] touch-pan-x [scrollbar-width:thin]
+          [&::-webkit-scrollbar]:h-1.5
+        `}
+      >
+        <div className="mx-auto flex h-full w-max min-w-0 flex-nowrap items-end justify-center gap-1 px-0.5 sm:gap-1.5 md:gap-2.5 md:px-1">
           {cards.map((card, index) => {
             const canPlay = card.cost <= energy && !disabled;
             const isSelected =
@@ -53,7 +60,7 @@ export function Hand({
           })}
 
           {cards.length === 0 && (
-            <div className="flex h-30 min-w-44 items-center justify-center px-2 text-center text-xs italic text-gray-500 md:h-40 md:text-sm">
+            <div className="flex h-full w-full min-w-0 items-center justify-center px-2 text-center text-xs italic text-gray-500 md:text-sm">
               Sua mão está vazia
             </div>
           )}

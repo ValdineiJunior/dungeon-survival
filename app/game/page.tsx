@@ -594,7 +594,12 @@ export default function GamePage() {
                 diceFaces={initiativeDiceFaces}
               />
             ) : phase === "viewingInitiative" ? (
-              <InitiativeOrderModal turnOrder={turnOrder} turn={turn} />
+              <InitiativeOrderModal
+                turnOrder={turnOrder}
+                turn={turn}
+                playerCharacterClass={player.characterClass}
+                enemies={enemies}
+              />
             ) : (
               <Hand
                 cards={hand}

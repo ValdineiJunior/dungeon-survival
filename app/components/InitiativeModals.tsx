@@ -1,8 +1,129 @@
 "use client";
 
 import { useState } from "react";
-import { InitiativeResult } from "@/app/types/game";
+import type {
+  CharacterClass,
+  Enemy,
+  InitiativeResult,
+} from "@/app/types/game";
 import { DiceIcon } from "@/app/components/DiceIcon";
+import { CHARACTER_CLASSES } from "@/app/lib/cards";
+import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
+
+function initiativePortraitSrc(
+  entry: InitiativeResult,
+  playerClass: CharacterClass,
+): string | null {
+  if (entry.entityType === "player") {
+    return CHARACTER_CLASSES[playerClass].imageUrl;
+  }
+  const file = ENEMY_IMAGE_FILES[entry.name];
+  return file ? `/enemies/${file}` : null;
+}
+
+/** Rótulo de ordem na iniciativa (1º, 2º, 3º em palavras; depois só ordinal numérico). */
+function initiativeRankLabel(index: number): string {
+  const words = ["Primeiro", "Segundo", "Terceiro"];
+  if (index < words.length) return words[index];
+  return `${index + 1}º`;
+}
+
+/** Mesmo índice que em EnemyCard: posição na lista `enemies` (1, 2, 3…). */
+function enemyEncounterOrderNumber(
+  entry: InitiativeResult,
+  enemies: Enemy[],
+): number | null {
+  if (entry.entityType !== "enemy") return null;
+  const idx = enemies.findIndex((e) => e.id === entry.id);
+  return idx >= 0 ? idx + 1 : null;
+}
+
+interface InitiativeOrderCardProps {
+  entry: InitiativeResult;
+  index: number;
+  playerCharacterClass: CharacterClass;
+  /** Só inimigos: número de ordem no combate (como no EnemyCard), não a posição na iniciativa. */
+  enemyEncounterNumber: number | null;
+}
+
+function InitiativeOrderCard({
+  entry,
+  index,
+  playerCharacterClass,
+  enemyEncounterNumber,
+}: InitiativeOrderCardProps) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const src = initiativePortraitSrc(entry, playerCharacterClass);
+  const showPortrait = Boolean(src) && !imgFailed;
+
+  const frameClass =
+    entry.entityType === "player"
+      ? "border-emerald-500/80 bg-linear-to-b from-emerald-950/85 to-slate-950"
+      : "border-red-600/70 bg-linear-to-b from-red-950/70 to-slate-950";
+
+  return (
+    <div
+      className={`
+        flex h-28 w-22 shrink-0 flex-col rounded-md border-2 p-0.5 shadow-md
+        md:h-36 md:w-24 md:rounded-lg md:p-1 md:shadow-lg
+        ${frameClass}
+      `}
+    >
+      {/* Primeiro / Segundo / Terceiro … acima do retrato */}
+      <div className="shrink-0 px-0.5 text-center text-[8px] font-semibold leading-tight text-amber-300 md:text-[9px]">
+        {initiativeRankLabel(index)}
+      </div>
+
+      {/* Retrato quadrado (como nos cards de inimigo na mesa) + número só nos inimigos (ordem no combate) */}
+      <div className="relative mx-auto mt-0.5 h-14 w-14 shrink-0 overflow-hidden rounded-md border-2 border-slate-600 bg-slate-800 md:h-16 md:w-16 md:mt-1">
+        {showPortrait ? (
+          <img
+            src={src!}
+            alt={entry.name}
+            className="h-full w-full object-cover object-top"
+            onError={() => setImgFailed(true)}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xl md:text-2xl">
+            <span aria-hidden>{entry.emoji}</span>
+          </div>
+        )}
+        {enemyEncounterNumber != null && (
+          <span
+            className="absolute bottom-0 right-0 z-10 flex h-4 w-4 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[10px] font-bold text-black md:h-[18px] md:w-[18px] md:text-[11px]"
+            title={`Ordem de turno: ${enemyEncounterNumber}`}
+          >
+            {enemyEncounterNumber}
+          </span>
+        )}
+      </div>
+
+      <div className="shrink-0 px-0.5 pt-0.5 text-center text-[9px] font-bold leading-tight text-white md:pt-1 md:text-[10px]">
+        <span className="line-clamp-2">{entry.name}</span>
+      </div>
+
+      <div className="flex shrink-0 flex-wrap items-center justify-center gap-0.5 px-0.5 pb-px pt-px md:gap-1">
+        {entry.dice.map((d, di) => {
+          const faces = entry.diceFaces?.[di] ?? 6;
+          return (
+            <DiceIcon
+              key={di}
+              faces={faces}
+              value={d}
+              size="xs"
+              highlighted={d === entry.highestDie}
+            />
+          );
+        })}
+        <span
+          className={`ml-0.5 text-[9px] font-bold tabular-nums md:text-[10px] ${entry.entityType === "player" ? "text-emerald-300" : "text-red-300"}`}
+        >
+          ={entry.total}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 // ─── Dice Choice Panel (inline, replaces hand area) ─────────────────────────
 
@@ -54,7 +175,7 @@ export function InitiativeRollModal({
   return (
     <div
       className={`
-        flex h-fit w-full max-w-full min-h-30 min-w-0 flex-row items-center justify-center gap-1.5
+        flex h-fit w-full max-w-full min-h-32 min-w-0 flex-row items-center justify-center gap-1.5
         px-1 py-0.5 md:min-h-40 md:gap-4 md:px-1.5 md:py-1
       `}
     >
@@ -137,70 +258,46 @@ export function InitiativeRollModal({
 interface InitiativeOrderModalProps {
   turnOrder: InitiativeResult[];
   turn: number;
+  playerCharacterClass: CharacterClass;
+  enemies: Enemy[];
 }
 
 export function InitiativeOrderModal({
   turnOrder,
   turn,
+  playerCharacterClass,
+  enemies,
 }: InitiativeOrderModalProps) {
   return (
-    <div className="flex h-fit min-h-30 w-full max-w-full min-w-0 items-center gap-1.5 overflow-hidden px-1 py-0.5 md:min-h-40 md:gap-3 md:px-1.5 md:py-1">
+    <div className="flex h-32 min-h-32 w-full max-w-full min-w-0 items-stretch gap-1.5 px-1 md:h-40 md:min-h-40 md:gap-3 md:px-1.5">
       {/* Label */}
-      <div className="shrink-0 text-center">
-        <div className="text-xl md:text-2xl mb-0.5">⚔️</div>
-        <div className="text-amber-400 font-bold text-[10px] md:text-xs leading-tight">
+      <div className="flex shrink-0 flex-col items-center justify-center text-center">
+        <div className="mb-0.5 text-xl md:text-2xl">⚔️</div>
+        <div className="text-[10px] font-bold leading-tight text-amber-400 md:text-xs">
           Ordem
         </div>
-        <div className="text-slate-500 text-[10px] md:text-xs">T{turn}</div>
+        <div className="text-[10px] text-slate-500 md:text-xs">T{turn}</div>
       </div>
 
-      {/* Lista horizontal */}
-      <div className="flex min-h-0 min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5 md:gap-2 md:py-1">
-        {turnOrder.map((entry, i) => (
-          <div
-            key={entry.id}
-            className={`flex min-h-0 min-w-[56px] shrink-0 flex-col items-center gap-0.5 rounded-xl border px-2 py-1 md:min-w-[72px] md:gap-1 md:px-3 md:py-2 ${
-              entry.entityType === "player"
-                ? "bg-emerald-900/40 border-emerald-700/60"
-                : "bg-red-900/20 border-red-800/40"
-            }`}
-          >
-            <div className="flex items-center gap-1">
-              <span
-                className={`w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full text-[9px] md:text-[10px] font-bold shrink-0 ${
-                  i === 0
-                    ? "bg-amber-400 text-black"
-                    : "bg-slate-700 text-slate-300"
-                }`}
-              >
-                {i + 1}
-              </span>
-              <span className="text-base md:text-lg">{entry.emoji}</span>
-            </div>
-            <div className="text-[9px] md:text-[10px] font-semibold text-white text-center leading-tight max-w-[56px] md:max-w-[64px] truncate">
-              {entry.name}
-            </div>
-            <div className="flex flex-row flex-nowrap items-center gap-0.5 justify-center">
-              {entry.dice.map((d, di) => {
-                const faces = entry.diceFaces?.[di] ?? 6;
-                return (
-                  <DiceIcon
-                    key={di}
-                    faces={faces}
-                    value={d}
-                    size="sm"
-                    highlighted={d === entry.highestDie}
-                  />
-                );
-              })}
-              <span
-                className={`ml-0.5 text-[10px] md:text-xs font-bold shrink-0 ${entry.entityType === "player" ? "text-emerald-400" : "text-red-400"}`}
-              >
-                ={entry.total}
-              </span>
-            </div>
-          </div>
-        ))}
+      {/* Mesma faixa fixa / scroll horizontal que a mão */}
+      <div
+        className={`
+          h-full max-w-full min-h-0 flex-1 overflow-x-auto overflow-y-hidden
+          [-webkit-overflow-scrolling:touch] touch-pan-x [scrollbar-width:thin]
+          [&::-webkit-scrollbar]:h-1.5
+        `}
+      >
+        <div className="mx-auto flex h-full w-max min-w-0 items-end justify-start gap-1 md:gap-2">
+          {turnOrder.map((entry, i) => (
+            <InitiativeOrderCard
+              key={entry.id}
+              entry={entry}
+              index={i}
+              playerCharacterClass={playerCharacterClass}
+              enemyEncounterNumber={enemyEncounterOrderNumber(entry, enemies)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
