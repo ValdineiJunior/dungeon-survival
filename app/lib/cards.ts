@@ -353,7 +353,7 @@ export const WARRIOR_DEFAULT_CARDS: Card[] = [
     name: 'Passo Lento',
     cost: 1,
     type: 'movement',
-    movement: 1,
+    movement: 2,
     description: '[Carta Padrão] Mova até 1 espaço.',
   },
 ];
