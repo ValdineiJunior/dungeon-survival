@@ -168,7 +168,7 @@ export function InitiativeRollModal({
 
   return (
     <div className="flex h-36 w-full max-w-full min-w-0 flex-col gap-0.5 px-1 py-0.5 md:h-44 md:gap-1 md:px-1.5 md:py-1">
-      <p className="w-full px-1 text-center text-[9px] leading-tight text-slate-400 sm:text-[10px] md:text-xs">
+      <p className="w-full px-1 text-center text-[10px] leading-tight text-slate-400 sm:text-[11px] md:text-sm">
         Selecione os dados que quer rolar. Clique para marcar/desmarcar.
       </p>
 
@@ -262,7 +262,7 @@ export function InitiativeRollModal({
         </button>
       </div>
 
-      <p className="w-full px-1 text-center text-[8px] leading-tight text-amber-400/80 sm:text-[9px] md:text-[10px]">
+      <p className="w-full px-1 text-center text-[9px] leading-tight text-amber-400/80 sm:text-[10px] md:text-xs">
         Menos dados = tende a agir depois. Mais dados = tende a agir primeiro.
       </p>
     </div>
