@@ -8,7 +8,7 @@ import {
   InnateAbility,
 } from "@/app/types/game";
 import { DiceIcon } from "./DiceIcon";
-import { GamePill } from "./GamePill";
+import { GamePill, gamePillBaseClasses } from "./GamePill";
 
 interface PlayerStatusProps {
   player: Player;
@@ -56,65 +56,65 @@ export function PlayerStatus({
       <div className="border-t border-slate-600" />
 
       <div className="flex min-h-0 flex-col gap-1.5">
-      {/* HP */}
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="text-red-400 shrink-0">❤️ Vida</span>
-        <GamePill variant="hp" hp={player.hp} maxHp={player.maxHp} shrink />
-      </div>
-
-      {/* Bloqueio */}
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="text-blue-400 shrink-0">🛡️ Bloqueio</span>
-        <GamePill variant="block" block={player.block} shrink />
-      </div>
-
-      {/* Energia */}
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="text-amber-400 shrink-0">⚡ Energia</span>
-        <GamePill
-          variant="energy"
-          energy={player.energy}
-          maxEnergy={player.maxEnergy}
-          shrink
-        />
-      </div>
-
-      {/* Pool de dados */}
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="shrink-0 text-violet-400">🎲 Pool de dados</span>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-          {initiativeDicePool.map((faces, i) => (
-            <DiceIcon key={i} faces={faces} size="sm" />
-          ))}
-        </div>
-      </div>
-
-      {/* Iniciativa */}
-      <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="shrink-0 text-violet-400">✨ Iniciativa</span>
-        <GamePill variant="initiativeResult" total={initiativeTotal} shrink />
-      </div>
-
-      {/* Habilidades inatas */}
-      {classDef.innateAbilities.length > 0 && (
+        {/* HP */}
         <div className="flex items-center justify-between gap-2 text-sm">
-          <span className="shrink-0 text-teal-400">✨ Habilidade</span>
+          <span className="text-red-400 shrink-0">❤️ Vida</span>
+          <GamePill variant="hp" hp={player.hp} maxHp={player.maxHp} shrink />
+        </div>
+
+        {/* Bloqueio */}
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="text-blue-400 shrink-0">🛡️ Bloqueio</span>
+          <GamePill variant="block" block={player.block} shrink />
+        </div>
+
+        {/* Energia */}
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="text-amber-400 shrink-0">⚡ Energia</span>
+          <GamePill
+            variant="energy"
+            energy={player.energy}
+            maxEnergy={player.maxEnergy}
+            shrink
+          />
+        </div>
+
+        {/* Iniciativa */}
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="shrink-0 text-cyan-400">✨ Iniciativa</span>
+          <GamePill variant="initiativeResult" total={initiativeTotal} shrink />
+        </div>
+
+        {/* Pool de dados */}
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="shrink-0 text-violet-400">🎲 Dados</span>
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-            {classDef.innateAbilities.map((ability, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setInnateDetail(ability)}
-                title={ability.name}
-                aria-label={`Habilidade inata: ${ability.name}`}
-                className="flex size-6 shrink-0 items-center justify-center rounded-md border border-slate-600 bg-slate-700/80 text-xs leading-none transition-colors hover:border-amber-500/50 hover:bg-slate-600"
-              >
-                {ability.emoji}
-              </button>
+            {initiativeDicePool.map((faces, i) => (
+              <DiceIcon key={i} faces={faces} size="sm" />
             ))}
           </div>
         </div>
-      )}
+
+        {/* Habilidades inatas */}
+        {classDef.innateAbilities.length > 0 && (
+          <div className="flex items-center justify-between gap-2 text-sm">
+            <span className="shrink-0 text-teal-400">✨ Habilidade</span>
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+              {classDef.innateAbilities.map((ability, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setInnateDetail(ability)}
+                  title={ability.name}
+                  aria-label={`Habilidade inata: ${ability.name}`}
+                  className={`${gamePillBaseClasses} h-6 min-w-6 shrink-0 rounded-md border-teal-500 bg-teal-800 px-1 text-xs leading-none text-white shadow-md shadow-teal-600/25 transition-colors hover:border-amber-500 hover:bg-teal-700`}
+                >
+                  {ability.emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {innateDetail &&
