@@ -57,12 +57,14 @@ function InitiativeOrderCard({
     entry.entityType === "player"
       ? "border-emerald-500/80 bg-linear-to-b from-emerald-950/85 to-slate-950"
       : "border-red-600/70 bg-linear-to-b from-red-950/70 to-slate-950";
+  const diceFaces = entry.diceFaces ?? entry.dice.map(() => 6);
+  const initiativeRange = `${diceFaces.length}-${diceFaces.reduce((sum, faces) => sum + faces, 0)}`;
 
   return (
     <div
       className={`
-        flex h-[8.75rem] w-[7rem] shrink-0 flex-col rounded-md border-2 p-0.5 shadow-md
-        md:h-[10.75rem] md:w-32 md:rounded-lg md:p-1 md:shadow-lg
+        flex h-[8.75rem] w-[9rem] shrink-0 flex-col rounded-md border-2 p-0.5 shadow-md
+        md:h-[10.75rem] md:w-40 md:rounded-lg md:p-1 md:shadow-lg
         ${frameClass}
       `}
     >
@@ -101,22 +103,40 @@ function InitiativeOrderCard({
 
       <div className="flex min-h-0 shrink-0 flex-wrap items-center justify-center gap-0.5 px-0.5 pb-px pt-px md:gap-1">
         {entry.dice.map((d, di) => {
-          const faces = entry.diceFaces?.[di] ?? 6;
+          const faces = diceFaces[di] ?? 6;
           return (
-            <DiceIcon
-              key={di}
-              faces={faces}
-              value={d}
-              size="xs"
-              highlighted={d === entry.highestDie}
-            />
+            <Fragment key={di}>
+              {di > 0 && (
+                <span
+                  className="shrink-0 text-[9px] font-bold text-slate-400 md:text-[10px]"
+                  aria-hidden
+                >
+                  +
+                </span>
+              )}
+              <DiceIcon
+                faces={faces}
+                value={d}
+                size="xs"
+                showImage={false}
+                highlighted={d === entry.highestDie}
+              />
+            </Fragment>
           );
         })}
         <span
-          className={`ml-0.5 text-[9px] font-bold tabular-nums md:text-[10px] ${entry.entityType === "player" ? "text-emerald-300" : "text-red-300"}`}
+          className="shrink-0 px-0.5 text-[9px] font-bold text-slate-400 md:text-[10px]"
+          aria-hidden
         >
-          ={entry.total}
+          =
         </span>
+        <GamePill
+          variant="initiative"
+          initiativeRange={initiativeRange}
+          total={entry.total}
+          shrink
+          className="px-1.5 py-px text-[9px] md:text-[10px]"
+        />
       </div>
     </div>
   );
@@ -235,7 +255,11 @@ export function InitiativeRollModal({
             >
               =
             </span>
-            <GamePill variant="initiative" initiativeRange={initiativeRange} shrink />
+            <GamePill
+              variant="initiative"
+              initiativeRange={initiativeRange}
+              shrink
+            />
           </div>
         </div>
 
