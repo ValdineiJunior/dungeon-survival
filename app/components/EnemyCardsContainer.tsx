@@ -16,7 +16,7 @@ export function EnemyCardsContainer({
     <div
       className={`
         flex min-h-0 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain
-        pr-0.5 [-webkit-overflow-scrolling:touch]
+        pt-2 pr-0.5 [-webkit-overflow-scrolling:touch]
         max-h-[min(42dvh,16rem)] sm:max-h-[min(44dvh,18rem)]
         lg:max-h-[min(72vh,32rem)]
         ${className}

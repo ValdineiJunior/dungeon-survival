@@ -67,7 +67,7 @@ export function EnemyCard({
     <div
       onClick={isTargetable ? onClick : undefined}
       className={`
-        relative min-w-0 max-w-full w-full rounded-xl border-2 p-3 shadow-lg
+        relative min-w-0 max-w-full w-full rounded-xl border-2 p-3 pt-4 shadow-lg
         bg-linear-to-r from-slate-800 to-slate-900
         transition-colors duration-200
         ${
@@ -79,6 +79,13 @@ export function EnemyCard({
         }
       `}
     >
+      <h3
+        className="pointer-events-none absolute left-1/2 top-0 z-20 max-w-[calc(100%-3rem)] -translate-x-1/2 -translate-y-1/2 truncate rounded-full bg-slate-900 px-2 py-px text-center text-[10px] font-semibold leading-tight text-slate-200 sm:text-[11px]"
+        title={enemy.name}
+      >
+        {enemy.name}
+      </h3>
+
       {/* Target indicator */}
       {isTargetable && (
         <div className="absolute left-2 top-2 z-20 max-w-[calc(100%-1rem)] truncate rounded-full bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-black sm:max-w-none sm:py-1 sm:text-xs">
@@ -89,12 +96,6 @@ export function EnemyCard({
       <div className="flex w-full min-w-0 flex-col gap-1.5 md:gap-2">
         <div className="flex w-full min-w-0 items-stretch gap-3">
           <div className="flex shrink-0 flex-col items-center gap-1.5">
-            <h3
-              className="w-14 min-w-0 truncate text-center text-xs font-bold leading-tight text-white sm:text-sm"
-              title={enemy.name}
-            >
-              {enemy.name}
-            </h3>
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border-2 border-slate-600 bg-slate-800">
               {ENEMY_IMAGE_FILES[enemy.name] ? (
                 <img
@@ -114,6 +115,12 @@ export function EnemyCard({
                 {orderNumber}
               </span>
             </div>
+            <GamePill
+              variant="hp"
+              hp={enemy.hp}
+              maxHp={enemy.maxHp}
+              className="min-w-13"
+            />
           </div>
 
           <div
@@ -125,12 +132,6 @@ export function EnemyCard({
           <div className="flex min-w-0 flex-1 flex-col justify-center">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <span className="shrink-0 text-xs text-red-400" aria-hidden>
-                  ❤️
-                </span>
-                <GamePill variant="hp" hp={enemy.hp} maxHp={enemy.maxHp} />
-              </div>
-              <div className="flex items-center justify-between gap-2">
                 <span className="shrink-0 text-xs text-blue-400" aria-hidden>
                   🛡️
                 </span>
@@ -141,6 +142,16 @@ export function EnemyCard({
                   🏹
                 </span>
                 <GamePill variant="range" attackRange={enemy.attackRange} />
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="shrink-0 text-sm leading-none" title="Iniciativa">
+                  🎲
+                </span>
+                <GamePill
+                  variant="initiative"
+                  initiativeRange={initiativeRange}
+                  total={initiativeDice?.total}
+                />
               </div>
             </div>
           </div>
