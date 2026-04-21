@@ -122,7 +122,9 @@ export default function GamePage() {
 
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
-  const playerInitiativeEntry = turnOrder.find((entry) => entry.id === "player");
+  const playerInitiativeEntry = turnOrder.find(
+    (entry) => entry.id === "player",
+  );
   const initiativeDiceFaces = CHARACTER_CLASSES[player.characterClass]
     .initiativeDice ?? [6, 6, 6];
 
@@ -130,6 +132,8 @@ export default function GamePage() {
     switch (phase) {
       case "playerTurn":
         return "Seu Turno";
+      case "viewingInitiative":
+        return "Ordem de turno";
       case "enemyTurn":
         return "Turno Inimigo";
       case "selectingMovement":
@@ -155,6 +159,8 @@ export default function GamePage() {
     switch (phase) {
       case "playerTurn":
         return "bg-green-600 text-white";
+      case "viewingInitiative":
+        return "bg-slate-600 text-white";
       case "selectingMovement":
         return "bg-blue-600 text-white";
       case "selectingTarget":
@@ -184,6 +190,20 @@ export default function GamePage() {
     phase === "selectingMovement" ||
     phase === "selectingTarget" ||
     phase === "confirmingSkill";
+
+  const activeTurnOrderEntry = turnOrder[activeTurnIndex];
+  const enemyResolvingInInitiativeView =
+    phase === "viewingInitiative" &&
+    activeTurnOrderEntry?.entityType === "enemy";
+
+  const showMiniInitiativeInStatusBar =
+    turnOrder.length > 0 &&
+    (phase === "playerTurn" ||
+      phase === "enemyTurn" ||
+      phase === "viewingInitiative");
+
+  const showStatusPhasePill =
+    phase !== "enemyTurn" && !enemyResolvingInInitiativeView;
 
   const pileButtonClass =
     "min-h-9 md:min-h-11 w-full min-w-0 px-2 py-1.5 md:px-1.5 md:py-2 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg text-[11px] md:text-sm transition-colors flex flex-row items-center justify-center gap-1 md:justify-between md:gap-2 whitespace-nowrap";
@@ -575,7 +595,7 @@ export default function GamePage() {
                 <span className="shrink-0 tabular-nums text-slate-400">
                   Turno {turn}
                 </span>
-                {phase === "playerTurn" && turnOrder.length > 0 && (
+                {showMiniInitiativeInStatusBar && (
                   <>
                     <span className="shrink-0 text-slate-600" aria-hidden>
                       |
@@ -588,14 +608,18 @@ export default function GamePage() {
                     />
                   </>
                 )}
-                <span className="shrink-0 text-slate-600" aria-hidden>
-                  |
-                </span>
-                <span
-                  className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
-                >
-                  {getPhaseLabel()}
-                </span>
+                {showStatusPhasePill && (
+                  <>
+                    <span className="shrink-0 text-slate-600" aria-hidden>
+                      |
+                    </span>
+                    <span
+                      className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-bold sm:text-xs ${getPhaseColor()}`}
+                    >
+                      {getPhaseLabel()}
+                    </span>
+                  </>
+                )}
               </div>
             )}
           </div>
