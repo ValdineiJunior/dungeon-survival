@@ -1,30 +1,57 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import GameView from "@/app/components/GameView";
+import { CharacterSelect } from "@/app/components/CharacterSelect";
 import { getVisibleStoryParts } from "@/app/lib/story";
 import { StoryView } from "@/app/hub/components/StoryView";
 import { HowToPlayContent } from "@/app/components/HowToPlayContent";
+import { useGameStore } from "@/app/lib/gameStore";
+import type { CharacterClass } from "@/app/types/game";
 
-type HubView = "main" | "historia" | "comoJogar" | "hunter" | "loja";
+type HubView = "main" | "historia" | "comoJogar";
 
 const BACKGROUNDS: Record<HubView, string> = {
   main: "url(/images/hub-main.jpg)",
   historia: "url(/images/hub-main.jpg)",
   comoJogar: "url(/images/hub-main.jpg)",
-  hunter: "url(/images/hub-hunter.jpg)",
-  loja: "url(/images/hub-loja.jpg)",
 };
 
 export default function HomePage() {
   const [inGame, setInGame] = useState(false);
+  const [heroSelectOpen, setHeroSelectOpen] = useState(false);
   const [view, setView] = useState<HubView>("main");
   const storyParts = useMemo(() => getVisibleStoryParts(), []);
+
+  const selectCharacter = useGameStore((s) => s.selectCharacter);
+  const startCombat = useGameStore((s) => s.startCombat);
+
+  const goHubView = useCallback((next: HubView) => {
+    setHeroSelectOpen(false);
+    setView(next);
+  }, []);
+
+  const handlePickHero = useCallback(
+    (characterClass: CharacterClass) => {
+      selectCharacter(characterClass);
+      startCombat();
+      setHeroSelectOpen(false);
+      setInGame(true);
+    },
+    [selectCharacter, startCombat],
+  );
 
   const bgImage = BACKGROUNDS[view];
 
   if (inGame) {
-    return <GameView onExitToHub={() => setInGame(false)} />;
+    return (
+      <GameView
+        onExitToHub={() => {
+          setInGame(false);
+          setHeroSelectOpen(false);
+        }}
+      />
+    );
   }
 
   return (
@@ -39,18 +66,24 @@ export default function HomePage() {
         aria-hidden
       />
       <div className="relative z-10 flex flex-col min-h-screen overflow-hidden pb-28">
-        <header className="shrink-0 flex items-center justify-center p-3 md:p-4 border-b border-amber-500/30 bg-slate-900/60">
+        <header className="shrink-0 flex items-center justify-center px-2 py-3 md:px-4 md:py-4 border-b border-amber-500/30 bg-slate-900/60">
           <button
             type="button"
-            onClick={() => setView("main")}
-            className="text-xl md:text-2xl font-bold text-amber-400 tracking-wide hover:text-amber-300 transition-colors"
-            title="Voltar ao início"
+            onClick={() => goHubView("main")}
+            className="text-center text-lg font-bold tracking-wide text-amber-400 hover:text-amber-300 transition-colors sm:text-xl md:text-2xl"
+            title="Ir à página principal"
           >
             Dungeon Survival
           </button>
         </header>
 
-        {view === "main" && (
+        {view === "main" && heroSelectOpen && (
+          <main className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-2 py-2 md:px-4 md:py-3 lg:px-6">
+            <CharacterSelect variant="embedded" onSelect={handlePickHero} />
+          </main>
+        )}
+
+        {view === "main" && !heroSelectOpen && (
           <main className="flex-1 flex flex-col p-3 md:p-4 lg:p-6 max-w-4xl mx-auto w-full min-h-0 overflow-auto pb-28">
             <div className="flex flex-col items-center gap-6 text-center px-2 py-4 md:py-6">
               <div>
@@ -146,40 +179,29 @@ export default function HomePage() {
           </main>
         )}
 
-        {view === "hunter" && (
-          <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
-            <div className="rounded-xl border border-amber-500/40 bg-slate-900/90 p-6 md:p-8 max-w-md text-center">
-              <span className="text-6xl mb-4 block">🎯</span>
-              <h2 className="text-2xl font-bold text-amber-400 mb-2">Hunter</h2>
-              <p className="text-slate-400 mb-6">
-                O responsável pela seleção dos heróis. Em breve você poderá
-                conhecer novos aventureiros aqui.
-              </p>
-              <p className="text-sm text-slate-500">Em breve</p>
-            </div>
-          </main>
-        )}
-
-        {view === "loja" && (
-          <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
-            <div className="rounded-xl border border-amber-500/40 bg-slate-900/90 p-6 md:p-8 max-w-md text-center">
-              <span className="text-6xl mb-4 block">⚔️</span>
-              <h2 className="text-2xl font-bold text-amber-400 mb-2">
-                Loja de Armas
-              </h2>
-              <p className="text-slate-400 mb-6">
-                Armas e equipamentos para sua jornada na masmorra. Em breve.
-              </p>
-              <p className="text-sm text-slate-500">Em breve</p>
-            </div>
-          </main>
-        )}
-
         <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-amber-500/30 bg-slate-900/95 backdrop-blur-sm p-2.5 md:p-3 lg:p-4">
-          <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
+          <div className="mx-auto grid max-w-4xl grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
             <button
               type="button"
-              onClick={() => setView("historia")}
+              onClick={() => goHubView("main")}
+              className={`flex flex-col items-center gap-1 md:gap-2 p-2.5 md:p-3 lg:p-4 rounded-xl border-2 transition-all hover:scale-[1.02] ${
+                view === "main" && !heroSelectOpen
+                  ? "border-amber-400 bg-amber-600/40"
+                  : "border-amber-500/50 bg-slate-800/80 hover:bg-slate-700/80 hover:border-amber-400"
+              }`}
+              title="Página principal — resumo do jogo"
+            >
+              <span className="text-2xl md:text-3xl" aria-hidden>
+                🏠
+              </span>
+              <span className="font-bold text-amber-400 text-[10px] text-center leading-tight sm:text-xs md:text-sm">
+                <span className="hidden sm:inline">Página principal</span>
+                <span className="sm:hidden">Início</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => goHubView("historia")}
               className={`flex flex-col items-center gap-1 md:gap-2 p-2.5 md:p-3 lg:p-4 rounded-xl border-2 transition-all hover:scale-[1.02] ${
                 view === "historia"
                   ? "border-amber-400 bg-amber-600/40"
@@ -193,7 +215,7 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              onClick={() => setView("comoJogar")}
+              onClick={() => goHubView("comoJogar")}
               className={`flex flex-col items-center gap-1 md:gap-2 p-2.5 md:p-3 lg:p-4 rounded-xl border-2 transition-all hover:scale-[1.02] ${
                 view === "comoJogar"
                   ? "border-amber-400 bg-amber-600/40"
@@ -207,40 +229,22 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              onClick={() => setView("hunter")}
+              onClick={() => {
+                goHubView("main");
+                setHeroSelectOpen(true);
+              }}
               className={`flex flex-col items-center gap-1 md:gap-2 p-2.5 md:p-3 lg:p-4 rounded-xl border-2 transition-all hover:scale-[1.02] ${
-                view === "hunter"
-                  ? "border-amber-400 bg-amber-600/40"
-                  : "border-amber-500/50 bg-slate-800/80 hover:bg-slate-700/80 hover:border-amber-400"
+                heroSelectOpen
+                  ? "border-amber-400 bg-amber-600/40 hover:border-amber-300 hover:bg-amber-500/50"
+                  : "border-amber-500/50 bg-slate-800/80 hover:bg-slate-700/80 hover:border-slate-500"
               }`}
+              title="Escolher classe e entrar na masmorra"
             >
-              <span className="text-2xl md:text-3xl">🎯</span>
-              <span className="font-bold text-amber-400 text-xs md:text-sm text-center leading-tight">
-                Hunter
+              <span className="text-2xl md:text-3xl" aria-hidden>
+                🛡️
               </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("loja")}
-              className={`flex flex-col items-center gap-1 md:gap-2 p-2.5 md:p-3 lg:p-4 rounded-xl border-2 transition-all hover:scale-[1.02] ${
-                view === "loja"
-                  ? "border-amber-400 bg-amber-600/40"
-                  : "border-amber-500/50 bg-slate-800/80 hover:bg-slate-700/80 hover:border-amber-400"
-              }`}
-            >
-              <span className="text-2xl md:text-3xl">⚔️</span>
-              <span className="font-bold text-amber-400 text-xs md:text-sm text-center leading-tight">
-                Loja de Armas
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setInGame(true)}
-              className="flex flex-col items-center justify-center gap-1 md:gap-2 p-2.5 md:p-3 lg:p-4 rounded-xl border-2 border-amber-500 bg-amber-600/30 hover:bg-amber-500/40 hover:border-amber-400 transition-all hover:scale-[1.02] col-span-2 lg:col-span-1"
-            >
-              <span className="text-2xl md:text-3xl">🚪</span>
-              <span className="font-bold text-amber-300 text-xs md:text-sm text-center leading-tight">
-                Iniciar Aventura
+              <span className="whitespace-nowrap text-center text-[10px] font-bold leading-tight text-amber-400 sm:text-xs md:text-sm">
+                Escolher herói
               </span>
             </button>
           </div>

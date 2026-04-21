@@ -15,11 +15,16 @@ import { DiceIcon } from "./DiceIcon";
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
+  /** `embedded`: dentro do hub (scroll, sem fundo full-screen). `fullscreen`: rota /game ou legado. */
+  variant?: "fullscreen" | "embedded";
 }
 
 const CLASS_ORDER: CharacterClass[] = ["warrior", "archer", "mage"];
 
-export function CharacterSelect({ onSelect }: CharacterSelectProps) {
+export function CharacterSelect({
+  onSelect,
+  variant = "fullscreen",
+}: CharacterSelectProps) {
   const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(
     null,
   );
@@ -73,25 +78,48 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
 
     return [];
   };
-  return (
-    <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-4 md:p-8">
-      {/* Background decorativo */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-900/30 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-900/10 rounded-full blur-3xl" />
-      </div>
+  const isEmbedded = variant === "embedded";
 
-      <div className="relative z-10 text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-linear-to-r from-amber-400 via-amber-300 to-amber-500 mb-4">
+  return (
+    <div
+      className={
+        isEmbedded
+          ? "flex min-h-0 w-full flex-1 flex-col items-center py-4 md:py-6"
+          : "relative flex min-h-screen flex-col items-center justify-center bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 p-4 md:p-8"
+      }
+    >
+      {!isEmbedded && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-purple-900/30 blur-3xl" />
+          <div className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-red-900/30 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-900/10 blur-3xl" />
+        </div>
+      )}
+
+      <div
+        className={`relative z-10 flex w-full max-w-5xl flex-col items-center px-2 ${isEmbedded ? "mb-6 shrink-0" : "mb-12"}`}
+      >
+        <h1
+          className={`mb-3 text-center font-bold text-transparent bg-clip-text bg-linear-to-r from-amber-400 via-amber-300 to-amber-500 ${
+            isEmbedded ? "text-3xl md:text-4xl" : "text-4xl md:text-5xl mb-4"
+          }`}
+        >
           Escolha seu Personagem
         </h1>
-        <p className="text-slate-400 text-lg">
+        <p
+          className={`text-center text-slate-400 ${isEmbedded ? "text-base" : "text-lg"}`}
+        >
           Cada classe tem habilidades e cartas únicas
         </p>
       </div>
 
-      <div className="relative z-10 flex flex-wrap justify-center gap-6 max-w-5xl">
+      <div
+        className={`relative z-10 flex w-full max-w-5xl flex-wrap justify-center gap-6 px-1 pb-4 md:px-2 ${
+          isEmbedded
+            ? "min-h-0 flex-1 content-start overflow-y-auto overflow-x-hidden"
+            : ""
+        }`}
+      >
         {CLASS_ORDER.map((classId) => {
           const classDef = CHARACTER_CLASSES[classId];
           const cards = getClassCards(classId);
@@ -106,7 +134,8 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
               onClick={() => onSelect(classId)}
               className="group relative w-80 p-4 md:p-6 bg-slate-800/80 rounded-2xl border-2 border-slate-600 
                          hover:border-amber-500 hover:bg-slate-700/80 
-                         transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-amber-500/20
+                         transition-[border-color,background-color,box-shadow] duration-300
+                         hover:shadow-lg hover:shadow-amber-500/15
                          backdrop-blur-sm text-left cursor-pointer"
             >
               {/* Imagem do herói */}
@@ -114,7 +143,7 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                 <img
                   src={classDef.imageUrl}
                   alt={classDef.name}
-                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-300"
+                  className="h-full w-full object-cover object-top transition-[filter] duration-300 group-hover:brightness-110"
                 />
               </div>
 
@@ -236,7 +265,9 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
         })}
       </div>
 
-      <div className="relative z-10 mt-12 text-slate-500 text-sm">
+      <div
+        className={`relative z-10 shrink-0 text-center text-sm text-slate-500 ${isEmbedded ? "mt-8" : "mt-12"}`}
+      >
         Clique em uma classe para começar a aventura
       </div>
 
