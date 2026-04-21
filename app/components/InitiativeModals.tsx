@@ -262,7 +262,7 @@ export function InitiativeRollModal({
               variant="initiative"
               initiativeRange={initiativeRange}
               shrink
-              className="w-14 justify-center"
+              className="w-14 h-12 justify-center"
             />
           </div>
         </div>

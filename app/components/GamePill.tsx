@@ -3,7 +3,7 @@ import { EnemyIntent } from "@/app/types/game";
 
 /** Shared base for stat and action pills — matches card accent weight (border + shadow). */
 export const gamePillBaseClasses =
-  "inline-flex min-w-0 items-center justify-center rounded-full border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
+  "inline-flex min-w-0 items-center justify-center border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
 
 /**
  * Accent border + deeper fill + shadow — shared by attack actions and HP (red family).
@@ -42,8 +42,7 @@ const actionPillClasses: Record<EnemyIntent, string> = {
   move: "border-green-500 bg-green-700 text-white shadow-md shadow-green-600/30",
 };
 
-const inactivePillClass =
-  "border-gray-600 bg-gray-600 text-slate-300";
+const inactivePillClass = "border-gray-600 bg-gray-600 text-slate-300";
 
 /** HP tiers stay in the attack palette: lighter border, darker fill, red-only shadows. */
 function hpPillClass(hp: number, maxHp: number): string {
@@ -60,7 +59,6 @@ function energyPillClass(energy: number): string {
     ? "border-amber-500 bg-amber-400 text-slate-900 shadow-md shadow-amber-400/35"
     : inactivePillClass;
 }
-
 
 type GamePillCommon = {
   className?: string;
@@ -179,19 +177,26 @@ function resolveColorClass(props: GamePillProps): string {
   }
 }
 
+function resolveRadiusClass(props: GamePillProps): string {
+  switch (props.variant) {
+    case "initiative":
+    case "action":
+      return "rounded-md";
+    default:
+      return "rounded-full";
+  }
+}
+
 export function GamePill(props: GamePillProps) {
-  const {
-    className = "",
-    title: titleProp,
-    shrink,
-  } = props;
+  const { className = "", title: titleProp, shrink } = props;
   const colorClass = resolveColorClass(props);
+  const radiusClass = resolveRadiusClass(props);
   const content = resolveContent(props);
   const title = titleProp ?? defaultTitle(props);
 
   return (
     <span
-      className={`${gamePillBaseClasses} ${shrink ? "shrink-0 " : ""}${colorClass} ${className}`.trim()}
+      className={`${gamePillBaseClasses} ${radiusClass} ${shrink ? "shrink-0 " : ""}${colorClass} ${className}`.trim()}
       title={title}
     >
       {content}
