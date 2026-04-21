@@ -203,7 +203,7 @@ export function InitiativeRollModal({
       >
         {/* Label — compact row, same vertical band as Hand */}
         <div className="flex shrink-0 flex-row items-center gap-1 text-center md:flex-col md:gap-0">
-          <div className="text-base leading-none md:text-2xl">🎲</div>
+          <div className="text-base leading-none md:text-2xl">⌛</div>
           <div>
             <div className="text-[10px] font-bold leading-tight text-amber-400 md:text-sm">
               Iniciativa

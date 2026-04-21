@@ -143,15 +143,13 @@ export function CharacterSelect({ onSelect }: CharacterSelectProps) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">
-                    🏹 Alcance
-                  </span>
+                  <span className="text-slate-400">🏹 Alcance</span>
                   <span className="text-white font-bold">
                     {hasRanged ? "Distância" : "Corpo a corpo"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-slate-400">🎲 Iniciativa</span>
+                  <span className="text-slate-400">🎲 Dados</span>
                   <div className="flex items-center gap-2">
                     <span className="text-slate-500 text-xs tabular-nums">
                       {initiativeRange}

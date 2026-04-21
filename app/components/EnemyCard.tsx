@@ -144,8 +144,11 @@ export function EnemyCard({
                 <GamePill variant="range" attackRange={enemy.attackRange} />
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="shrink-0 text-sm leading-none" title="Iniciativa">
-                  🎲
+                <span
+                  className="shrink-0 text-sm leading-none"
+                  title="Iniciativa"
+                >
+                  ⌛
                 </span>
                 <GamePill
                   variant="initiativeResult"

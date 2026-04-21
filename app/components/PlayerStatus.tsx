@@ -81,7 +81,7 @@ export function PlayerStatus({
 
         {/* Iniciativa */}
         <div className="flex items-center justify-between gap-2 text-sm">
-          <span className="shrink-0 text-cyan-400">✨ Iniciativa</span>
+          <span className="shrink-0 text-cyan-400">⌛ Iniciativa</span>
           <GamePill variant="initiativeResult" total={initiativeTotal} shrink />
         </div>
 
