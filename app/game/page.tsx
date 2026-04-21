@@ -634,7 +634,7 @@ export default function GamePage() {
                       setShowLogModal(true);
                       setShowActionMenu(false);
                     }}
-                    className={`${pileButtonClass} min-h-8 justify-start md:justify-start px-2 text-xs hover:text-white`}
+                    className="flex min-h-8 w-full items-center justify-start gap-1.5 rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white"
                   >
                     <span className="flex items-center gap-1.5">
                       <span>📜</span>
@@ -647,7 +647,7 @@ export default function GamePage() {
                       setShowAbandonModal(true);
                       setShowActionMenu(false);
                     }}
-                    className={`${pileButtonClass} min-h-8 justify-start md:justify-start px-2 text-xs hover:bg-red-600 hover:text-white`}
+                    className="flex min-h-8 w-full items-center justify-start gap-1.5 rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white"
                   >
                     <span className="flex items-center gap-1.5">
                       <span>❌</span>
@@ -660,7 +660,7 @@ export default function GamePage() {
                       setShowDrawPileModal(true);
                       setShowActionMenu(false);
                     }}
-                    className={`${pileButtonClass} min-h-8 justify-between md:justify-between px-2 text-xs hover:text-amber-400`}
+                    className="flex min-h-8 w-full items-center justify-between rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white"
                   >
                     <span className="flex items-center gap-1.5">
                       <span>🗂️</span>
@@ -676,7 +676,7 @@ export default function GamePage() {
                       setShowDeckModal(true);
                       setShowActionMenu(false);
                     }}
-                    className={`${pileButtonClass} min-h-8 justify-between md:justify-between px-2 text-xs hover:text-amber-400`}
+                    className="flex min-h-8 w-full items-center justify-between rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white"
                   >
                     <span className="flex items-center gap-1.5">
                       <span>📚</span>
@@ -692,7 +692,7 @@ export default function GamePage() {
                       setShowDiscardModal(true);
                       setShowActionMenu(false);
                     }}
-                    className={`${pileButtonClass} min-h-8 justify-between md:justify-between px-2 text-xs hover:text-amber-400`}
+                    className="flex min-h-8 w-full items-center justify-between rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white"
                   >
                     <span className="flex items-center gap-1.5">
                       <span>🗑️</span>
@@ -708,13 +708,13 @@ export default function GamePage() {
                       setShowBurnedModal(true);
                       setShowActionMenu(false);
                     }}
-                    className={`${pileButtonClass} min-h-8 justify-between md:justify-between px-2 text-xs hover:text-orange-500`}
+                    className="flex min-h-8 w-full items-center justify-between rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white"
                   >
                     <span className="flex items-center gap-1.5">
                       <span>🔥</span>
                       <span>Queimadas</span>
                     </span>
-                    <span className="shrink-0 rounded-full bg-slate-800 px-1.5 py-px text-[10px] font-bold tabular-nums text-orange-400">
+                    <span className="shrink-0 rounded-full bg-slate-800 px-1.5 py-px text-[10px] font-bold tabular-nums">
                       {burnedPile.length}
                     </span>
                   </button>
@@ -732,7 +732,8 @@ export default function GamePage() {
                   currentEnergy={player.energy}
                   disabled={defaultActionsDisabled}
                   selected={
-                    selectedCard?.id === entry.card.id && !!selectedCardIsDefault
+                    selectedCard?.id === entry.card.id &&
+                    !!selectedCardIsDefault
                   }
                   onClick={() => selectDefaultCard(entry.id)}
                 />
@@ -748,9 +749,13 @@ export default function GamePage() {
                     : "Finalizar turno"
                 }
                 onClick={
-                  phase === "viewingInitiative" ? confirmInitiativeModal : endTurn
+                  phase === "viewingInitiative"
+                    ? confirmInitiativeModal
+                    : endTurn
                 }
-                disabled={phase !== "playerTurn" && phase !== "viewingInitiative"}
+                disabled={
+                  phase !== "playerTurn" && phase !== "viewingInitiative"
+                }
                 className={`flex h-full w-full min-h-9 flex-col items-center justify-center gap-0 rounded-lg border-2 px-1 py-0.5 text-center text-[9px] font-bold leading-tight sm:text-[10px] md:min-h-11 md:py-1 md:text-xs ${
                   phase === "playerTurn" || phase === "viewingInitiative"
                     ? "border-amber-400 bg-amber-500 text-black hover:bg-amber-400"
@@ -758,7 +763,8 @@ export default function GamePage() {
                 }`}
               >
                 <span>
-                  {phase === "rollingInitiative" || phase === "viewingInitiative"
+                  {phase === "rollingInitiative" ||
+                  phase === "viewingInitiative"
                     ? "Começar"
                     : "Finalizar"}
                 </span>

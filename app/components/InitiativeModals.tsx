@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type {
-  CharacterClass,
-  Enemy,
-  InitiativeResult,
-} from "@/app/types/game";
+import type { CharacterClass, Enemy, InitiativeResult } from "@/app/types/game";
 import { DiceIcon } from "@/app/components/DiceIcon";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
@@ -173,82 +169,88 @@ export function InitiativeRollModal({
   };
 
   return (
-    <div
-      className={`
-        flex h-fit w-full max-w-full min-h-36 min-w-0 flex-row items-center justify-center gap-1.5
-        px-1 py-0.5 md:min-h-44 md:gap-4 md:px-1.5 md:py-1
-      `}
-    >
-      {/* Label — compact row, same vertical band as Hand */}
-      <div className="flex shrink-0 flex-row items-center gap-1 text-center md:flex-col md:gap-0">
-        <div className="text-base leading-none md:text-2xl">🎲</div>
-        <div>
-          <div className="text-[10px] font-bold leading-tight text-amber-400 md:text-sm">
-            Iniciativa
-          </div>
-          <div className="text-[9px] text-slate-500 md:text-xs">Turno {turn}</div>
-        </div>
-      </div>
+    <div className="flex h-36 w-full max-w-full min-w-0 flex-col gap-0.5 px-1 py-0.5 md:h-44 md:gap-1 md:px-1.5 md:py-1">
+      <p className="w-full px-1 text-center text-[9px] leading-tight text-slate-400 sm:text-[10px] md:text-xs">
+        Selecione os dados que quer rolar. Clique para marcar/desmarcar.
+      </p>
 
-      <div className="hidden shrink-0 text-lg text-slate-600 md:block">—</div>
-
-      {/* Pool — one horizontal scroller like the hand */}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-0 md:gap-2">
-        <p className="hidden px-1 text-center text-[10px] text-slate-400 md:block md:text-xs">
-          Selecione os dados que quer rolar. Clique para marcar/desmarcar.
-        </p>
-        <div
-          className={`
-            flex max-w-full flex-nowrap items-center justify-center gap-1 overflow-x-auto py-px
-            [-webkit-overflow-scrolling:touch] touch-pan-x sm:gap-2
-          `}
-        >
-          {pool.map((faces, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => toggle(i)}
-              className={`shrink-0 rounded-md border-2 transition-all duration-200 md:rounded-lg ${
-                selected[i]
-                  ? "scale-100 border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50"
-                  : "scale-95 border-slate-600 bg-slate-800/50 opacity-50"
-              }`}
-              title={
-                selected[i]
-                  ? `d${faces} selecionado (clique para desmarcar)`
-                  : `d${faces} (clique para incluir)`
-              }
-            >
-              <DiceIcon faces={faces} size="sm" />
-            </button>
-          ))}
-        </div>
-        <p className="hidden max-w-[220px] px-1 text-center text-[9px] text-amber-400/80 md:block md:text-[10px]">
-          Menos dados = tende a agir depois. Mais dados = tende a agir primeiro.
-        </p>
-      </div>
-
-      <div className="hidden shrink-0 text-lg text-slate-600 md:block">—</div>
-
-      <button
-        type="button"
-        onClick={handleRoll}
-        disabled={!canRoll}
-        title={`Total possível: ${minTotal}–${maxTotal}. Pelo menos 1 dado.`}
+      <div
         className={`
-          group flex shrink-0 flex-col items-center gap-0.5 rounded-md border-2 border-blue-600 bg-blue-900/40 px-2 py-1
-          transition-all duration-200 hover:border-blue-400 hover:bg-blue-800/60 hover:shadow-lg hover:shadow-blue-500/20
-          disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100
-          md:gap-2 md:rounded-xl md:px-5 md:py-3 md:hover:scale-105
+          flex min-h-0 flex-1 w-full min-w-0 flex-row items-center justify-center gap-1.5
+          md:gap-4
         `}
       >
-        <div className="text-center text-[10px] font-bold text-blue-300 group-hover:text-white md:text-sm">
-          Rolar {diceLabel}
+        {/* Label — compact row, same vertical band as Hand */}
+        <div className="flex shrink-0 flex-row items-center gap-1 text-center md:flex-col md:gap-0">
+          <div className="text-base leading-none md:text-2xl">🎲</div>
+          <div>
+            <div className="text-[10px] font-bold leading-tight text-amber-400 md:text-sm">
+              Iniciativa
+            </div>
+            <div className="text-[9px] text-slate-500 md:text-xs">
+              Turno {turn}
+            </div>
+          </div>
         </div>
-        <div className="hidden text-center text-[9px] text-slate-400 md:block md:text-[10px]">
-          {minTotal} – {maxTotal} · Pelo menos 1 dado
+
+        <div className="hidden shrink-0 text-lg text-slate-600 md:block">—</div>
+
+        {/* Pool — one horizontal scroller like the hand */}
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-0 md:gap-2">
+          <div
+            className={`
+              flex max-w-full flex-nowrap items-center justify-center gap-1 overflow-x-auto py-px
+              [-webkit-overflow-scrolling:touch] touch-pan-x sm:gap-2
+            `}
+          >
+            {pool.map((faces, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => toggle(i)}
+                className={`shrink-0 rounded-md border-2 transition-all duration-200 md:rounded-lg ${
+                  selected[i]
+                    ? "scale-100 border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50"
+                    : "scale-95 border-slate-600 bg-slate-800/50 opacity-50"
+                }`}
+                title={
+                  selected[i]
+                    ? `d${faces} selecionado (clique para desmarcar)`
+                    : `d${faces} (clique para incluir)`
+                }
+              >
+                <DiceIcon faces={faces} size="md" />
+              </button>
+            ))}
+          </div>
         </div>
-      </button>
+
+        <div className="hidden shrink-0 text-lg text-slate-600 md:block">—</div>
+
+        <button
+          type="button"
+          onClick={handleRoll}
+          disabled={!canRoll}
+          title={`Total possível: ${minTotal}–${maxTotal}. Pelo menos 1 dado.`}
+          className={`
+            group flex shrink-0 flex-col items-center gap-0.5 rounded-md border-2 border-blue-600 bg-blue-900/40 px-2 py-1
+            transition-all duration-200 hover:border-blue-400 hover:bg-blue-800/60 hover:shadow-lg hover:shadow-blue-500/20
+            disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100
+            md:gap-2 md:rounded-xl md:px-5 md:py-3 md:hover:scale-105
+          `}
+        >
+          <div className="text-center text-[10px] font-bold text-blue-300 group-hover:text-white md:text-sm">
+            Rolar {diceLabel}
+          </div>
+          <div className="hidden text-center text-[9px] text-slate-400 md:block md:text-[10px]">
+            {minTotal} – {maxTotal} · Pelo menos 1 dado
+          </div>
+        </button>
+      </div>
+
+      <p className="w-full px-1 text-center text-[8px] leading-tight text-amber-400/80 sm:text-[9px] md:text-[10px]">
+        Menos dados = tende a agir depois. Mais dados = tende a agir primeiro.
+      </p>
     </div>
   );
 }
