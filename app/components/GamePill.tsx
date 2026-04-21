@@ -3,7 +3,7 @@ import { EnemyIntent } from "@/app/types/game";
 
 /** Shared base for stat and action pills — matches card accent weight (border + shadow). */
 export const gamePillBaseClasses =
-  "inline-flex min-w-0 items-center justify-center border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
+  "inline-flex min-w-0 items-center border-2 px-2.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors sm:text-xs";
 
 /**
  * Accent border + deeper fill + shadow — shared by attack actions and HP (red family).
@@ -40,6 +40,14 @@ const actionPillClasses: Record<EnemyIntent, string> = {
   debuff:
     "border-purple-600 bg-purple-600 text-white shadow-md shadow-purple-600/30",
   move: "border-green-500 bg-green-700 text-white shadow-md shadow-green-600/30",
+};
+
+const actionEmojis: Record<EnemyIntent, string> = {
+  attack: "⚔️",
+  defend: "🛡️",
+  buff: "⬆️",
+  debuff: "⬇️",
+  move: "👟",
 };
 
 const inactivePillClass = "border-gray-600 bg-gray-600 text-slate-300";
@@ -137,6 +145,18 @@ function defaultTitle(props: GamePillProps): string | undefined {
 
 function resolveContent(props: GamePillProps): ReactNode {
   switch (props.variant) {
+    case "action":
+      return (
+        <>
+          <span
+            className="shrink-0 text-[11px] leading-none sm:text-xs"
+            aria-hidden
+          >
+            {actionEmojis[props.action]}
+          </span>
+          <span className="shrink-0 tabular-nums">{props.children}</span>
+        </>
+      );
     case "hp":
       return props.children ?? `${props.hp}/${props.maxHp}`;
     case "block":
@@ -151,8 +171,6 @@ function resolveContent(props: GamePillProps): ReactNode {
         : props.initiativeRange;
     case "initiativeResult":
       return props.total !== undefined ? String(props.total) : "?";
-    default:
-      return props.children;
   }
 }
 
@@ -193,10 +211,14 @@ export function GamePill(props: GamePillProps) {
   const radiusClass = resolveRadiusClass(props);
   const content = resolveContent(props);
   const title = titleProp ?? defaultTitle(props);
+  const layoutClass =
+    props.variant === "action"
+      ? "justify-between gap-1"
+      : "justify-center";
 
   return (
     <span
-      className={`${gamePillBaseClasses} ${radiusClass} ${shrink ? "shrink-0 " : ""}${colorClass} ${className}`.trim()}
+      className={`${gamePillBaseClasses} ${radiusClass} ${layoutClass} ${shrink ? "shrink-0 " : ""}${colorClass} ${className}`.trim()}
       title={title}
     >
       {content}

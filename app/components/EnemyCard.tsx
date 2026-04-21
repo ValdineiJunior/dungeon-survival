@@ -234,21 +234,15 @@ export function EnemyCard({
                 {actionCard.actions.map((action, index) => {
                   const info = actionIcons[action.type];
                   return (
-                    <span
+                    <GamePill
                       key={index}
-                      className={`inline-flex shrink-0 items-center gap-1 text-sm ${info.color}`}
+                      variant="action"
+                      action={action.type}
+                      shrink
                       title={`${info.label}: ${action.value}`}
                     >
-                      {info.icon}
-                      <GamePill
-                        variant="action"
-                        action={action.type}
-                        shrink
-                        title={`${info.label}: ${action.value}`}
-                      >
-                        {action.value}
-                      </GamePill>
-                    </span>
+                      {action.value}
+                    </GamePill>
                   );
                 })}
               </div>
