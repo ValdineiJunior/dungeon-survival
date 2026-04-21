@@ -148,8 +148,7 @@ export function EnemyCard({
                   🎲
                 </span>
                 <GamePill
-                  variant="initiative"
-                  initiativeRange={initiativeRange}
+                  variant="initiativeResult"
                   total={initiativeDice?.total}
                 />
               </div>

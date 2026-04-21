@@ -121,6 +121,7 @@ export default function GamePage() {
 
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
+  const playerInitiativeEntry = turnOrder.find((entry) => entry.id === "player");
   const initiativeDiceFaces = CHARACTER_CLASSES[player.characterClass]
     .initiativeDice ?? [6, 6, 6];
 
@@ -212,6 +213,7 @@ export default function GamePage() {
                 deckCount={deck.length}
                 discardCount={discardPile.length}
                 classDef={classDef}
+                initiativeTotal={playerInitiativeEntry?.total}
                 onViewDeck={() => setShowDeckModal(true)}
                 onViewDiscard={() => setShowDiscardModal(true)}
               />

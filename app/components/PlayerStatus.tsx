@@ -15,6 +15,7 @@ interface PlayerStatusProps {
   deckCount: number;
   discardCount: number;
   classDef: CharacterClassDefinition;
+  initiativeTotal?: number;
   onViewDeck: () => void;
   onViewDiscard: () => void;
 }
@@ -24,10 +25,12 @@ export function PlayerStatus({
   deckCount,
   discardCount,
   classDef,
+  initiativeTotal,
   onViewDeck,
   onViewDiscard,
 }: PlayerStatusProps) {
   const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
+  const initiativeDicePool = classDef.initiativeDice ?? [6, 6, 6];
 
   return (
     <div className="relative flex h-full min-w-0 max-w-full flex-col gap-3 rounded-xl border border-slate-600 bg-slate-800/80 p-3 pt-4 backdrop-blur-sm lg:p-4 lg:pt-5">
@@ -76,14 +79,20 @@ export function PlayerStatus({
         />
       </div>
 
-      {/* Iniciativa */}
+      {/* Pool de dados */}
       <div className="flex items-center justify-between gap-2 text-sm">
-        <span className="shrink-0 text-violet-400">🎲 Iniciativa</span>
+        <span className="shrink-0 text-violet-400">🎲 Pool de dados</span>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-          {(classDef.initiativeDice ?? [6, 6, 6]).map((faces, i) => (
+          {initiativeDicePool.map((faces, i) => (
             <DiceIcon key={i} faces={faces} size="sm" />
           ))}
         </div>
+      </div>
+
+      {/* Iniciativa */}
+      <div className="flex items-center justify-between gap-2 text-sm">
+        <span className="shrink-0 text-violet-400">✨ Iniciativa</span>
+        <GamePill variant="initiativeResult" total={initiativeTotal} shrink />
       </div>
 
       {/* Habilidades inatas */}

@@ -25,6 +25,10 @@ const rangeLikePill =
 const initiativeLikePill =
   "border-purple-500 bg-purple-800 text-white shadow-md shadow-purple-600/35";
 
+/** Distinct tone for initiative result. */
+const initiativeResultLikePill =
+  "border-cyan-500 bg-cyan-800 text-white shadow-md shadow-cyan-600/35";
+
 /**
  * Action pills: colors aligned with `Card` type accents —
  * attack (red), defend / skill (blue), move / movement (green), power (buff yellow), debuff (purple).
@@ -101,6 +105,11 @@ export type GamePillProps = GamePillCommon &
         /** When rolled, the pill shows only this (e.g. `16`); otherwise shows `initiativeRange`. */
         total?: number;
       }
+    | {
+        variant: "initiativeResult";
+        /** Initiative total after rolling. Shows "?" while undefined. */
+        total?: number;
+      }
   );
 
 function defaultTitle(props: GamePillProps): string | undefined {
@@ -119,6 +128,10 @@ function defaultTitle(props: GamePillProps): string | undefined {
       return props.total !== undefined
         ? `Iniciativa: ${props.total} (intervalo possível ${props.initiativeRange})`
         : `Intervalo possível da iniciativa: ${props.initiativeRange}. Lance os dados.`;
+    case "initiativeResult":
+      return props.total !== undefined
+        ? `Resultado da iniciativa: ${props.total}`
+        : "Resultado da iniciativa ainda não definido.";
     default:
       return undefined;
   }
@@ -138,6 +151,8 @@ function resolveContent(props: GamePillProps): ReactNode {
       return props.total !== undefined
         ? String(props.total)
         : props.initiativeRange;
+    case "initiativeResult":
+      return props.total !== undefined ? String(props.total) : "?";
     default:
       return props.children;
   }
@@ -157,6 +172,8 @@ function resolveColorClass(props: GamePillProps): string {
       return rangeLikePill;
     case "initiative":
       return initiativeLikePill;
+    case "initiativeResult":
+      return initiativeResultLikePill;
     default:
       return "";
   }
