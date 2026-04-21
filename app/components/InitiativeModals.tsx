@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { CharacterClass, Enemy, InitiativeResult } from "@/app/types/game";
 import { DiceIcon } from "@/app/components/DiceIcon";
+import { GamePill } from "@/app/components/GamePill";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { ENEMY_IMAGE_FILES } from "@/app/lib/enemies";
 
@@ -153,15 +154,12 @@ export function InitiativeRollModal({
   const selectedFaces = selectedIndices.map((i) => pool[i]);
   const canRoll = selectedIndices.length > 0;
 
-  const diceLabel =
-    selectedFaces.length > 0
-      ? selectedFaces.map((faces) => `d${faces}`).join(" + ")
-      : "dados";
   const minTotal = selectedFaces.length;
   const maxTotal =
     selectedFaces.length > 0
       ? selectedFaces.reduce((sum, faces) => sum + faces, 0)
       : 20;
+  const initiativeRange = canRoll ? `${minTotal}-${maxTotal}` : "—";
 
   const handleRoll = () => {
     if (!canRoll) return;
@@ -204,24 +202,40 @@ export function InitiativeRollModal({
             `}
           >
             {pool.map((faces, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => toggle(i)}
-                className={`shrink-0 rounded-md border-2 transition-all duration-200 md:rounded-lg ${
-                  selected[i]
-                    ? "scale-100 border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50"
-                    : "scale-95 border-slate-600 bg-slate-800/50 opacity-50"
-                }`}
-                title={
-                  selected[i]
-                    ? `d${faces} selecionado (clique para desmarcar)`
-                    : `d${faces} (clique para incluir)`
-                }
-              >
-                <DiceIcon faces={faces} size="md" />
-              </button>
+              <Fragment key={i}>
+                {i > 0 && (
+                  <span
+                    className="shrink-0 text-[11px] font-bold text-slate-400 md:text-xs"
+                    aria-hidden
+                  >
+                    +
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => toggle(i)}
+                  className={`shrink-0 rounded-md border-2 transition-all duration-200 md:rounded-lg ${
+                    selected[i]
+                      ? "scale-100 border-amber-400 bg-amber-900/30 ring-2 ring-amber-400/50"
+                      : "scale-95 border-slate-600 bg-slate-800/50 opacity-50"
+                  }`}
+                  title={
+                    selected[i]
+                      ? `d${faces} selecionado (clique para desmarcar)`
+                      : `d${faces} (clique para incluir)`
+                  }
+                >
+                  <DiceIcon faces={faces} size="md" />
+                </button>
+              </Fragment>
             ))}
+            <span
+              className="shrink-0 px-0.5 text-[11px] font-bold text-slate-400 md:text-xs"
+              aria-hidden
+            >
+              =
+            </span>
+            <GamePill variant="initiative" initiativeRange={initiativeRange} shrink />
           </div>
         </div>
 
@@ -240,7 +254,7 @@ export function InitiativeRollModal({
           `}
         >
           <div className="text-center text-[10px] font-bold text-blue-300 group-hover:text-white md:text-sm">
-            Rolar {diceLabel}
+            Rolar
           </div>
           <div className="hidden text-center text-[9px] text-slate-400 md:block md:text-[10px]">
             {minTotal} – {maxTotal} · Pelo menos 1 dado
