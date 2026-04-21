@@ -180,6 +180,9 @@ export function InitiativeRollModal({
       ? selectedFaces.reduce((sum, faces) => sum + faces, 0)
       : 20;
   const initiativeRange = canRoll ? `${minTotal}-${maxTotal}` : "—";
+  const desktopRollStatus = canRoll
+    ? `Variação de iniciativa ${minTotal} – ${maxTotal}`
+    : "Pelo menos um dado deve ser selecionado";
 
   const handleRoll = () => {
     if (!canRoll) return;
@@ -259,6 +262,7 @@ export function InitiativeRollModal({
               variant="initiative"
               initiativeRange={initiativeRange}
               shrink
+              className="w-14 justify-center"
             />
           </div>
         </div>
@@ -274,14 +278,14 @@ export function InitiativeRollModal({
             group flex shrink-0 flex-col items-center gap-0.5 rounded-md border-2 border-blue-600 bg-blue-900/40 px-2 py-1
             transition-all duration-200 hover:border-blue-400 hover:bg-blue-800/60 hover:shadow-lg hover:shadow-blue-500/20
             disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100
-            md:gap-2 md:rounded-xl md:px-5 md:py-3 md:hover:scale-105
+            md:w-64 md:gap-2 md:rounded-xl md:px-5 md:py-3 md:hover:scale-105
           `}
         >
           <div className="text-center text-[10px] font-bold text-blue-300 group-hover:text-white md:text-sm">
             Rolar
           </div>
           <div className="hidden text-center text-[9px] text-slate-400 md:block md:text-[10px]">
-            {minTotal} – {maxTotal} · Pelo menos 1 dado
+            {desktopRollStatus}
           </div>
         </button>
       </div>
