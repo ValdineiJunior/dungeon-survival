@@ -109,7 +109,7 @@ export function EnemyCard({
                 </div>
               )}
               <span
-                className="absolute bottom-0 right-0 z-10 flex h-4 w-4 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[10px] font-bold text-black"
+                className="absolute bottom-0.5 right-0.5 z-10 flex h-4 w-4 items-center justify-center rounded-md border border-amber-600 bg-amber-400 text-[10px] font-bold text-black"
                 title={`Ordem de turno: ${orderNumber}`}
               >
                 {orderNumber}

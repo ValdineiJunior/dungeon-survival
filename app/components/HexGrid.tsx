@@ -242,7 +242,7 @@ export function HexGrid({
                         <span className="text-base">{content.emoji}</span>
                       )}
                       <span
-                        className="absolute bottom-2 right-0.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[8px] font-bold text-black shadow-sm"
+                        className="absolute bottom-1 right-5 z-10 flex h-4 w-4 items-center justify-center rounded-md border border-amber-600 bg-amber-400 text-[10px] font-bold text-black shadow-sm"
                         style={{ minWidth: "0.875rem", minHeight: "0.875rem" }}
                       >
                         {content.orderNumber}

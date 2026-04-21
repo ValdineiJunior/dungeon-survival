@@ -89,7 +89,7 @@ function InitiativeOrderCard({
         )}
         {enemyEncounterNumber != null && (
           <span
-            className="absolute bottom-0 right-0 z-10 flex h-4 w-4 items-center justify-center rounded-full border border-amber-600 bg-amber-400 text-[10px] font-bold text-black md:h-[18px] md:w-[18px] md:text-[11px]"
+            className="absolute bottom-0.5 right-0.5 z-10 flex h-4 w-4 items-center justify-center rounded-md border border-amber-600 bg-amber-400 text-[10px] font-bold text-black md:h-[18px] md:w-[18px] md:text-[11px]"
             title={`Ordem de turno: ${enemyEncounterNumber}`}
           >
             {enemyEncounterNumber}
