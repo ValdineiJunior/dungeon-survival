@@ -19,6 +19,7 @@ import {
   InitiativeRollModal,
   InitiativeOrderModal,
 } from "@/app/components/InitiativeModals";
+import { MiniInitiativeOrderStrip } from "@/app/components/MiniInitiativeOrderStrip";
 import { Card, HexPosition, CharacterClass, Enemy } from "@/app/types/game";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { getFloorConfig } from "@/app/lib/enemies";
@@ -574,6 +575,19 @@ export default function GamePage() {
                 <span className="shrink-0 tabular-nums text-slate-400">
                   Turno {turn}
                 </span>
+                {phase === "playerTurn" && turnOrder.length > 0 && (
+                  <>
+                    <span className="shrink-0 text-slate-600" aria-hidden>
+                      |
+                    </span>
+                    <MiniInitiativeOrderStrip
+                      turnOrder={turnOrder}
+                      playerCharacterClass={player.characterClass}
+                      activeTurnIndex={activeTurnIndex}
+                      enemies={enemies}
+                    />
+                  </>
+                )}
                 <span className="shrink-0 text-slate-600" aria-hidden>
                   |
                 </span>
