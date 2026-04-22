@@ -38,60 +38,6 @@ function layoutFor(floor: number, col: number): { layoutX: number; layoutY: numb
   return { layoutX, layoutY };
 }
 
-type Pt = { x: number; y: number };
-
-function nodeCenter(n: RunMapNode): Pt {
-  return { x: n.layoutX, y: n.layoutY };
-}
-
-function orientation(a: Pt, b: Pt, c: Pt): number {
-  const v = (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
-  if (Math.abs(v) < 1e-9) return 0;
-  return v > 0 ? 1 : 2;
-}
-
-function onSegment(a: Pt, b: Pt, c: Pt): boolean {
-  return (
-    c.x <= Math.max(a.x, b.x) + 1e-9 &&
-    c.x + 1e-9 >= Math.min(a.x, b.x) &&
-    c.y <= Math.max(a.y, b.y) + 1e-9 &&
-    c.y + 1e-9 >= Math.min(a.y, b.y)
-  );
-}
-
-function segmentsIntersect(p1: Pt, q1: Pt, p2: Pt, q2: Pt): boolean {
-  const o1 = orientation(p1, q1, p2);
-  const o2 = orientation(p1, q1, q2);
-  const o3 = orientation(p2, q2, p1);
-  const o4 = orientation(p2, q2, q1);
-
-  if (o1 !== o2 && o3 !== o4) return true;
-
-  if (o1 === 0 && onSegment(p1, q1, p2)) return true;
-  if (o2 === 0 && onSegment(p1, q1, q2)) return true;
-  if (o3 === 0 && onSegment(p2, q2, p1)) return true;
-  if (o4 === 0 && onSegment(p2, q2, q1)) return true;
-
-  return false;
-}
-
-function edgeCrossesAnySegment(
-  p1: Pt,
-  p2: Pt,
-  existing: RunMapEdge[],
-  nodeById: Map<string, RunMapNode>,
-): boolean {
-  for (const e of existing) {
-    const na = nodeById.get(e.fromId);
-    const nb = nodeById.get(e.toId);
-    if (!na || !nb) continue;
-    const c = nodeCenter(na);
-    const d = nodeCenter(nb);
-    if (segmentsIntersect(p1, p2, c, d)) return true;
-  }
-  return false;
-}
-
 function shuffleInPlace<T>(arr: T[]): void {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -165,10 +111,6 @@ function tryAddPathEdge(
   if (!na || !nb) return false;
   if (na.neighborIds.includes(toId)) return true;
 
-  const pa = nodeCenter(na);
-  const pb = nodeCenter(nb);
-  if (edgeCrossesAnySegment(pa, pb, edges, nodeById)) return false;
-
   addUndirectedEdge(edges, nodeById, fromId, toId);
   return true;
 }
@@ -214,6 +156,72 @@ function pruneOrphans(nodeById: Map<string, RunMapNode>, edges: RunMapEdge[]): v
   }
   for (const id of toRemove) {
     nodeById.delete(id);
+  }
+  const filtered = edges.filter(
+    (e) => nodeById.has(e.fromId) && nodeById.has(e.toId),
+  );
+  edges.length = 0;
+  edges.push(...filtered);
+  for (const n of nodeById.values()) {
+    n.neighborIds = n.neighborIds.filter((nid) => nodeById.has(nid));
+  }
+}
+
+/** Undirected connected components as sets of node ids. */
+function findComponents(nodeById: Map<string, RunMapNode>): Set<string>[] {
+  const visited = new Set<string>();
+  const components: Set<string>[] = [];
+  for (const startId of nodeById.keys()) {
+    if (visited.has(startId)) continue;
+    const comp = new Set<string>();
+    const stack = [startId];
+    while (stack.length > 0) {
+      const id = stack.pop()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      comp.add(id);
+      const n = nodeById.get(id);
+      if (!n) continue;
+      for (const nid of n.neighborIds) {
+        if (nodeById.has(nid) && !visited.has(nid)) stack.push(nid);
+      }
+    }
+    components.push(comp);
+  }
+  return components;
+}
+
+/**
+ * Keep a single navigable mass: the largest connected component that touches
+ * floor 1 (Slay-the-Spire style — always a path from some start to the top).
+ */
+function keepLargestFloor1TouchingComponent(
+  nodeById: Map<string, RunMapNode>,
+  edges: RunMapEdge[],
+): void {
+  const components = findComponents(nodeById);
+  const touching = components.filter((comp) =>
+    [...comp].some((id) => nodeById.get(id)?.floor === 1),
+  );
+  if (touching.length === 0) {
+    nodeById.clear();
+    edges.length = 0;
+    return;
+  }
+  let best = touching[0];
+  for (const comp of touching) {
+    if (comp.size > best.size) {
+      best = comp;
+      continue;
+    }
+    if (comp.size === best.size) {
+      const compHas10 = [...comp].some((id) => nodeById.get(id)?.floor === MAX_FLOOR);
+      const bestHas10 = [...best].some((id) => nodeById.get(id)?.floor === MAX_FLOOR);
+      if (compHas10 && !bestHas10) best = comp;
+    }
+  }
+  for (const id of [...nodeById.keys()]) {
+    if (!best.has(id)) nodeById.delete(id);
   }
   const filtered = edges.filter(
     (e) => nodeById.has(e.fromId) && nodeById.has(e.toId),
@@ -348,6 +356,8 @@ export function generateRunMap(): RunGeneratedMap {
       growPathWave(nodeById, edges, s);
     }
     pruneOrphans(nodeById, edges);
+    keepLargestFloor1TouchingComponent(nodeById, edges);
+    pruneOrphans(nodeById, edges);
 
     const floor10Count = [...nodeById.values()].filter((n) => n.floor === MAX_FLOOR).length;
     if (floor10Count === 0) continue;
@@ -376,6 +386,8 @@ export function generateRunMap(): RunGeneratedMap {
   for (let f = 1; f < MAX_FLOOR; f++) {
     tryAddPathEdge(edges, nodeById, nodeId(f, c0), nodeId(f + 1, c0));
   }
+  pruneOrphans(nodeById, edges);
+  keepLargestFloor1TouchingComponent(nodeById, edges);
   pruneOrphans(nodeById, edges);
   assignLocations(nodeById);
   const bossPick = BOSS_DEFINITION_POOL[0];

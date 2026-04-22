@@ -178,7 +178,10 @@ export type GamePhase =
   | 'confirmingSkill'   // Confirming skill card use
   | 'selectingBurn'     // Selecting a card to burn from hand
   | 'floorComplete'     // Floor cleared, ready for next floor
-  | 'selectingReward';  // Selecting reward card
+  | 'selectingReward'  // Selecting reward card
+  | 'selectingMapNode' // Pick next node on run map
+  | 'restSite'         // Confirm rest (+HP, capped)
+  | 'bossRoomIntro';   // Pre-boss modal before rolling initiative
 
 export const MAX_FLOOR = 10;
 
@@ -213,6 +216,12 @@ export interface RunGeneratedMap {
   /** Sentinel floor index used only for layout (above last floor). */
   bossFloor: number;
 }
+
+/** What kind of combat (if any) determines victory / floor-complete when enemies are cleared. */
+export type RunCombatKind = 'none' | 'mapMonster' | 'boss';
+
+/** Rooms to clear on the map before boss intro (not counting the boss fight). */
+export const MAP_ROOMS_BEFORE_BOSS = 10;
 
 export interface InitiativeResult {
   id: string; // Enemy ID or 'player'
@@ -273,6 +282,14 @@ export interface GameState {
 
   /** Procedural map for the current run; regenerated when combat starts. */
   runMap: RunGeneratedMap | null;
+
+  /** Map path: null = before first pick (only floor-1 choices). */
+  mapCurrentNodeId: string | null;
+  /** Rooms fully resolved this run (0 … MAP_ROOMS_BEFORE_BOSS). */
+  mapRoomsCompleted: number;
+  /** Monster combats finished; next monster room uses `createFloorEnemies(mapMonsterCombatsCompleted + 1)`. */
+  mapMonsterCombatsCompleted: number;
+  runCombatKind: RunCombatKind;
 }
 
 export interface DefaultHandCard {

@@ -14,6 +14,9 @@ import { CardRewardModal } from "@/app/components/CardRewardModal";
 import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
 import { GameLogModal } from "@/app/components/GameLogModal";
 import { RunMapModal } from "@/app/components/RunMapModal";
+import { MapNodeChoiceModal } from "@/app/components/MapNodeChoiceModal";
+import { RestSiteModal } from "@/app/components/RestSiteModal";
+import { BossRoomModal } from "@/app/components/BossRoomModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
 import { BurnCardModal } from "@/app/components/BurnCardModal";
 import {
@@ -21,7 +24,14 @@ import {
   InitiativeOrderModal,
 } from "@/app/components/InitiativeModals";
 import { MiniInitiativeOrderStrip } from "@/app/components/MiniInitiativeOrderStrip";
-import { Card, HexPosition, CharacterClass, Enemy } from "@/app/types/game";
+import {
+  Card,
+  HexPosition,
+  CharacterClass,
+  Enemy,
+  MAX_FLOOR,
+  MAP_ROOMS_BEFORE_BOSS,
+} from "@/app/types/game";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { getFloorConfig } from "@/app/lib/enemies";
 
@@ -65,6 +75,9 @@ export default function GameView(props: GameViewProps = {}) {
     remainingMovement,
     gameLog,
     runMap,
+    mapCurrentNodeId,
+    mapRoomsCompleted,
+    runCombatKind,
     rewardCards,
     defaultHand,
     selectDefaultCard,
@@ -83,6 +96,10 @@ export default function GameView(props: GameViewProps = {}) {
     endTurn,
     selectRewardCard,
     advanceFloor,
+    selectMapNode,
+    confirmRestSite,
+    startBossFightFromIntro,
+    continueAfterMapMonster,
     resetGame,
     rollInitiative,
     confirmInitiativeModal,
@@ -136,6 +153,10 @@ export default function GameView(props: GameViewProps = {}) {
 
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
+  const isMapRoomPhase =
+    phase === "selectingMapNode" ||
+    phase === "restSite" ||
+    phase === "bossRoomIntro";
   const playerInitiativeEntry = turnOrder.find(
     (entry) => entry.id === "player",
   );
@@ -158,6 +179,12 @@ export default function GameView(props: GameViewProps = {}) {
         return "Confirmar Habilidade";
       case "selectingReward":
         return "🎁 Selecione Recompensa";
+      case "selectingMapNode":
+        return "Mapa — próximo nó";
+      case "restSite":
+        return "Descanso";
+      case "bossRoomIntro":
+        return "Chefe";
       case "floorComplete":
         return "🏆 Andar Completo!";
       case "victory":
@@ -183,6 +210,12 @@ export default function GameView(props: GameViewProps = {}) {
         return "bg-purple-600 text-white";
       case "selectingReward":
         return "bg-indigo-600 text-white";
+      case "selectingMapNode":
+        return "bg-teal-600 text-white";
+      case "restSite":
+        return "bg-emerald-700 text-white";
+      case "bossRoomIntro":
+        return "bg-red-800 text-white";
       case "floorComplete":
         return "bg-emerald-500 text-white";
       case "victory":
@@ -195,10 +228,11 @@ export default function GameView(props: GameViewProps = {}) {
   };
 
   const defaultActionsDisabled =
-    phase !== "playerTurn" &&
-    phase !== "selectingMovement" &&
-    phase !== "selectingTarget" &&
-    phase !== "confirmingSkill";
+    isMapRoomPhase ||
+    (phase !== "playerTurn" &&
+      phase !== "selectingMovement" &&
+      phase !== "selectingTarget" &&
+      phase !== "confirmingSkill");
 
   const isSelectionInstructionPhase =
     phase === "selectingMovement" ||
@@ -211,6 +245,7 @@ export default function GameView(props: GameViewProps = {}) {
     activeTurnOrderEntry?.entityType === "enemy";
 
   const showMiniInitiativeInStatusBar =
+    !isMapRoomPhase &&
     turnOrder.length > 0 &&
     (phase === "playerTurn" ||
       phase === "enemyTurn" ||
@@ -288,7 +323,8 @@ export default function GameView(props: GameViewProps = {}) {
                 {enemies.length === 0 &&
                   phase !== "victory" &&
                   phase !== "defeat" &&
-                  phase !== "floorComplete" && (
+                  phase !== "floorComplete" &&
+                  !isMapRoomPhase && (
                     <div className="text-slate-500 text-center">
                       Carregando...
                     </div>
@@ -352,7 +388,8 @@ export default function GameView(props: GameViewProps = {}) {
             {enemies.length === 0 &&
               phase !== "victory" &&
               phase !== "defeat" &&
-              phase !== "floorComplete" && (
+              phase !== "floorComplete" &&
+              !isMapRoomPhase && (
                 <div className="text-slate-500 text-center">Carregando...</div>
               )}
           </div>
@@ -370,32 +407,60 @@ export default function GameView(props: GameViewProps = {}) {
               <p className="text-slate-300 mb-2">
                 Você derrotou todos os inimigos deste andar!
               </p>
-              <p className="text-amber-400 mb-6">
-                Preparado para o próximo desafio?
-              </p>
-              <div className="bg-slate-900/50 rounded-xl p-4 md:p-4 mb-6">
-                <p className="text-slate-400 text-sm mb-2">Próximo andar:</p>
-                <p className="text-lg font-bold text-amber-300">
-                  {getFloorConfig(floor + 1).name}
-                </p>
-                <p className="text-slate-500 text-xs mt-1">
-                  {getFloorConfig(floor + 1).description}
-                </p>
-              </div>
-              <div className="flex gap-4 justify-center">
-                <button
-                  onClick={handleRestart}
-                  className="px-4 py-2 md:px-4 md:py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
-                >
-                  Desistir
-                </button>
-                <button
-                  onClick={advanceFloor}
-                  className="px-4 py-2.5 md:px-6 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
-                >
-                  Avançar ao Andar {floor + 1} →
-                </button>
-              </div>
+              {runCombatKind === "mapMonster" ? (
+                <>
+                  <p className="text-amber-400 mb-6">
+                    Escolha o próximo nó no mapa da corrida.
+                  </p>
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      type="button"
+                      onClick={handleRestart}
+                      className="px-4 py-2 md:px-4 md:py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
+                    >
+                      Desistir
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => continueAfterMapMonster()}
+                      className="px-4 py-2.5 md:px-6 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
+                    >
+                      Continuar
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-amber-400 mb-6">
+                    Preparado para o próximo desafio?
+                  </p>
+                  <div className="bg-slate-900/50 rounded-xl p-4 md:p-4 mb-6">
+                    <p className="text-slate-400 text-sm mb-2">Próximo andar:</p>
+                    <p className="text-lg font-bold text-amber-300">
+                      {getFloorConfig(floor + 1).name}
+                    </p>
+                    <p className="text-slate-500 text-xs mt-1">
+                      {getFloorConfig(floor + 1).description}
+                    </p>
+                  </div>
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      type="button"
+                      onClick={handleRestart}
+                      className="px-4 py-2 md:px-4 md:py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
+                    >
+                      Desistir
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => advanceFloor()}
+                      className="px-4 py-2.5 md:px-6 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
+                    >
+                      Avançar ao Andar {floor + 1} →
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -598,7 +663,9 @@ export default function GameView(props: GameViewProps = {}) {
                   title={`${floorConfig.name} — andar ${floor} de 4`}
                 >
                   <span className="text-slate-500">Andar </span>
-                  <span className="font-bold text-amber-400">{floor}/4</span>
+                  <span className="font-bold text-amber-400">
+                    {floor}/{MAX_FLOOR}
+                  </span>
                   <span className="ml-1 hidden text-slate-500 md:inline">
                     · {floorConfig.name}
                   </span>
@@ -655,6 +722,14 @@ export default function GameView(props: GameViewProps = {}) {
                 playerCharacterClass={player.characterClass}
                 enemies={enemies}
               />
+            ) : isMapRoomPhase ? (
+              <div className="flex min-h-[4.5rem] w-full items-center justify-center px-2 text-center text-sm text-slate-400 md:min-h-11 md:text-base">
+                {phase === "selectingMapNode" &&
+                  "Escolha o próximo destino na janela do mapa."}
+                {phase === "restSite" && "Confirme o descanso na janela aberta."}
+                {phase === "bossRoomIntro" &&
+                  "Confirme o combate contra o chefe na janela aberta."}
+              </div>
             ) : (
               <Hand
                 cards={hand}
@@ -920,6 +995,31 @@ export default function GameView(props: GameViewProps = {}) {
 
       {showMapModal && runMap && (
         <RunMapModal runMap={runMap} onClose={() => setShowMapModal(false)} />
+      )}
+
+      {phase === "selectingMapNode" && runMap && (
+        <MapNodeChoiceModal
+          runMap={runMap}
+          mapCurrentNodeId={mapCurrentNodeId}
+          mapRoomsCompleted={mapRoomsCompleted}
+          roomsBeforeBoss={MAP_ROOMS_BEFORE_BOSS}
+          onPickNode={(id) => selectMapNode(id)}
+        />
+      )}
+
+      {phase === "restSite" && (
+        <RestSiteModal
+          currentHp={player.hp}
+          maxHp={player.maxHp}
+          onConfirm={() => confirmRestSite()}
+        />
+      )}
+
+      {phase === "bossRoomIntro" && runMap && (
+        <BossRoomModal
+          bossDefinitionId={runMap.bossDefinitionId}
+          onFight={() => startBossFightFromIntro()}
+        />
       )}
     </div>
   );

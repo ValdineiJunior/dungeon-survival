@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType, DefaultHandCard, InitiativeResult } from '@/app/types/game';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType, DefaultHandCard, InitiativeResult, MAP_ROOMS_BEFORE_BOSS, RunCombatKind } from '@/app/types/game';
 import { generateRunMap } from '@/app/lib/mapGeneration';
+import { getNextMapChoices } from '@/app/lib/mapPath';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from './cards';
 import { pickRewardCards } from './cardRewards';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
@@ -175,6 +176,10 @@ interface GameActions {
   endTurn: () => void;
   selectRewardCard: (card: Card) => void;
   advanceFloor: () => void;
+  selectMapNode: (nextNodeId: string) => void;
+  confirmRestSite: () => void;
+  startBossFightFromIntro: () => void;
+  continueAfterMapMonster: () => void;
   resetGame: () => void;
 }
 
@@ -203,6 +208,13 @@ function drawCards(state: GameState, amount: number): { hand: Card[]; drawPile: 
   return { hand, drawPile, discardPile };
 }
 
+function combatClearPhase(state: GameState, enemiesRemaining: number): GamePhase {
+  if (enemiesRemaining > 0) return 'playerTurn';
+  if (state.runCombatKind === 'boss') return 'victory';
+  if (state.runCombatKind === 'mapMonster') return 'floorComplete';
+  return state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
+}
+
 export const useGameStore = create<GameStore>((set, get) => ({
   // Estado inicial - começa na seleção de personagem
   player: { ...INITIAL_PLAYER },
@@ -213,6 +225,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
   burnedPile: [],
   defaultHand: [],
   runMap: null,
+  mapCurrentNodeId: null,
+  mapRoomsCompleted: 0,
+  mapMonsterCombatsCompleted: 0,
+  runCombatKind: 'none' as RunCombatKind,
   enemies: [],
   hexMap: createHexMap(MAP_RADIUS),
   phase: 'characterSelect',
@@ -238,7 +254,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
   startCombat: () => {
     const state = get();
     const characterClass = state.player.characterClass;
-    const floor = state.floor;
     const classDef = CHARACTER_CLASSES[characterClass];
 
     const deck = createClassDeck(characterClass);
@@ -246,18 +261,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const hexMap = createHexMap(MAP_RADIUS);
     const runMap = generateRunMap();
 
-    // Create enemies based on current floor
-    const enemies = createFloorEnemies(floor);
-
     const player = createInitialPlayer(characterClass);
 
-    // Create initial game log
     const gameLog: GameLogEntry[] = [];
-    logIdCounter = 0; // Reset counter for new game
+    logIdCounter = 0;
 
-    gameLog.push(createLogEntry(1, floor, 'floorStart',
-      `🏰 Andar ${floor} - ${classDef.emoji} ${classDef.name} entra na masmorra`));
-    gameLog.push(createLogEntry(1, floor, 'turnStart', `=== Turno 1 — Rolagem de Iniciativa ===`));
+    gameLog.push(createLogEntry(1, 1, 'floorStart',
+      `🏰 ${classDef.emoji} ${classDef.name} entra na masmorra — escolha o próximo nó no mapa.`));
 
     set({
       player,
@@ -266,13 +276,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       drawPile,
       discardPile: [],
       burnedPile: [],
-      enemies,
+      enemies: [],
       hexMap,
       runMap,
+      mapCurrentNodeId: null,
+      mapRoomsCompleted: 0,
+      mapMonsterCombatsCompleted: 0,
+      runCombatKind: 'none',
       gameLog,
-      phase: 'rollingInitiative',
+      phase: 'selectingMapNode',
       turn: 1,
-      floor,
+      floor: 1,
       turnOrder: [],
       activeTurnIndex: 0,
       selectedCard: null,
@@ -283,6 +297,245 @@ export const useGameStore = create<GameStore>((set, get) => ({
       remainingMovement: 0,
       rewardCards: [],
       defaultHand: (characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
+        id: `default_${c.id}`,
+        card: { ...c },
+        usedThisTurn: false,
+      })),
+    });
+  },
+
+  selectMapNode: (nextNodeId: string) => {
+    const state = get();
+    if (state.phase !== 'selectingMapNode' || !state.runMap) return;
+    const choices = getNextMapChoices(state.runMap, state.mapCurrentNodeId);
+    if (!choices.some((n) => n.id === nextNodeId)) return;
+
+    const byId = new Map(state.runMap.nodes.map((n) => [n.id, n]));
+    const node = byId.get(nextNodeId);
+    if (!node) return;
+
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
+    const newLog = [...state.gameLog];
+
+    if (node.location === 'monster') {
+      const encounterIndex = state.mapMonsterCombatsCompleted + 1;
+      const enemies = createFloorEnemies(encounterIndex);
+      let player = { ...state.player };
+      player.position = { q: -2, r: 0 };
+      const passiveBlock = getInnateAbilityValue(state.player.characterClass, 'passiveBlock');
+      const energyRegen = getInnateAbilityValue(state.player.characterClass, 'energyRegen');
+      player.block = passiveBlock;
+      player.energy = player.maxEnergy + energyRegen;
+
+      newLog.push(createLogEntry(1, encounterIndex, 'floorStart',
+        `🏰 Sala de combate (${encounterIndex}/10) — ${classDef.emoji} ${classDef.name}`));
+      newLog.push(createLogEntry(1, encounterIndex, 'turnStart', `=== Turno 1 — Rolagem de Iniciativa ===`));
+      if (passiveBlock > 0) {
+        newLog.push(createLogEntry(1, encounterIndex, 'innateAbility',
+          `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
+      }
+      if (energyRegen > 0) {
+        newLog.push(createLogEntry(1, encounterIndex, 'innateAbility',
+          `✨ Canalização Arcana: +${energyRegen} energia extra`));
+      }
+
+      set({
+        mapCurrentNodeId: nextNodeId,
+        player,
+        enemies,
+        floor: encounterIndex,
+        runCombatKind: 'mapMonster',
+        phase: 'rollingInitiative',
+        turn: 1,
+        turnOrder: [],
+        activeTurnIndex: 0,
+        selectedCard: null,
+        validMovePositions: [],
+        targetableEnemyIds: [],
+        movementPath: [],
+        remainingMovement: 0,
+        rewardCards: [],
+        gameLog: newLog,
+      });
+      return;
+    }
+
+    if (node.location === 'treasure' || node.location === 'merchant') {
+      const [card1, card2] = pickRewardCards(state.player.characterClass);
+      newLog.push(createLogEntry(state.turn, state.floor, 'rewardStart', '🎁 Escolha uma carta'));
+      set({
+        mapCurrentNodeId: nextNodeId,
+        rewardCards: [card1, card2],
+        phase: 'selectingReward',
+        gameLog: newLog,
+      });
+      return;
+    }
+
+    if (node.location === 'rest') {
+      set({
+        mapCurrentNodeId: nextNodeId,
+        phase: 'restSite',
+        gameLog: newLog,
+      });
+      return;
+    }
+  },
+
+  confirmRestSite: () => {
+    const state = get();
+    if (state.phase !== 'restSite' || !state.runMap) return;
+
+    const player = { ...state.player };
+    const before = player.hp;
+    const heal = Math.min(10, player.maxHp - player.hp);
+    player.hp = Math.min(player.maxHp, player.hp + 10);
+
+    const newLog = [...state.gameLog];
+    newLog.push(createLogEntry(state.turn, state.floor, 'innateAbility',
+      `💤 Descanso: +${heal} HP (${before} → ${player.hp})`, { healing: heal }));
+
+    const nextRooms = state.mapRoomsCompleted + 1;
+    const nextPhase: GamePhase =
+      nextRooms >= MAP_ROOMS_BEFORE_BOSS ? 'bossRoomIntro' : 'selectingMapNode';
+
+    const defaultHandReset = (state.player.characterClass === 'warrior'
+      ? WARRIOR_DEFAULT_CARDS
+      : state.player.characterClass === 'archer'
+        ? ARCHER_DEFAULT_CARDS
+        : MAGE_DEFAULT_CARDS
+    ).map((c) => ({
+      id: `default_${c.id}`,
+      card: { ...c },
+      usedThisTurn: false,
+    }));
+
+    set({
+      player,
+      mapRoomsCompleted: nextRooms,
+      phase: nextPhase,
+      gameLog: newLog,
+      defaultHand: defaultHandReset,
+    });
+  },
+
+  startBossFightFromIntro: () => {
+    const state = get();
+    if (state.phase !== 'bossRoomIntro' || !state.runMap) return;
+
+    const classDef = CHARACTER_CLASSES[state.player.characterClass];
+    const enemies = [
+      createEnemy(state.runMap.bossDefinitionId, 'boss_0', { q: 0, r: -2 }),
+    ];
+    let player = { ...state.player };
+    player.position = { q: -2, r: 0 };
+    const passiveBlock = getInnateAbilityValue(state.player.characterClass, 'passiveBlock');
+    const energyRegen = getInnateAbilityValue(state.player.characterClass, 'energyRegen');
+    player.block = passiveBlock;
+    player.energy = player.maxEnergy + energyRegen;
+
+    const newLog = [...state.gameLog];
+    newLog.push(createLogEntry(1, MAX_FLOOR, 'floorStart',
+      `🐉 Confronto final — ${classDef.emoji} ${classDef.name}`));
+    newLog.push(createLogEntry(1, MAX_FLOOR, 'turnStart', `=== Turno 1 — Rolagem de Iniciativa ===`));
+    if (passiveBlock > 0) {
+      newLog.push(createLogEntry(1, MAX_FLOOR, 'innateAbility',
+        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
+    }
+    if (energyRegen > 0) {
+      newLog.push(createLogEntry(1, MAX_FLOOR, 'innateAbility',
+        `✨ Canalização Arcana: +${energyRegen} energia extra`));
+    }
+
+    set({
+      player,
+      enemies,
+      floor: MAX_FLOOR,
+      runCombatKind: 'boss',
+      phase: 'rollingInitiative',
+      turn: 1,
+      turnOrder: [],
+      activeTurnIndex: 0,
+      selectedCard: null,
+      validMovePositions: [],
+      targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
+      rewardCards: [],
+      gameLog: newLog,
+    });
+  },
+
+  continueAfterMapMonster: () => {
+    const state = get();
+    if (state.phase !== 'floorComplete' || state.runCombatKind !== 'mapMonster') return;
+
+    const player = { ...state.player };
+    const classDef = CHARACTER_CLASSES[player.characterClass];
+    const newLog = [...state.gameLog];
+
+    const roomHealing = getInnateAbilityValue(player.characterClass, 'roomHealing');
+    if (roomHealing > 0) {
+      player.hp = Math.min(player.maxHp, player.hp + roomHealing);
+      newLog.push(createLogEntry(1, state.floor, 'innateAbility',
+        `❤️‍🩹 Resistência: +${roomHealing} HP recuperado`));
+    }
+
+    player.position = { q: -2, r: 0 };
+    const passiveBlock = getInnateAbilityValue(player.characterClass, 'passiveBlock');
+    const energyRegen = getInnateAbilityValue(player.characterClass, 'energyRegen');
+    const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
+    player.block = passiveBlock;
+    player.energy = player.maxEnergy + energyRegen;
+
+    const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, ...state.burnedPile];
+    const drawPile = shuffleArray(allCards);
+    const cardState = drawCards({
+      ...state,
+      hand: [],
+      drawPile,
+      discardPile: [],
+    } as GameState, HAND_SIZE + bonusDraw);
+
+    const mapMonsterCombatsCompleted = state.mapMonsterCombatsCompleted + 1;
+    const mapRoomsCompleted = state.mapRoomsCompleted + 1;
+    const nextFloorDisplay = Math.min(MAX_FLOOR, mapMonsterCombatsCompleted + 1);
+
+    if (passiveBlock > 0) {
+      newLog.push(createLogEntry(1, nextFloorDisplay, 'innateAbility',
+        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
+    }
+    if (energyRegen > 0) {
+      newLog.push(createLogEntry(1, nextFloorDisplay, 'innateAbility',
+        `✨ Canalização Arcana: +${energyRegen} energia extra`));
+    }
+
+    const nextPhase: GamePhase =
+      mapRoomsCompleted >= MAP_ROOMS_BEFORE_BOSS ? 'bossRoomIntro' : 'selectingMapNode';
+
+    set({
+      floor: nextFloorDisplay,
+      mapMonsterCombatsCompleted,
+      mapRoomsCompleted,
+      player,
+      enemies: [],
+      hand: cardState.hand,
+      drawPile: cardState.drawPile,
+      discardPile: cardState.discardPile,
+      burnedPile: [],
+      gameLog: newLog,
+      phase: nextPhase,
+      turn: 1,
+      runCombatKind: 'none',
+      selectedCard: null,
+      validMovePositions: [],
+      targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
+      rewardCards: [],
+      turnOrder: [],
+      activeTurnIndex: 0,
+      defaultHand: (player.characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : player.characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
         id: `default_${c.id}`,
         card: { ...c },
         usedThisTurn: false,
@@ -1143,8 +1396,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (newPlayer.hp <= 0) {
       phase = 'defeat';
     } else if (newEnemies.length === 0) {
-      // If final floor, victory! Otherwise, floor complete
-      phase = state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
+      phase = combatClearPhase(state, newEnemies.length);
     }
 
     set({
@@ -1264,11 +1516,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
     player.energy = player.energy - card.cost;
     const newDefaultHand = state.defaultHand.map((d, i) => i === defIndex ? { ...d, usedThisTurn: true } : d);
 
+    let phase: GamePhase = 'playerTurn';
+    if (enemies.length === 0) {
+      phase = combatClearPhase(state, enemies.length);
+    }
+
     set({
       player,
       enemies,
       gameLog: newLog,
       defaultHand: newDefaultHand,
+      phase,
+      selectedCard: null,
+      selectedCardIsDefault: false,
+      validMovePositions: [],
+      targetableEnemyIds: [],
+      movementPath: [],
+      remainingMovement: 0,
     });
   },
 
@@ -1376,7 +1640,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Check floor cleared after attacks
     let phase: GamePhase = 'playerTurn';
     if (enemies.length === 0) {
-      phase = state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
+      phase = combatClearPhase(state, enemies.length);
     }
 
     set({
@@ -1426,6 +1690,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   advanceFloor: () => {
     const state = get();
     if (state.phase !== 'floorComplete') return;
+    if (state.runMap) return;
 
     const nextFloor = state.floor + 1;
     const player = { ...state.player };
@@ -1543,6 +1808,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
     newLog.push(createLogEntry(state.turn, state.floor, 'cardReward',
       `✨ ${card.name} adicionado ao baralho`));
 
+    const mapRoomsCompleted = state.mapRoomsCompleted + 1;
+    const nextPhase: GamePhase =
+      state.runMap && mapRoomsCompleted >= MAP_ROOMS_BEFORE_BOSS
+        ? 'bossRoomIntro'
+        : state.runMap
+          ? 'selectingMapNode'
+          : 'rollingInitiative';
+
+    const defaultHandReset =
+      state.runMap
+        ? (state.player.characterClass === 'warrior'
+            ? WARRIOR_DEFAULT_CARDS
+            : state.player.characterClass === 'archer'
+              ? ARCHER_DEFAULT_CARDS
+              : MAGE_DEFAULT_CARDS
+          ).map((c) => ({
+            id: `default_${c.id}`,
+            card: { ...c },
+            usedThisTurn: false,
+          }))
+        : state.defaultHand;
+
     set({
       deck,
       hand: cardState.hand,
@@ -1550,7 +1837,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: cardState.discardPile,
       rewardCards: [],
       gameLog: newLog,
-      phase: 'rollingInitiative',
+      mapRoomsCompleted: state.runMap ? mapRoomsCompleted : state.mapRoomsCompleted,
+      phase: nextPhase,
+      defaultHand: defaultHandReset,
     });
   },
 
@@ -1564,6 +1853,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: [],
       defaultHand: [],
       runMap: null,
+      mapCurrentNodeId: null,
+      mapRoomsCompleted: 0,
+      mapMonsterCombatsCompleted: 0,
+      runCombatKind: 'none',
       enemies: [],
       hexMap: createHexMap(MAP_RADIUS),
       gameLog: [],
