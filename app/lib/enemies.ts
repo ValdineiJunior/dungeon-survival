@@ -427,6 +427,66 @@ export const FLOOR_CONFIGS: FloorConfig[] = [
   },
   {
     floor: 4,
+    name: 'Câmara Profunda',
+    description: 'Criaturas endurecidas patrulham os corredores estreitos.',
+    enemies: [
+      { definitionId: 'orc', position: { q: 2, r: 0 } },
+      { definitionId: 'darkMage', position: { q: -2, r: 1 } },
+      { definitionId: 'ghost', position: { q: 0, r: -2 } },
+    ],
+  },
+  {
+    floor: 5,
+    name: 'Salão Quebrado',
+    description: 'Ecos de batalhas antigas ainda ressoam nas paredes.',
+    enemies: [
+      { definitionId: 'goblin', position: { q: 2, r: -1 } },
+      { definitionId: 'skeleton', position: { q: -2, r: 2 } },
+      { definitionId: 'orc', position: { q: 0, r: 2 } },
+    ],
+  },
+  {
+    floor: 6,
+    name: 'Poço Sombrio',
+    description: 'A umidade e o fedor de carne podre pairam no ar.',
+    enemies: [
+      { definitionId: 'skeleton', position: { q: 2, r: 0 } },
+      { definitionId: 'ghost', position: { q: -2, r: 1 } },
+      { definitionId: 'darkMage', position: { q: 0, r: -2 } },
+    ],
+  },
+  {
+    floor: 7,
+    name: 'Antecâmara Maldita',
+    description: 'Você sente que está sendo observado por todos os lados.',
+    enemies: [
+      { definitionId: 'orc', position: { q: 2, r: 0 } },
+      { definitionId: 'ghost', position: { q: -2, r: 2 } },
+      { definitionId: 'darkMage', position: { q: 0, r: 2 } },
+    ],
+  },
+  {
+    floor: 8,
+    name: 'Descida ao Abismo',
+    description: 'Cada passo ecoa como um aviso.',
+    enemies: [
+      { definitionId: 'darkMage', position: { q: 2, r: -1 } },
+      { definitionId: 'orc', position: { q: -2, r: 2 } },
+      { definitionId: 'ghost', position: { q: 0, r: 2 } },
+    ],
+  },
+  {
+    floor: 9,
+    name: 'Última Trincheira',
+    description: 'Os guardiões finais bloqueiam seu caminho.',
+    enemies: [
+      { definitionId: 'orc', position: { q: 2, r: 0 } },
+      { definitionId: 'darkMage', position: { q: -2, r: 1 } },
+      { definitionId: 'ghost', position: { q: 0, r: -2 } },
+    ],
+  },
+  {
+    floor: 10,
     name: 'Covil do Dragão',
     description: 'O Dragão Ancião protege o tesouro final!',
     enemies: [

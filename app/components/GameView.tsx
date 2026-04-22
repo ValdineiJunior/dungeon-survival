@@ -13,6 +13,7 @@ import { CardListModal } from "@/app/components/CardListModal";
 import { CardRewardModal } from "@/app/components/CardRewardModal";
 import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
 import { GameLogModal } from "@/app/components/GameLogModal";
+import { RunMapModal } from "@/app/components/RunMapModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
 import { BurnCardModal } from "@/app/components/BurnCardModal";
 import {
@@ -38,6 +39,7 @@ export default function GameView(props: GameViewProps = {}) {
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const [showBurnedModal, setShowBurnedModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
   // Kept for future debug: EnemyActionsModal. To show it, add onViewActions={() => setSelectedEnemyForActions(enemy)} to EnemyCard
   const [selectedEnemyForActions, setSelectedEnemyForActions] =
@@ -62,6 +64,7 @@ export default function GameView(props: GameViewProps = {}) {
     movementPath,
     remainingMovement,
     gameLog,
+    runMap,
     rewardCards,
     defaultHand,
     selectDefaultCard,
@@ -694,6 +697,21 @@ export default function GameView(props: GameViewProps = {}) {
                   </button>
                   <button
                     type="button"
+                    disabled={!runMap}
+                    onClick={() => {
+                      if (!runMap) return;
+                      setShowMapModal(true);
+                      setShowActionMenu(false);
+                    }}
+                    className="flex min-h-8 w-full items-center justify-start gap-1.5 rounded-lg bg-slate-700 px-2 py-1.5 text-left text-xs text-gray-300 transition-colors hover:bg-slate-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <span>🗺️</span>
+                      <span>Mapa</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => {
                       setShowAbandonModal(true);
                       setShowActionMenu(false);
@@ -898,6 +916,10 @@ export default function GameView(props: GameViewProps = {}) {
       {/* Game Log Modal */}
       {showLogModal && (
         <GameLogModal logs={gameLog} onClose={() => setShowLogModal(false)} />
+      )}
+
+      {showMapModal && runMap && (
+        <RunMapModal runMap={runMap} onClose={() => setShowMapModal(false)} />
       )}
     </div>
   );

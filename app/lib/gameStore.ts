@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType, DefaultHandCard, InitiativeResult } from '@/app/types/game';
+import { generateRunMap } from '@/app/lib/mapGeneration';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from './cards';
 import { pickRewardCards } from './cardRewards';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
@@ -211,6 +212,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   discardPile: [],
   burnedPile: [],
   defaultHand: [],
+  runMap: null,
   enemies: [],
   hexMap: createHexMap(MAP_RADIUS),
   phase: 'characterSelect',
@@ -242,6 +244,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const deck = createClassDeck(characterClass);
     const drawPile = shuffleArray([...deck]);
     const hexMap = createHexMap(MAP_RADIUS);
+    const runMap = generateRunMap();
 
     // Create enemies based on current floor
     const enemies = createFloorEnemies(floor);
@@ -265,6 +268,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       burnedPile: [],
       enemies,
       hexMap,
+      runMap,
       gameLog,
       phase: 'rollingInitiative',
       turn: 1,
@@ -1559,6 +1563,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       drawPile: [],
       discardPile: [],
       defaultHand: [],
+      runMap: null,
       enemies: [],
       hexMap: createHexMap(MAP_RADIUS),
       gameLog: [],

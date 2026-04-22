@@ -180,7 +180,39 @@ export type GamePhase =
   | 'floorComplete'     // Floor cleared, ready for next floor
   | 'selectingReward';  // Selecting reward card
 
-export const MAX_FLOOR = 4;
+export const MAX_FLOOR = 10;
+
+/** Procedural run map; independent of hex combat for now. */
+export type MapRoomLocation = 'monster' | 'treasure' | 'merchant' | 'rest' | 'boss';
+
+export interface RunMapNode {
+  id: string;
+  /** Dungeon floor 1 = bottom … MAX_FLOOR; boss uses `bossFloor`. */
+  floor: number;
+  /** Column index in the irregular row template (0–6). */
+  col: number;
+  location: MapRoomLocation;
+  /** Undirected adjacency (neighbor node ids). */
+  neighborIds: string[];
+  /** 0–100-ish layout hints for read-only viewer (row stagger / isometric feel). */
+  layoutX: number;
+  layoutY: number;
+}
+
+export interface RunMapEdge {
+  fromId: string;
+  toId: string;
+}
+
+export interface RunGeneratedMap {
+  nodes: RunMapNode[];
+  edges: RunMapEdge[];
+  bossNodeId: string;
+  /** Cosmetic boss pick for this run (matches `EnemyDefinition` ids where possible). */
+  bossDefinitionId: string;
+  /** Sentinel floor index used only for layout (above last floor). */
+  bossFloor: number;
+}
 
 export interface InitiativeResult {
   id: string; // Enemy ID or 'player'
@@ -218,7 +250,7 @@ export interface GameState {
   // Fase do jogo
   phase: GamePhase;
   turn: number;
-  floor: number;  // Current dungeon floor (1-4)
+  floor: number;  // Current dungeon floor (1–MAX_FLOOR)
   turnOrder: InitiativeResult[];
   activeTurnIndex: number;
 
@@ -238,6 +270,9 @@ export interface GameState {
   rewardCards: Card[];  // Two cards to choose from after floor completion
   // Secondary persistent default hand (3 simple cards, usable once per round)
   defaultHand: DefaultHandCard[];
+
+  /** Procedural map for the current run; regenerated when combat starts. */
+  runMap: RunGeneratedMap | null;
 }
 
 export interface DefaultHandCard {
