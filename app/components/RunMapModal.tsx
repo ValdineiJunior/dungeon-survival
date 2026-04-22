@@ -1,53 +1,19 @@
 "use client";
 
-import { MapRoomLocation, RunGeneratedMap, RunMapNode } from "@/app/types/game";
+import { MapRoomLocation, RunGeneratedMap } from "@/app/types/game";
 import { ENEMY_DEFINITIONS } from "@/app/lib/enemies";
+import {
+  RunMapGraph,
+  runMapLocationColor,
+  runMapLocationLabel,
+} from "@/app/components/RunMapGraph";
 
 interface RunMapModalProps {
   runMap: RunGeneratedMap;
   onClose: () => void;
 }
 
-function locationLabel(loc: RunMapNode["location"]): string {
-  switch (loc) {
-    case "monster":
-      return "Monstro";
-    case "treasure":
-      return "Tesouro";
-    case "merchant":
-      return "Mercador";
-    case "rest":
-      return "Descanso";
-    case "boss":
-      return "Chefe";
-    default:
-      return loc;
-  }
-}
-
-function locationColor(loc: RunMapNode["location"]): string {
-  switch (loc) {
-    case "monster":
-      return "#f87171";
-    case "treasure":
-      return "#fbbf24";
-    case "merchant":
-      return "#60a5fa";
-    case "rest":
-      return "#4ade80";
-    case "boss":
-      return "#c084fc";
-    default:
-      return "#94a3b8";
-  }
-}
-
-function toSvgY(layoutY: number): number {
-  return 100 - layoutY;
-}
-
 export function RunMapModal({ runMap, onClose }: RunMapModalProps) {
-  const nodeById = new Map(runMap.nodes.map((n) => [n.id, n]));
   const bossDef = ENEMY_DEFINITIONS[runMap.bossDefinitionId];
   const bossTitle = bossDef?.name ?? runMap.bossDefinitionId;
 
@@ -75,55 +41,7 @@ export function RunMapModal({ runMap, onClose }: RunMapModalProps) {
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4">
           <div className="aspect-[10/11] w-full min-h-[280px] rounded-xl border border-slate-600/80 bg-slate-950/80 p-2">
-            <svg viewBox="0 0 100 108" className="h-full w-full" aria-hidden>
-              {runMap.edges.map((e, i) => {
-                const a = nodeById.get(e.fromId);
-                const b = nodeById.get(e.toId);
-                if (!a || !b) return null;
-                const x1 = a.layoutX;
-                const y1 = toSvgY(a.layoutY);
-                const x2 = b.layoutX;
-                const y2 = toSvgY(b.layoutY);
-                return (
-                  <line
-                    key={`${e.fromId}-${e.toId}-${i}`}
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
-                    stroke="#64748b"
-                    strokeWidth={0.35}
-                    strokeOpacity={0.85}
-                  />
-                );
-              })}
-
-              {runMap.nodes.map((n) => {
-                const cx = n.layoutX;
-                const cy = toSvgY(n.layoutY);
-                const r = n.location === "boss" ? 2.8 : 2.1;
-                return (
-                  <g key={n.id}>
-                    <circle
-                      cx={cx}
-                      cy={cy}
-                      r={r + 0.35}
-                      fill="#0f172a"
-                      stroke="#334155"
-                      strokeWidth={0.2}
-                    />
-                    <circle
-                      cx={cx}
-                      cy={cy}
-                      r={r}
-                      fill={locationColor(n.location)}
-                      stroke="#1e293b"
-                      strokeWidth={0.15}
-                    />
-                  </g>
-                );
-              })}
-            </svg>
+            <RunMapGraph runMap={runMap} className="h-full w-full" />
           </div>
 
           <div className="mt-4 flex flex-wrap gap-3 text-[11px] text-slate-400">
@@ -139,13 +57,18 @@ export function RunMapModal({ runMap, onClose }: RunMapModalProps) {
               <span key={loc} className="flex items-center gap-1.5">
                 <span
                   className="inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-slate-600"
-                  style={{ backgroundColor: locationColor(loc) }}
+                  style={{ backgroundColor: runMapLocationColor(loc) }}
                 />
-                {locationLabel(loc)}
+                {runMapLocationLabel(loc)}
               </span>
             ))}
           </div>
           <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+            Identificação nos círculos: <strong className="font-medium text-slate-400">andar·coluna</strong>{" "}
+            (ex.: <span className="font-mono text-slate-400">1·6</span> = Andar 1, col 6). Chefe:{" "}
+            <span className="font-mono text-slate-400">Chefe</span>.
+          </p>
+          <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
             Andar 1: monstro fixo · Andar 4: tesouro fixo · Andar{" "}
             {runMap.bossFloor - 1}: descanso fixo
           </p>
