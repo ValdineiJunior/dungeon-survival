@@ -2,8 +2,7 @@
 
 import { RunGeneratedMap } from "@/app/types/game";
 import { getNextMapChoices } from "@/app/lib/mapPath";
-import { runMapNodeChoiceTitle } from "@/app/lib/runMapLabels";
-import { RunMapGraph, runMapLocationLabel } from "@/app/components/RunMapGraph";
+import { RunMapGraph } from "@/app/components/RunMapGraph";
 
 interface MapNodeChoiceModalProps {
   runMap: RunGeneratedMap;
@@ -21,8 +20,8 @@ export function MapNodeChoiceModal({
   onPickNode,
 }: MapNodeChoiceModalProps) {
   const choices = getNextMapChoices(runMap, mapCurrentNodeId);
-
   const choiceIds = choices.map((n) => n.id);
+  const hasChoices = choiceIds.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm">
@@ -35,13 +34,16 @@ export function MapNodeChoiceModal({
             Salas concluídas: {mapRoomsCompleted}/{roomsBeforeBoss}
           </p>
           <p className="text-center text-sm text-slate-300">
-            Escolha um nó conectado para continuar subindo até o chefe.
+            {hasChoices
+              ? "Toque num nó com contorno âmbar tracejado para continuar subindo até o chefe."
+              : "Não há destinos disponíveis neste mapa."}
           </p>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col border-b border-slate-600/60 bg-slate-950/40 px-3 py-3 md:px-4">
+        <div className="flex min-h-0 flex-1 flex-col bg-slate-950/40 px-3 py-3 md:px-4">
           <p className="mb-2 shrink-0 text-center text-[10px] uppercase tracking-wide text-slate-500">
-            Mapa — ouro: onde você está · âmbar tracejado: toque para escolher ou role para ver tudo
+            Mapa — ouro: onde você está · âmbar tracejado: toque para escolher ·
+            role para ver tudo
           </p>
           <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain rounded-lg border border-slate-600/70 bg-slate-950/90 p-2 touch-pan-y">
             <div className="mx-auto w-full max-w-2xl aspect-[100/108] min-w-[min(100%,18rem)] md:max-w-none">
@@ -49,34 +51,13 @@ export function MapNodeChoiceModal({
                 runMap={runMap}
                 mapCurrentNodeId={mapCurrentNodeId}
                 choiceNodeIds={choiceIds}
-                onChoiceNodeClick={onPickNode}
+                onChoiceNodeClick={hasChoices ? onPickNode : undefined}
                 className="block h-full w-full"
               />
             </div>
           </div>
-        </div>
-
-        <div className="min-h-0 max-h-[min(34dvh,20rem)] shrink-0 overflow-y-auto p-4 pt-3 md:p-5 md:pt-4">
-          <ul className="flex flex-col gap-2">
-            {choices.map((n) => (
-              <li key={n.id}>
-                <button
-                  type="button"
-                  onClick={() => onPickNode(n.id)}
-                  className="flex w-full flex-col items-stretch gap-0.5 rounded-xl border border-slate-600 bg-slate-900/80 px-4 py-3 text-left text-sm text-slate-200 transition-colors hover:border-amber-500/60 hover:bg-slate-700"
-                >
-                  <span className="font-medium text-slate-100">
-                    {runMapNodeChoiceTitle(n)}
-                  </span>
-                  <span className="text-xs text-amber-200/90">
-                    {runMapLocationLabel(n.location)}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-          {choices.length === 0 && (
-            <p className="mt-4 text-center text-sm text-red-400">
+          {!hasChoices && (
+            <p className="mt-3 shrink-0 text-center text-sm text-red-400">
               Nenhum caminho disponível. Reinicie a corrida.
             </p>
           )}
