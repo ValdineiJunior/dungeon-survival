@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import type { MapRoomLocation, RunGeneratedMap, RunMapNode } from '@/app/types/game';
-import { runMapNodeGraphCaption } from '@/app/lib/runMapLabels';
+import { runMapNodeChoiceTitle, runMapNodeGraphCaption } from '@/app/lib/runMapLabels';
 
 export function runMapLocationColor(loc: RunMapNode['location']): string {
   switch (loc) {
@@ -45,8 +46,10 @@ export interface RunMapGraphProps {
   runMap: RunGeneratedMap;
   /** Node the player is on (after first pick). Highlighted in gold. */
   mapCurrentNodeId?: string | null;
-  /** Valid next picks — dashed amber ring. */
+  /** Valid next picks — dashed amber ring; clickable when `onChoiceNodeClick` is set. */
   choiceNodeIds?: readonly string[];
+  /** When set, choice nodes can be clicked to pick (same as list buttons). */
+  onChoiceNodeClick?: (nodeId: string) => void;
   /** Applied to the root SVG (e.g. `h-full w-full`). */
   className?: string;
 }
@@ -55,17 +58,26 @@ export function RunMapGraph({
   runMap,
   mapCurrentNodeId = null,
   choiceNodeIds = [],
+  onChoiceNodeClick,
   className,
 }: RunMapGraphProps) {
   const nodeById = new Map(runMap.nodes.map((n) => [n.id, n]));
   const choiceSet = new Set(choiceNodeIds);
+  const interactive = Boolean(onChoiceNodeClick);
+  const [hoverChoiceId, setHoverChoiceId] = useState<string | null>(null);
 
   return (
     <svg
       viewBox="0 0 100 108"
       className={className ?? 'h-full w-full'}
-      aria-hidden
+      aria-hidden={!interactive}
     >
+      {interactive && (
+        <title>
+          Mapa da corrida — toque ou clique nos nós com contorno âmbar tracejado para escolher o
+          próximo destino.
+        </title>
+      )}
       {runMap.edges.map((e, i) => {
         const a = nodeById.get(e.fromId);
         const b = nodeById.get(e.toId);
@@ -103,6 +115,7 @@ export function RunMapGraph({
               : 1.65;
         const isCurrent = mapCurrentNodeId != null && n.id === mapCurrentNodeId;
         const isChoice = choiceSet.has(n.id);
+        const choiceHovered = interactive && isChoice && hoverChoiceId === n.id;
 
         return (
           <g key={n.id}>
@@ -110,10 +123,10 @@ export function RunMapGraph({
               <circle
                 cx={cx}
                 cy={cy}
-                r={r + 0.85}
+                r={r + 0.85 + (choiceHovered ? 0.25 : 0)}
                 fill="none"
                 stroke={isCurrent ? '#fbbf24' : '#f59e0b'}
-                strokeWidth={isCurrent ? 0.42 : 0.32}
+                strokeWidth={isCurrent ? 0.42 : choiceHovered ? 0.48 : 0.32}
                 strokeDasharray={isCurrent ? undefined : '0.55 0.35'}
                 strokeOpacity={0.95}
               />
@@ -147,9 +160,33 @@ export function RunMapGraph({
               stroke="#0f172a"
               strokeWidth={0.2}
               strokeLinejoin="round"
+              pointerEvents="none"
             >
               {caption}
             </text>
+            {interactive && isChoice && onChoiceNodeClick && (
+              <circle
+                cx={cx}
+                cy={cy}
+                r={r + 2.8}
+                fill="transparent"
+                stroke="none"
+                cursor="pointer"
+                aria-label={`Escolher: ${runMapNodeChoiceTitle(n)}`}
+                tabIndex={0}
+                onClick={() => onChoiceNodeClick(n.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onChoiceNodeClick(n.id);
+                  }
+                }}
+                onMouseEnter={() => setHoverChoiceId(n.id)}
+                onMouseLeave={() => setHoverChoiceId(null)}
+                onFocus={() => setHoverChoiceId(n.id)}
+                onBlur={() => setHoverChoiceId(null)}
+              />
+            )}
           </g>
         );
       })}

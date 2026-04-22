@@ -41,8 +41,7 @@ export function MapNodeChoiceModal({
 
         <div className="flex min-h-0 flex-1 flex-col border-b border-slate-600/60 bg-slate-950/40 px-3 py-3 md:px-4">
           <p className="mb-2 shrink-0 text-center text-[10px] uppercase tracking-wide text-slate-500">
-            Mapa — ouro: onde você está · tracejado âmbar: destinos possíveis · role para ver o mapa
-            completo
+            Mapa — ouro: onde você está · âmbar tracejado: toque para escolher ou role para ver tudo
           </p>
           <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain rounded-lg border border-slate-600/70 bg-slate-950/90 p-2 touch-pan-y">
             <div className="mx-auto w-full max-w-2xl aspect-[100/108] min-w-[min(100%,18rem)] md:max-w-none">
@@ -50,6 +49,7 @@ export function MapNodeChoiceModal({
                 runMap={runMap}
                 mapCurrentNodeId={mapCurrentNodeId}
                 choiceNodeIds={choiceIds}
+                onChoiceNodeClick={onPickNode}
                 className="block h-full w-full"
               />
             </div>
