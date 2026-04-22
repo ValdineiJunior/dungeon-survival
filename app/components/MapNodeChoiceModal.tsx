@@ -26,7 +26,7 @@ export function MapNodeChoiceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm">
-      <div className="flex max-h-[min(92dvh,52rem)] w-full max-w-xl flex-col rounded-2xl border-2 border-amber-600/80 bg-slate-800 shadow-2xl md:max-w-2xl">
+      <div className="flex h-[min(94dvh,56rem)] max-h-[min(94dvh,56rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl border-2 border-amber-600/80 bg-slate-800 shadow-2xl md:max-w-3xl">
         <div className="shrink-0 border-b border-slate-600/80 p-4 pb-3 md:p-5 md:pb-4">
           <h2 className="mb-1 text-center text-xl font-bold text-amber-400 md:text-2xl">
             Próximo destino
@@ -39,21 +39,24 @@ export function MapNodeChoiceModal({
           </p>
         </div>
 
-        <div className="min-h-0 shrink-0 border-b border-slate-600/60 bg-slate-950/40 px-3 py-3 md:px-4">
-          <p className="mb-2 text-center text-[10px] uppercase tracking-wide text-slate-500">
-            Mapa — ouro: onde você está · tracejado âmbar: destinos possíveis
+        <div className="flex min-h-0 flex-1 flex-col border-b border-slate-600/60 bg-slate-950/40 px-3 py-3 md:px-4">
+          <p className="mb-2 shrink-0 text-center text-[10px] uppercase tracking-wide text-slate-500">
+            Mapa — ouro: onde você está · tracejado âmbar: destinos possíveis · role para ver o mapa
+            completo
           </p>
-          <div className="mx-auto aspect-[10/11] w-full max-h-[min(36dvh,260px)] min-h-[160px] max-w-md rounded-lg border border-slate-600/70 bg-slate-950/90 p-1.5 md:max-h-[min(38dvh,280px)]">
-            <RunMapGraph
-              runMap={runMap}
-              mapCurrentNodeId={mapCurrentNodeId}
-              choiceNodeIds={choiceIds}
-              className="h-full w-full"
-            />
+          <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain rounded-lg border border-slate-600/70 bg-slate-950/90 p-2 touch-pan-y">
+            <div className="mx-auto w-full max-w-2xl aspect-[100/108] min-w-[min(100%,18rem)] md:max-w-none">
+              <RunMapGraph
+                runMap={runMap}
+                mapCurrentNodeId={mapCurrentNodeId}
+                choiceNodeIds={choiceIds}
+                className="block h-full w-full"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-3 md:p-5 md:pt-4">
+        <div className="min-h-0 max-h-[min(34dvh,20rem)] shrink-0 overflow-y-auto p-4 pt-3 md:p-5 md:pt-4">
           <ul className="flex flex-col gap-2">
             {choices.map((n) => (
               <li key={n.id}>
