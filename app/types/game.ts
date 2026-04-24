@@ -109,6 +109,7 @@ export interface Player {
   maxEnergy: number;
   block: number;
   position: HexPosition;
+  gold: number;
 }
 
 // === MAPA HEXAGONAL ===
@@ -178,6 +179,7 @@ export type GamePhase =
   | 'selectingBurn'     // Selecting a card to burn from hand
   | 'floorComplete'     // Floor cleared, ready for next floor
   | 'selectingReward'  // Selecting reward card
+  | 'selectingMerchant' // Merchant shop (priced offers)
   | 'selectingMapNode' // Pick next node on run map
   | 'restSite'         // Confirm rest (+HP, capped)
   | 'bossRoomIntro';   // Pre-boss modal before rolling initiative
@@ -221,6 +223,13 @@ export type RunCombatKind = 'none' | 'mapMonster' | 'boss';
 
 /** Rooms to clear on the map before boss intro (not counting the boss fight). */
 export const MAP_ROOMS_BEFORE_BOSS = 10;
+
+export type RewardRarity = 'normal' | 'rare';
+
+export interface MerchantOffer {
+  card: Card;
+  rarity: RewardRarity;
+}
 
 export interface InitiativeResult {
   id: string; // Enemy ID or 'player'
@@ -289,6 +298,9 @@ export interface GameState {
   /** Monster combats finished; next monster room uses `createFloorEnemies(mapMonsterCombatsCompleted + 1)`. */
   mapMonsterCombatsCompleted: number;
   runCombatKind: RunCombatKind;
+
+  /** Merchant node: up to 6 priced offers; entries removed when bought. */
+  merchantOffers: MerchantOffer[];
 }
 
 export interface DefaultHandCard {

@@ -1,4 +1,4 @@
-import { Card, CharacterClass } from '@/app/types/game';
+import { Card, CharacterClass, MerchantOffer, RewardRarity } from '@/app/types/game';
 
 // === REWARD CARDS PER CLASS ===
 
@@ -276,6 +276,56 @@ export function pickRewardCards(characterClass: CharacterClass): [Card, Card] {
   const secondPick = pickCard(firstPick.card.id);
 
   return [firstPick.card, secondPick.card];
+}
+
+function pickOneOffer(
+  weightedPool: { card: Card; type: RewardRarity }[],
+  excludedIds: Set<string>,
+): MerchantOffer | null {
+  const availablePicks = weightedPool.filter((item) => !excludedIds.has(item.card.id));
+  if (availablePicks.length === 0) return null;
+
+  const isNormal = Math.random() < 0.7;
+  let candidates = availablePicks.filter((item) => item.type === (isNormal ? 'normal' : 'rare'));
+  if (candidates.length === 0) {
+    candidates = availablePicks.filter((item) => item.type === (isNormal ? 'rare' : 'normal'));
+  }
+  if (candidates.length === 0) {
+    candidates = availablePicks;
+  }
+
+  const randomIndex = Math.floor(Math.random() * candidates.length);
+  const pick = candidates[randomIndex];
+  return { card: pick.card, rarity: pick.type };
+}
+
+/** Picks `count` distinct reward cards (by base card id) for the merchant, 70% normal / 30% rare. */
+export function pickMerchantOffers(
+  characterClass: CharacterClass,
+  count: number,
+): MerchantOffer[] {
+  const pool = getRewardPool(characterClass);
+  const weightedPool = [
+    ...pool.normal.map((card) => ({ card, type: 'normal' as const })),
+    ...pool.rare.map((card) => ({ card, type: 'rare' as const })),
+  ];
+
+  const excludedIds = new Set<string>();
+  const offers: MerchantOffer[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const offer = pickOneOffer(weightedPool, excludedIds);
+    if (offer) {
+      excludedIds.add(offer.card.id);
+      offers.push(offer);
+      continue;
+    }
+    // All distinct ids used: allow duplicates
+    const fallback = pickOneOffer(weightedPool, new Set());
+    if (fallback) offers.push(fallback);
+  }
+
+  return offers;
 }
 
 // This helper is no longer needed with the simplified weighted pick logic.

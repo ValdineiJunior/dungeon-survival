@@ -11,6 +11,7 @@ import { HexGrid } from "@/app/components/HexGrid";
 import { CharacterSelect } from "@/app/components/CharacterSelect";
 import { CardListModal } from "@/app/components/CardListModal";
 import { CardRewardModal } from "@/app/components/CardRewardModal";
+import { MerchantModal } from "@/app/components/MerchantModal";
 import { EnemyActionsModal } from "@/app/components/EnemyActionsModal";
 import { GameLogModal } from "@/app/components/GameLogModal";
 import { RunMapModal } from "@/app/components/RunMapModal";
@@ -34,6 +35,7 @@ import {
 } from "@/app/types/game";
 import { CHARACTER_CLASSES } from "@/app/lib/cards";
 import { getFloorConfig } from "@/app/lib/enemies";
+import { mapMonsterGoldLoot } from "@/app/lib/goldEconomy";
 
 export type GameViewProps = {
   /** When set (e.g. game embedded on `/`), abandoning returns to hub without a full navigation. */
@@ -79,6 +81,7 @@ export default function GameView(props: GameViewProps = {}) {
     mapRoomsCompleted,
     runCombatKind,
     rewardCards,
+    merchantOffers,
     defaultHand,
     selectDefaultCard,
     selectedCardIsDefault,
@@ -100,6 +103,8 @@ export default function GameView(props: GameViewProps = {}) {
     confirmRestSite,
     startBossFightFromIntro,
     continueAfterMapMonster,
+    buyMerchantCard,
+    leaveMerchant,
     resetGame,
     rollInitiative,
     confirmInitiativeModal,
@@ -179,6 +184,8 @@ export default function GameView(props: GameViewProps = {}) {
         return "Confirmar Habilidade";
       case "selectingReward":
         return "🎁 Selecione Recompensa";
+      case "selectingMerchant":
+        return "🛒 Mercador";
       case "selectingMapNode":
         return "Mapa — próximo nó";
       case "restSite":
@@ -210,6 +217,8 @@ export default function GameView(props: GameViewProps = {}) {
         return "bg-purple-600 text-white";
       case "selectingReward":
         return "bg-indigo-600 text-white";
+      case "selectingMerchant":
+        return "bg-amber-800 text-white";
       case "selectingMapNode":
         return "bg-teal-600 text-white";
       case "restSite":
@@ -409,6 +418,13 @@ export default function GameView(props: GameViewProps = {}) {
               </p>
               {runCombatKind === "mapMonster" ? (
                 <>
+                  <p className="mb-3 text-sm text-yellow-200 md:text-base">
+                    Você saqueou{" "}
+                    <span className="font-bold tabular-nums">
+                      {mapMonsterGoldLoot(floor)}
+                    </span>{" "}
+                    moedas de ouro ao limpar esta sala.
+                  </p>
                   <p className="text-amber-400 mb-6">
                     Escolha o próximo nó no mapa da corrida.
                   </p>
@@ -973,6 +989,15 @@ export default function GameView(props: GameViewProps = {}) {
         <CardRewardModal
           cards={[rewardCards[0], rewardCards[1]]}
           onSelectCard={selectRewardCard}
+        />
+      )}
+
+      {phase === "selectingMerchant" && merchantOffers.length > 0 && (
+        <MerchantModal
+          offers={merchantOffers}
+          playerGold={player.gold}
+          onBuy={(index) => buyMerchantCard(index)}
+          onLeave={() => leaveMerchant()}
         />
       )}
 

@@ -3,7 +3,8 @@ import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, Charact
 import { generateRunMap } from '@/app/lib/mapGeneration';
 import { getNextMapChoices } from '@/app/lib/mapPath';
 import { createClassDeck, shuffleArray, CHARACTER_CLASSES, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from './cards';
-import { pickRewardCards } from './cardRewards';
+import { pickRewardCards, pickMerchantOffers } from './cardRewards';
+import { mapMonsterGoldLoot, merchantPriceForRarity, INITIAL_PLAYER_GOLD } from './goldEconomy';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
 import {
   createHexMap,
@@ -57,6 +58,7 @@ function createInitialPlayer(characterClass: CharacterClass): Player {
     maxEnergy: classDef.baseEnergy,
     block: 0,
     position: { q: -2, r: 0 },
+    gold: INITIAL_PLAYER_GOLD,
   };
 }
 
@@ -69,6 +71,7 @@ const INITIAL_PLAYER: Player = {
   maxEnergy: 3,
   block: 0,
   position: { q: -2, r: 0 },
+  gold: INITIAL_PLAYER_GOLD,
 };
 
 const HAND_SIZE = 5;
@@ -180,6 +183,8 @@ interface GameActions {
   confirmRestSite: () => void;
   startBossFightFromIntro: () => void;
   continueAfterMapMonster: () => void;
+  buyMerchantCard: (offerIndex: number) => void;
+  leaveMerchant: () => void;
   resetGame: () => void;
 }
 
@@ -215,6 +220,12 @@ function combatClearPhase(state: GameState, enemiesRemaining: number): GamePhase
   return state.floor >= MAX_FLOOR ? 'victory' : 'floorComplete';
 }
 
+function playerWithMapMonsterLoot(player: Player, state: GameState, phase: GamePhase): Player {
+  if (phase !== 'floorComplete' || state.runCombatKind !== 'mapMonster') return player;
+  const loot = mapMonsterGoldLoot(state.floor);
+  return { ...player, gold: player.gold + loot };
+}
+
 export const useGameStore = create<GameStore>((set, get) => ({
   // Estado inicial - começa na seleção de personagem
   player: { ...INITIAL_PLAYER },
@@ -245,6 +256,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   movementPath: [],
   remainingMovement: 0,
   rewardCards: [],
+  merchantOffers: [],
 
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
@@ -296,6 +308,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       movementPath: [],
       remainingMovement: 0,
       rewardCards: [],
+      merchantOffers: [],
       defaultHand: (characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
         id: `default_${c.id}`,
         card: { ...c },
@@ -350,17 +363,32 @@ export const useGameStore = create<GameStore>((set, get) => ({
         movementPath: [],
         remainingMovement: 0,
         rewardCards: [],
+        merchantOffers: [],
         gameLog: newLog,
       });
       return;
     }
 
-    if (node.location === 'treasure' || node.location === 'merchant') {
+    if (node.location === 'merchant') {
+      const merchantOffers = pickMerchantOffers(state.player.characterClass, 6);
+      newLog.push(createLogEntry(state.turn, state.floor, 'rewardStart', '🛒 Mercador'));
+      set({
+        mapCurrentNodeId: nextNodeId,
+        merchantOffers,
+        rewardCards: [],
+        phase: 'selectingMerchant',
+        gameLog: newLog,
+      });
+      return;
+    }
+
+    if (node.location === 'treasure') {
       const [card1, card2] = pickRewardCards(state.player.characterClass);
       newLog.push(createLogEntry(state.turn, state.floor, 'rewardStart', '🎁 Escolha uma carta'));
       set({
         mapCurrentNodeId: nextNodeId,
         rewardCards: [card1, card2],
+        merchantOffers: [],
         phase: 'selectingReward',
         gameLog: newLog,
       });
@@ -452,6 +480,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       movementPath: [],
       remainingMovement: 0,
       rewardCards: [],
+      merchantOffers: [],
       gameLog: newLog,
     });
   },
@@ -518,6 +547,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       movementPath: [],
       remainingMovement: 0,
       rewardCards: [],
+      merchantOffers: [],
       turnOrder: [],
       activeTurnIndex: 0,
       defaultHand: (player.characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : player.characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
@@ -1379,9 +1409,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       phase = combatClearPhase(state, newEnemies.length);
     }
 
+    const playerOut = playerWithMapMonsterLoot(newPlayer, state, phase);
+
     set({
       hand: newHand,
-      player: newPlayer,
+      player: playerOut,
       enemies: newEnemies,
       drawPile: newDrawPile,
       discardPile: newDiscardPile,
@@ -1501,8 +1533,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       phase = combatClearPhase(state, enemies.length);
     }
 
+    const playerOutDefault = playerWithMapMonsterLoot(player, state, phase);
+
     set({
-      player,
+      player: playerOutDefault,
       enemies,
       gameLog: newLog,
       defaultHand: newDefaultHand,
@@ -1623,8 +1657,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       phase = combatClearPhase(state, enemies.length);
     }
 
+    const playerOutSelected = playerWithMapMonsterLoot(player, state, phase);
+
     set({
-      player,
+      player: playerOutSelected,
       enemies,
       gameLog: newLog,
       defaultHand: newDefaultHand,
@@ -1811,10 +1847,119 @@ export const useGameStore = create<GameStore>((set, get) => ({
       drawPile: cardState.drawPile,
       discardPile: cardState.discardPile,
       rewardCards: [],
+      merchantOffers: [],
       gameLog: newLog,
       mapRoomsCompleted: state.runMap ? mapRoomsCompleted : state.mapRoomsCompleted,
       phase: nextPhase,
       defaultHand: defaultHandReset,
+    });
+  },
+
+  buyMerchantCard: (offerIndex: number) => {
+    const state = get();
+    if (state.phase !== 'selectingMerchant') return;
+    const offer = state.merchantOffers[offerIndex];
+    if (!offer) return;
+
+    const price = merchantPriceForRarity(offer.rarity);
+    if (state.player.gold < price) return;
+
+    const newLog = [...state.gameLog];
+    const player = { ...state.player, gold: state.player.gold - price };
+    const newCard = {
+      ...offer.card,
+      id: `${offer.card.id}_${Date.now()}`,
+    };
+    const deck = [...state.deck, newCard];
+    const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, newCard];
+    const shuffledDrawPile = shuffleArray(allCards);
+
+    const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
+    const cardState = drawCards({
+      ...state,
+      hand: [],
+      drawPile: shuffledDrawPile,
+      discardPile: [],
+    } as GameState, HAND_SIZE + bonusDraw);
+
+    const merchantOffers = state.merchantOffers.filter((_, i) => i !== offerIndex);
+
+    newLog.push(createLogEntry(state.turn, state.floor, 'cardReward',
+      `🛒 ${newCard.name} comprado por ${price} ouro`));
+
+    if (merchantOffers.length === 0 && state.runMap) {
+      const mapRoomsCompleted = state.mapRoomsCompleted + 1;
+      const nextPhase: GamePhase =
+        mapRoomsCompleted >= MAP_ROOMS_BEFORE_BOSS
+          ? 'bossRoomIntro'
+          : 'selectingMapNode';
+      const defaultHandReset =
+        (state.player.characterClass === 'warrior'
+          ? WARRIOR_DEFAULT_CARDS
+          : state.player.characterClass === 'archer'
+            ? ARCHER_DEFAULT_CARDS
+            : MAGE_DEFAULT_CARDS
+        ).map((c) => ({
+          id: `default_${c.id}`,
+          card: { ...c },
+          usedThisTurn: false,
+        }));
+
+      set({
+        player,
+        deck,
+        hand: cardState.hand,
+        drawPile: cardState.drawPile,
+        discardPile: cardState.discardPile,
+        merchantOffers: [],
+        mapRoomsCompleted,
+        phase: nextPhase,
+        defaultHand: defaultHandReset,
+        gameLog: newLog,
+      });
+      return;
+    }
+
+    set({
+      player,
+      deck,
+      hand: cardState.hand,
+      drawPile: cardState.drawPile,
+      discardPile: cardState.discardPile,
+      merchantOffers,
+      gameLog: newLog,
+    });
+  },
+
+  leaveMerchant: () => {
+    const state = get();
+    if (state.phase !== 'selectingMerchant' || !state.runMap) return;
+
+    const newLog = [...state.gameLog];
+    const mapRoomsCompleted = state.mapRoomsCompleted + 1;
+    const nextPhase: GamePhase =
+      mapRoomsCompleted >= MAP_ROOMS_BEFORE_BOSS
+        ? 'bossRoomIntro'
+        : 'selectingMapNode';
+
+    const defaultHandReset =
+      (state.player.characterClass === 'warrior'
+        ? WARRIOR_DEFAULT_CARDS
+        : state.player.characterClass === 'archer'
+          ? ARCHER_DEFAULT_CARDS
+          : MAGE_DEFAULT_CARDS
+      ).map((c) => ({
+        id: `default_${c.id}`,
+        card: { ...c },
+        usedThisTurn: false,
+      }));
+
+    set({
+      merchantOffers: [],
+      mapRoomsCompleted,
+      phase: nextPhase,
+      defaultHand: defaultHandReset,
+      gameLog: newLog,
     });
   },
 
@@ -1848,6 +1993,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       activeTurnIndex: 0,
       burnedPile: [],
       cardsToBurn: 0,
+      merchantOffers: [],
     });
   },
 }));
