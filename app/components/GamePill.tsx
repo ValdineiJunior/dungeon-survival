@@ -68,6 +68,10 @@ function energyPillClass(energy: number): string {
     : inactivePillClass;
 }
 
+/** Gold / currency — distinct from energy (amber). */
+const goldLikePill =
+  "border-yellow-400 bg-yellow-600 text-slate-900 shadow-md shadow-yellow-500/35";
+
 type GamePillCommon = {
   className?: string;
   /** Optional override; sensible defaults are set per variant when omitted. */
@@ -100,6 +104,11 @@ export type GamePillProps = GamePillCommon &
         children?: ReactNode;
       }
     | {
+        variant: "gold";
+        gold: number;
+        children?: ReactNode;
+      }
+    | {
         variant: "range";
         attackRange: number;
         children?: ReactNode;
@@ -126,6 +135,8 @@ function defaultTitle(props: GamePillProps): string | undefined {
       return `Bloqueio: ${props.block}`;
     case "energy":
       return `Energia: ${props.energy} de ${props.maxEnergy}`;
+    case "gold":
+      return `Ouro: ${props.gold}`;
     case "range":
       return props.attackRange > 1
         ? `Alcance: ${props.attackRange} hexes (ataque à distância)`
@@ -163,6 +174,8 @@ function resolveContent(props: GamePillProps): ReactNode {
       return props.children ?? String(props.block);
     case "energy":
       return props.children ?? `${props.energy}/${props.maxEnergy}`;
+    case "gold":
+      return props.children ?? String(props.gold);
     case "range":
       return props.children ?? String(props.attackRange);
     case "initiative":
@@ -184,6 +197,8 @@ function resolveColorClass(props: GamePillProps): string {
       return defendLikePill;
     case "energy":
       return energyPillClass(props.energy);
+    case "gold":
+      return goldLikePill;
     case "range":
       return rangeLikePill;
     case "initiative":

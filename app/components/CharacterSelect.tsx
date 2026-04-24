@@ -12,6 +12,7 @@ import {
 import { getRewardPool } from "@/app/lib/cardRewards";
 import { CardListModal } from "./CardListModal";
 import { DiceIcon } from "./DiceIcon";
+import { INITIAL_PLAYER_GOLD } from "../lib/goldEconomy";
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
@@ -187,6 +188,12 @@ export function CharacterSelect({
                       <DiceIcon key={i} faces={faces} size="sm" />
                     ))}
                   </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">💰 Ouro</span>
+                  <span className="text-white font-bold">
+                    {INITIAL_PLAYER_GOLD}
+                  </span>
                 </div>
               </div>
 

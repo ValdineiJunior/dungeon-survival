@@ -79,14 +79,6 @@ export function PlayerStatus({
           />
         </div>
 
-        {/* Ouro */}
-        <div className="flex items-center justify-between gap-2 text-sm">
-          <span className="shrink-0 text-yellow-400">🪙 Ouro</span>
-          <span className="font-semibold tabular-nums text-yellow-200">
-            {player.gold}
-          </span>
-        </div>
-
         {/* Iniciativa */}
         <div className="flex items-center justify-between gap-2 text-sm">
           <span className="shrink-0 text-cyan-400">⌛ Iniciativa</span>
@@ -101,6 +93,12 @@ export function PlayerStatus({
               <DiceIcon key={i} faces={faces} size="sm" />
             ))}
           </div>
+        </div>
+
+        {/* Ouro */}
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="shrink-0 text-yellow-400">💰 Ouro</span>
+          <GamePill variant="gold" gold={player.gold} shrink />
         </div>
 
         {/* Habilidades inatas */}
