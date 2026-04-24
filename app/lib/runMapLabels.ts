@@ -1,13 +1,50 @@
-import type { RunMapNode } from '@/app/types/game';
+import type { MapRoomLocation, RunMapNode } from '@/app/types/game';
 
-/** First line in node lists (matches in-graph caption semantics). */
-export function runMapNodeChoiceTitle(n: RunMapNode): string {
-  if (n.location === 'boss') return `Andar ${n.floor}`;
-  return `Andar ${n.floor} · col ${n.col}`;
+export function runMapLocationLabel(loc: MapRoomLocation): string {
+  switch (loc) {
+    case 'monster':
+      return 'Monstro';
+    case 'treasure':
+      return 'Tesouro';
+    case 'merchant':
+      return 'Mercador';
+    case 'rest':
+      return 'Descanso';
+    case 'boss':
+      return 'Chefe';
+    default:
+      return loc;
+  }
 }
 
-/** Short text drawn inside map circles (e.g. 1·6 ↔ Andar 1, col 6). */
+/** Single emoji shown inside each map node (matches location type). */
+export function runMapLocationEmoji(loc: MapRoomLocation): string {
+  switch (loc) {
+    case 'monster':
+      return '⚔️';
+    case 'treasure':
+      return '🎁';
+    case 'merchant':
+      return '💰';
+    case 'rest':
+      return '💤';
+    case 'boss':
+      return '👑';
+    default:
+      return '❔';
+  }
+}
+
+/** Accessible title for list / screen readers (emoji + text + coordinates). */
+export function runMapNodeChoiceTitle(n: RunMapNode): string {
+  const emoji = runMapLocationEmoji(n.location);
+  if (n.location === 'boss') {
+    return `${emoji} ${runMapLocationLabel('boss')} (andar ${n.floor})`;
+  }
+  return `${emoji} ${runMapLocationLabel(n.location)} — andar ${n.floor}, col ${n.col}`;
+}
+
+/** Glyph drawn inside map circles. */
 export function runMapNodeGraphCaption(n: RunMapNode): string {
-  if (n.location === 'boss') return 'Chefe';
-  return `${n.floor}·${n.col}`;
+  return runMapLocationEmoji(n.location);
 }

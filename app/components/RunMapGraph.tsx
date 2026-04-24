@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { MapRoomLocation, RunGeneratedMap, RunMapNode } from '@/app/types/game';
+import type { RunGeneratedMap, RunMapNode } from '@/app/types/game';
 import { runMapNodeChoiceTitle, runMapNodeGraphCaption } from '@/app/lib/runMapLabels';
 
 export function runMapLocationColor(loc: RunMapNode['location']): string {
@@ -18,23 +18,6 @@ export function runMapLocationColor(loc: RunMapNode['location']): string {
       return '#c084fc';
     default:
       return '#94a3b8';
-  }
-}
-
-export function runMapLocationLabel(loc: MapRoomLocation): string {
-  switch (loc) {
-    case 'monster':
-      return 'Monstro';
-    case 'treasure':
-      return 'Tesouro';
-    case 'merchant':
-      return 'Mercador';
-    case 'rest':
-      return 'Descanso';
-    case 'boss':
-      return 'Chefe';
-    default:
-      return loc;
   }
 }
 

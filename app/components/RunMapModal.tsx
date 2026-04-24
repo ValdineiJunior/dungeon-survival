@@ -2,11 +2,8 @@
 
 import { MapRoomLocation, RunGeneratedMap } from "@/app/types/game";
 import { ENEMY_DEFINITIONS } from "@/app/lib/enemies";
-import {
-  RunMapGraph,
-  runMapLocationColor,
-  runMapLocationLabel,
-} from "@/app/components/RunMapGraph";
+import { RunMapGraph, runMapLocationColor } from "@/app/components/RunMapGraph";
+import { runMapLocationLabel } from "@/app/lib/runMapLabels";
 
 interface RunMapModalProps {
   runMap: RunGeneratedMap;
