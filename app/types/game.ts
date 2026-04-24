@@ -5,7 +5,6 @@ export type CharacterClass = 'warrior' | 'archer' | 'mage';
 
 // Tipos de habilidades inatas
 export type InnateAbilityType =
-  | 'passiveBlock'    // Ganha bloqueio no início de cada turno
   | 'roomHealing'     // Cura HP ao completar cada sala
   | 'bonusDraw'       // Compra cartas extras no início do turno
   | 'energyRegen'     // Ganha energia extra no primeiro turno de cada sala

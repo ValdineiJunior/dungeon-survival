@@ -320,20 +320,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (node.location === 'monster') {
       const encounterIndex = state.mapMonsterCombatsCompleted + 1;
       const enemies = createFloorEnemies(encounterIndex);
-      let player = { ...state.player };
+      const player = { ...state.player };
       player.position = { q: -2, r: 0 };
-      const passiveBlock = getInnateAbilityValue(state.player.characterClass, 'passiveBlock');
       const energyRegen = getInnateAbilityValue(state.player.characterClass, 'energyRegen');
-      player.block = passiveBlock;
+      player.block = 0;
       player.energy = player.maxEnergy + energyRegen;
 
       newLog.push(createLogEntry(1, encounterIndex, 'floorStart',
         `🏰 Sala de combate (${encounterIndex}/10) — ${classDef.emoji} ${classDef.name}`));
       newLog.push(createLogEntry(1, encounterIndex, 'turnStart', `=== Turno 1 — Rolagem de Iniciativa ===`));
-      if (passiveBlock > 0) {
-        newLog.push(createLogEntry(1, encounterIndex, 'innateAbility',
-          `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
-      }
       if (energyRegen > 0) {
         newLog.push(createLogEntry(1, encounterIndex, 'innateAbility',
           `✨ Canalização Arcana: +${energyRegen} energia extra`));
@@ -427,21 +422,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const enemies = [
       createEnemy(state.runMap.bossDefinitionId, 'boss_0', { q: 0, r: -2 }),
     ];
-    let player = { ...state.player };
+    const player = { ...state.player };
     player.position = { q: -2, r: 0 };
-    const passiveBlock = getInnateAbilityValue(state.player.characterClass, 'passiveBlock');
     const energyRegen = getInnateAbilityValue(state.player.characterClass, 'energyRegen');
-    player.block = passiveBlock;
+    player.block = 0;
     player.energy = player.maxEnergy + energyRegen;
 
     const newLog = [...state.gameLog];
     newLog.push(createLogEntry(1, MAX_FLOOR, 'floorStart',
       `🐉 Confronto final — ${classDef.emoji} ${classDef.name}`));
     newLog.push(createLogEntry(1, MAX_FLOOR, 'turnStart', `=== Turno 1 — Rolagem de Iniciativa ===`));
-    if (passiveBlock > 0) {
-      newLog.push(createLogEntry(1, MAX_FLOOR, 'innateAbility',
-        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
-    }
     if (energyRegen > 0) {
       newLog.push(createLogEntry(1, MAX_FLOOR, 'innateAbility',
         `✨ Canalização Arcana: +${energyRegen} energia extra`));
@@ -482,10 +472,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     player.position = { q: -2, r: 0 };
-    const passiveBlock = getInnateAbilityValue(player.characterClass, 'passiveBlock');
     const energyRegen = getInnateAbilityValue(player.characterClass, 'energyRegen');
     const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
-    player.block = passiveBlock;
+    player.block = 0;
     player.energy = player.maxEnergy + energyRegen;
 
     const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, ...state.burnedPile];
@@ -501,10 +490,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const mapRoomsCompleted = state.mapRoomsCompleted + 1;
     const nextFloorDisplay = Math.min(MAX_FLOOR, mapMonsterCombatsCompleted + 1);
 
-    if (passiveBlock > 0) {
-      newLog.push(createLogEntry(1, nextFloorDisplay, 'innateAbility',
-        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
-    }
     if (energyRegen > 0) {
       newLog.push(createLogEntry(1, nextFloorDisplay, 'innateAbility',
         `✨ Canalização Arcana: +${energyRegen} energia extra`));
@@ -668,12 +653,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (current.entityType === 'player') {
       // Is this player's entity still valid? (always yes)
       // Apply player turn-start effects
-      const passiveBlock = getInnateAbilityValue(state.player.characterClass, 'passiveBlock');
       const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
 
       const updatedPlayer = {
         ...state.player,
-        block: passiveBlock,
+        block: 0,
         energy: state.player.maxEnergy, // Refill to limit each round; cards can grant extra for that round only
       };
 
@@ -689,10 +673,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
         : { hand: state.hand, drawPile: state.drawPile, discardPile: state.discardPile };
 
       const newLog = [...state.gameLog];
-      if (passiveBlock > 0) {
-        newLog.push(createLogEntry(state.turn, state.floor, 'innateAbility',
-          `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
-      }
 
       set({
         player: updatedPlayer,
@@ -1709,11 +1689,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     player.position = { q: -2, r: 0 };
 
     // Apply innate abilities for turn 1 of new floor
-    const passiveBlock = getInnateAbilityValue(player.characterClass, 'passiveBlock');
     const energyRegen = getInnateAbilityValue(player.characterClass, 'energyRegen');
     const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
 
-    player.block = passiveBlock;
+    player.block = 0;
     player.energy = player.maxEnergy + energyRegen; // Extra energy on first turn
 
     // Log floor advancement
@@ -1721,10 +1700,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       `🏰 Andar ${nextFloor} - ${classDef.emoji} ${classDef.name} avança`));
     newLog.push(createLogEntry(1, nextFloor, 'turnStart', `=== Turno 1 ===`));
 
-    if (passiveBlock > 0) {
-      newLog.push(createLogEntry(1, nextFloor, 'innateAbility',
-        `🛡️ Postura Defensiva: +${passiveBlock} bloqueio`));
-    }
     if (energyRegen > 0) {
       newLog.push(createLogEntry(1, nextFloor, 'innateAbility',
         `✨ Canalização Arcana: +${energyRegen} energia extra`));

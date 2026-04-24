@@ -13,11 +13,11 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     initiativeDice: [6, 8, 10],
     innateAbilities: [
       {
-        type: 'passiveBlock',
-        value: 1,
-        name: 'Postura Defensiva',
-        description: 'Ganha 1 de bloqueio no início de cada turno',
-        emoji: '🛡️',
+        type: 'roomHealing',
+        value: 2,
+        name: 'Tenacidade',
+        description: 'Recupera 2 de vida ao concluir cada sala de combate',
+        emoji: '❤️‍🩹',
       },
     ],
   },
