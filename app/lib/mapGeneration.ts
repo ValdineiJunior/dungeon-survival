@@ -22,6 +22,9 @@ const LOCATION_WEIGHTS: { type: MapRoomLocation; weight: number }[] = [
 
 const BOSS_FLOOR = MAX_FLOOR + 1;
 
+/** Run-map row where every surviving node is forced to `treasure`. */
+const FIXED_TREASURE_FLOOR = 6;
+
 function columnsForFloor(floor: number): number[] {
   if (floor < 1 || floor > MAX_FLOOR) return [];
   return floor % 2 === 0 ? [...MAP_COLS_EVEN_ROW] : [...MAP_COLS_FULL];
@@ -357,13 +360,16 @@ function validateLocations(nodeById: Map<string, RunMapNode>): boolean {
 function assignLocations(nodeById: Map<string, RunMapNode>): void {
   for (const n of nodeById.values()) {
     if (n.floor === 1) n.location = 'monster';
-    else if (n.floor === 4) n.location = 'treasure';
+    else if (n.floor === FIXED_TREASURE_FLOOR) n.location = 'treasure';
     else if (n.floor === MAX_FLOOR) n.location = 'rest';
     else n.location = 'monster';
   }
 
   const assignable = [...nodeById.values()].filter(
-    (n) => n.floor !== 1 && n.floor !== 4 && n.floor !== MAX_FLOOR,
+    (n) =>
+      n.floor !== 1 &&
+      n.floor !== FIXED_TREASURE_FLOOR &&
+      n.floor !== MAX_FLOOR,
   );
   shuffleInPlace(assignable);
 
