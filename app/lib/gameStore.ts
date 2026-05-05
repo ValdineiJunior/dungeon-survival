@@ -1,8 +1,9 @@
 import { create } from 'zustand';
-import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType, DefaultHandCard, InitiativeResult, MAP_ROOMS_BEFORE_BOSS, RunCombatKind } from '@/app/types/game';
+import { Card, Enemy, GamePhase, GameState, Player, HexPosition, HexMap, CharacterClass, EnemyAction, MAX_FLOOR, InnateAbility, GameLogEntry, LogEntryType, DefaultHandCard, InitiativeResult, MAP_ROOMS_BEFORE_BOSS, RunCombatKind, RunStartRewardPick, RunDefaultCardEnhancementDeltas } from '@/app/types/game';
 import { generateRunMap } from '@/app/lib/mapGeneration';
 import { getNextMapChoices } from '@/app/lib/mapPath';
-import { createClassDeck, shuffleArray, CHARACTER_CLASSES, WARRIOR_DEFAULT_CARDS, ARCHER_DEFAULT_CARDS, MAGE_DEFAULT_CARDS } from './cards';
+import { createClassDeck, shuffleArray, CHARACTER_CLASSES } from './cards';
+import { buildDefaultHandFromClass } from '@/app/lib/defaultHandRun';
 import { pickRewardCards, pickMerchantOffers } from './cardRewards';
 import { mapMonsterGoldLoot, merchantPriceForRarity, INITIAL_PLAYER_GOLD } from './goldEconomy';
 import { createEnemy, drawNextActionCard, getEnemyDefinitionByName, ENEMY_DEFINITIONS, createFloorEnemies, getFloorConfig } from './enemies';
@@ -183,7 +184,7 @@ interface GameActions {
   confirmRestSite: () => void;
   startBossFightFromIntro: () => void;
   continueAfterMapMonster: () => void;
-  confirmRunStartGoldBonus: (bonusGold: 25 | 50 | 75) => void;
+  confirmRunStartReward: (pick: RunStartRewardPick) => void;
   buyMerchantCard: (offerIndex: number) => void;
   leaveMerchant: () => void;
   resetGame: () => void;
@@ -258,6 +259,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   remainingMovement: 0,
   rewardCards: [],
   merchantOffers: [],
+  runDefaultCardEnhancementDeltas: {},
 
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
@@ -310,27 +312,67 @@ export const useGameStore = create<GameStore>((set, get) => ({
       remainingMovement: 0,
       rewardCards: [],
       merchantOffers: [],
-      defaultHand: (characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
-        id: `default_${c.id}`,
-        card: { ...c },
-        usedThisTurn: false,
-      })),
+      defaultHand: buildDefaultHandFromClass(characterClass, {}),
+      runDefaultCardEnhancementDeltas: {},
     });
   },
 
-  confirmRunStartGoldBonus: (bonusGold: 25 | 50 | 75) => {
+  confirmRunStartReward: (pick: RunStartRewardPick) => {
     const state = get();
     if (state.phase !== 'selectingRunStartBonus') return;
 
-    const player = { ...state.player, gold: state.player.gold + bonusGold };
     const newLog = [...state.gameLog];
+
+    if (pick.kind === 'gold') {
+      const player = { ...state.player, gold: state.player.gold + pick.amount };
+      newLog.push(createLogEntry(state.turn, state.floor, 'rewardStart',
+        `💰 Recompensa de partida: +${pick.amount} ouro.`));
+      newLog.push(createLogEntry(state.turn, state.floor, 'floorStart',
+        '🗺️ Escolha o próximo nó no mapa da corrida.'));
+      set({
+        player,
+        phase: 'selectingMapNode',
+        gameLog: newLog,
+      });
+      return;
+    }
+
+    const { role, field, delta } = pick;
+    if (delta === 0 || Number.isNaN(delta)) return;
+
+    const prevRole = state.runDefaultCardEnhancementDeltas[role] ?? {};
+    const prevField = prevRole[field] ?? 0;
+    const nextDeltas: RunDefaultCardEnhancementDeltas = {
+      ...state.runDefaultCardEnhancementDeltas,
+      [role]: { ...prevRole, [field]: prevField + delta },
+    };
+
+    const newDefaultHand = buildDefaultHandFromClass(
+      state.player.characterClass,
+      nextDeltas,
+    );
+
+    const rolePt =
+      role === 'attack' ? 'Ataque' : role === 'defense' ? 'Defesa' : 'Movimento';
+    const fieldPt =
+      field === 'cost'
+        ? 'custo'
+        : field === 'damage'
+          ? 'dano'
+          : field === 'range'
+            ? 'alcance'
+            : field === 'block'
+              ? 'bloqueio'
+              : 'movimento';
+    const deltaStr = delta > 0 ? `+${delta}` : `${delta}`;
     newLog.push(createLogEntry(state.turn, state.floor, 'rewardStart',
-      `💰 Recompensa de partida: +${bonusGold} ouro.`));
+      `✨ Recompensa de partida — carta padrão (${rolePt}): ${fieldPt} ${deltaStr} nesta corrida.`));
     newLog.push(createLogEntry(state.turn, state.floor, 'floorStart',
       '🗺️ Escolha o próximo nó no mapa da corrida.'));
 
     set({
-      player,
+      runDefaultCardEnhancementDeltas: nextDeltas,
+      defaultHand: newDefaultHand,
       phase: 'selectingMapNode',
       gameLog: newLog,
     });
@@ -441,16 +483,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const nextPhase: GamePhase =
       nextRooms >= MAP_ROOMS_BEFORE_BOSS ? 'bossRoomIntro' : 'selectingMapNode';
 
-    const defaultHandReset = (state.player.characterClass === 'warrior'
-      ? WARRIOR_DEFAULT_CARDS
-      : state.player.characterClass === 'archer'
-        ? ARCHER_DEFAULT_CARDS
-        : MAGE_DEFAULT_CARDS
-    ).map((c) => ({
-      id: `default_${c.id}`,
-      card: { ...c },
-      usedThisTurn: false,
-    }));
+    const defaultHandReset = buildDefaultHandFromClass(
+      state.player.characterClass,
+      state.runDefaultCardEnhancementDeltas,
+    );
 
     set({
       player,
@@ -568,11 +604,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       merchantOffers: [],
       turnOrder: [],
       activeTurnIndex: 0,
-      defaultHand: (player.characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : player.characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
-        id: `default_${c.id}`,
-        card: { ...c },
-        usedThisTurn: false,
-      })),
+      defaultHand: buildDefaultHandFromClass(
+        player.characterClass,
+        state.runDefaultCardEnhancementDeltas,
+      ),
     });
   },
 
@@ -1800,12 +1835,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
-      // reset or initialize default hand for the new floor
-      defaultHand: (player.characterClass === 'warrior' ? WARRIOR_DEFAULT_CARDS : player.characterClass === 'archer' ? ARCHER_DEFAULT_CARDS : MAGE_DEFAULT_CARDS).map(c => ({
-        id: `default_${c.id}`,
-        card: { ...c },
-        usedThisTurn: false,
-      })),
+      defaultHand: buildDefaultHandFromClass(
+        player.characterClass,
+        state.runDefaultCardEnhancementDeltas,
+      ),
     });
   },
 
@@ -1845,19 +1878,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
           ? 'selectingMapNode'
           : 'rollingInitiative';
 
-    const defaultHandReset =
-      state.runMap
-        ? (state.player.characterClass === 'warrior'
-            ? WARRIOR_DEFAULT_CARDS
-            : state.player.characterClass === 'archer'
-              ? ARCHER_DEFAULT_CARDS
-              : MAGE_DEFAULT_CARDS
-          ).map((c) => ({
-            id: `default_${c.id}`,
-            card: { ...c },
-            usedThisTurn: false,
-          }))
-        : state.defaultHand;
+    const defaultHandReset = state.runMap
+      ? buildDefaultHandFromClass(
+          state.player.characterClass,
+          state.runDefaultCardEnhancementDeltas,
+        )
+      : state.defaultHand;
 
     set({
       deck,
@@ -1911,17 +1937,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
         mapRoomsCompleted >= MAP_ROOMS_BEFORE_BOSS
           ? 'bossRoomIntro'
           : 'selectingMapNode';
-      const defaultHandReset =
-        (state.player.characterClass === 'warrior'
-          ? WARRIOR_DEFAULT_CARDS
-          : state.player.characterClass === 'archer'
-            ? ARCHER_DEFAULT_CARDS
-            : MAGE_DEFAULT_CARDS
-        ).map((c) => ({
-          id: `default_${c.id}`,
-          card: { ...c },
-          usedThisTurn: false,
-        }));
+      const defaultHandReset = buildDefaultHandFromClass(
+        state.player.characterClass,
+        state.runDefaultCardEnhancementDeltas,
+      );
 
       set({
         player,
@@ -1960,17 +1979,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
         ? 'bossRoomIntro'
         : 'selectingMapNode';
 
-    const defaultHandReset =
-      (state.player.characterClass === 'warrior'
-        ? WARRIOR_DEFAULT_CARDS
-        : state.player.characterClass === 'archer'
-          ? ARCHER_DEFAULT_CARDS
-          : MAGE_DEFAULT_CARDS
-      ).map((c) => ({
-        id: `default_${c.id}`,
-        card: { ...c },
-        usedThisTurn: false,
-      }));
+    const defaultHandReset = buildDefaultHandFromClass(
+      state.player.characterClass,
+      state.runDefaultCardEnhancementDeltas,
+    );
 
     set({
       merchantOffers: [],
@@ -2012,6 +2024,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       burnedPile: [],
       cardsToBurn: 0,
       merchantOffers: [],
+      runDefaultCardEnhancementDeltas: {},
     });
   },
 }));

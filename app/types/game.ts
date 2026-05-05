@@ -63,6 +63,32 @@ export interface Card {
   effects?: CardEffect[];
 }
 
+/** Numeric fields that can be adjusted on a card (run-wide or future effects); values clamp at 0. */
+export type EnhanceableNumericCardField =
+  | 'cost'
+  | 'damage'
+  | 'range'
+  | 'block'
+  | 'movement';
+
+/** Default starter slot for per-run enhancement stacking (maps to *_default_attack / _defend / _move). */
+export type RunDefaultCardRole = 'attack' | 'defense' | 'movement';
+
+/** Accumulated delta per field per default role for the current run only. */
+export type RunDefaultCardEnhancementDeltas = Partial<
+  Record<RunDefaultCardRole, Partial<Record<EnhanceableNumericCardField, number>>>
+>;
+
+/** First reward after starting a run: gold or a default-card stat boost. */
+export type RunStartRewardPick =
+  | { kind: 'gold'; amount: 25 | 50 | 75 }
+  | {
+      kind: 'defaultEnhance';
+      role: RunDefaultCardRole;
+      field: EnhanceableNumericCardField;
+      delta: number;
+    };
+
 export interface CardEffect {
   type: 'draw' | 'energy' | 'heal' | 'vulnerable' | 'weak';
   value: number;
@@ -302,6 +328,9 @@ export interface GameState {
 
   /** Merchant node: up to 6 priced offers; entries removed when bought. */
   merchantOffers: MerchantOffer[];
+
+  /** Deltas applied to class default-hand templates for this run (cleared on resetGame). */
+  runDefaultCardEnhancementDeltas: RunDefaultCardEnhancementDeltas;
 }
 
 export interface DefaultHandCard {

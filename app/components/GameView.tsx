@@ -105,7 +105,7 @@ export default function GameView(props: GameViewProps = {}) {
     confirmRestSite,
     startBossFightFromIntro,
     continueAfterMapMonster,
-    confirmRunStartGoldBonus,
+    confirmRunStartReward,
     buyMerchantCard,
     leaveMerchant,
     resetGame,
@@ -1089,7 +1089,7 @@ export default function GameView(props: GameViewProps = {}) {
       )}
 
       {phase === "selectingRunStartBonus" && (
-        <RunStartBonusModal onPick={(amount) => confirmRunStartGoldBonus(amount)} />
+        <RunStartBonusModal onPick={(pick) => confirmRunStartReward(pick)} />
       )}
 
       {phase === "selectingMapNode" && runMap && (
