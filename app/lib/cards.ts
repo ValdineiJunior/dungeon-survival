@@ -354,7 +354,7 @@ export const WARRIOR_DEFAULT_CARDS: Card[] = [
     cost: 1,
     type: 'movement',
     movement: 2,
-    description: '[Carta Padrão] Mova até 1 espaço.',
+    description: '[Carta Padrão] Mova até 2 espaço.',
   },
 ];
 
