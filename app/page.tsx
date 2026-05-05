@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useMemo, useCallback } from "react";
 import GameView from "@/app/components/GameView";
 import { CharacterSelect } from "@/app/components/CharacterSelect";
@@ -7,6 +8,9 @@ import { getVisibleStoryParts } from "@/app/lib/story";
 import { StoryView } from "@/app/hub/components/StoryView";
 import { HowToPlayContent } from "@/app/components/HowToPlayContent";
 import { useGameStore } from "@/app/lib/gameStore";
+import { CHARACTER_CLASSES, getClassCards } from "@/app/lib/cards";
+import { INITIAL_PLAYER_GOLD } from "@/app/lib/goldEconomy";
+import { DiceIcon } from "@/app/components/DiceIcon";
 import type { CharacterClass } from "@/app/types/game";
 
 type HubView = "main" | "historia" | "comoJogar";
@@ -17,9 +21,13 @@ const BACKGROUNDS: Record<HubView, string> = {
   comoJogar: "url(/images/hub-main.jpg)",
 };
 
+const DEFAULT_HERO: CharacterClass = "warrior";
+
 export default function HomePage() {
   const [inGame, setInGame] = useState(false);
   const [heroSelectOpen, setHeroSelectOpen] = useState(false);
+  const [selectedHero, setSelectedHero] =
+    useState<CharacterClass>(DEFAULT_HERO);
   const [view, setView] = useState<HubView>("main");
   const storyParts = useMemo(() => getVisibleStoryParts(), []);
 
@@ -34,12 +42,33 @@ export default function HomePage() {
   const handlePickHero = useCallback(
     (characterClass: CharacterClass) => {
       selectCharacter(characterClass);
-      startCombat();
+      setSelectedHero(characterClass);
       setHeroSelectOpen(false);
-      setInGame(true);
     },
-    [selectCharacter, startCombat],
+    [selectCharacter],
   );
+
+  const handleStartRun = useCallback(() => {
+    selectCharacter(selectedHero);
+    startCombat();
+    setInGame(true);
+  }, [selectedHero, selectCharacter, startCombat]);
+
+  const heroPreview = useMemo(() => {
+    const def = CHARACTER_CLASSES[selectedHero];
+    const cards = getClassCards(selectedHero);
+    const hasRanged = cards.some(
+      (c) => c.type === "attack" && (c.range ?? 1) > 1,
+    );
+    const initiativeDice = def.initiativeDice ?? [6, 6, 6];
+    const initiativeRange = `${initiativeDice.length}-${initiativeDice.reduce((a, b) => a + b, 0)}`;
+    return {
+      def,
+      hasRanged,
+      initiativeDice,
+      initiativeRange,
+    };
+  }, [selectedHero]);
 
   const bgImage = BACKGROUNDS[view];
 
@@ -91,63 +120,139 @@ export default function HomePage() {
                   ⚔️
                 </div>
                 <p className="text-slate-300 text-base md:text-lg max-w-xl mx-auto">
-                  Construa seu deck, enfrente dungeons e lute pela sobrevivência.
-                </p>
-                <p className="text-slate-400 text-sm md:text-base mt-3 max-w-lg mx-auto">
-                  Explore as opções abaixo — em{" "}
-                  <span className="text-amber-400 font-semibold">
-                    Como Jogar
-                  </span>{" "}
-                  você encontra as regras da masmorra.
+                  Construa seu deck, enfrente dungeons e lute pela
+                  sobrevivência.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full max-w-4xl">
-                <div className="p-4 md:p-5 rounded-xl border border-amber-500/40 bg-slate-900/90 backdrop-blur-sm text-left">
-                  <div className="text-3xl mb-2">🃏</div>
-                  <h3 className="text-base font-bold text-amber-400 mb-1.5">
-                    Deck Building
-                  </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
-                    Construa seu deck com cartas de ataque, defesa e poderes
-                    especiais.
-                  </p>
-                </div>
-                <div className="p-4 md:p-5 rounded-xl border border-amber-500/40 bg-slate-900/90 backdrop-blur-sm text-left">
-                  <div className="text-3xl mb-2">⚔️</div>
-                  <h3 className="text-base font-bold text-amber-400 mb-1.5">
-                    Combate Tático
-                  </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
-                    Gerencie sua energia e preveja os ataques dos inimigos.
-                  </p>
-                </div>
-                <div className="p-4 md:p-5 rounded-xl border border-amber-500/40 bg-slate-900/90 backdrop-blur-sm text-left md:col-span-1">
-                  <div className="text-3xl mb-2">💀</div>
-                  <h3 className="text-base font-bold text-amber-400 mb-1.5">
-                    Roguelike
-                  </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
-                    Cada partida é única — derrota significa recomeçar do zero.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                disabled
-                className="px-6 py-2.5 md:px-8 md:py-3 bg-slate-800/80 border border-slate-600 text-slate-400 rounded-xl cursor-not-allowed text-sm font-semibold"
+              <section
+                className="w-full max-w-4xl rounded-xl border border-amber-500/40 bg-slate-900/90 p-4 text-left shadow-xl md:p-5"
+                aria-label="Resumo do herói e início da partida"
               >
-                Em breve: Modo Campanha
-              </button>
-            </div>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-300">
+                  Start run
+                </div>
+                <h3 className="text-lg font-bold text-amber-400">
+                  Iniciar partida
+                </h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  Visão geral do herói antes de entrar na masmorra. Este painel
+                  poderá exibir mais dados conforme o jogo evoluir.
+                </p>
 
-            <footer className="mt-auto pt-6 text-center text-slate-500 text-xs space-y-1">
-              <div>Versão 0.1.0 - Em desenvolvimento</div>
-              <div className="text-slate-600">
-                🤖 Artes do jogo geradas com IA
-              </div>
-            </footer>
+                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start">
+                  <div className="mx-auto shrink-0 sm:mx-0">
+                    <div className="relative h-28 w-28 overflow-hidden rounded-xl border-2 border-amber-500/40 bg-slate-800/80 shadow-inner md:h-32 md:w-32">
+                      <Image
+                        src={heroPreview.def.imageUrl}
+                        alt={heroPreview.def.name}
+                        fill
+                        className="object-cover object-top"
+                        sizes="128px"
+                      />
+                    </div>
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-3">
+                    <div>
+                      <p className="text-base font-bold text-slate-100">
+                        <span aria-hidden>{heroPreview.def.emoji}</span>{" "}
+                        {heroPreview.def.name}
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-slate-400">
+                        {heroPreview.def.description}
+                      </p>
+                    </div>
+
+                    <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+                      <div className="rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2">
+                        <dt className="text-xs text-slate-500">Vida</dt>
+                        <dd className="font-semibold tabular-nums text-rose-200">
+                          {heroPreview.def.baseHp}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2">
+                        <dt className="text-xs text-slate-500">Energia</dt>
+                        <dd className="font-semibold tabular-nums text-amber-200">
+                          {heroPreview.def.baseEnergy}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2">
+                        <dt className="text-xs text-slate-500">Ouro inicial</dt>
+                        <dd className="font-semibold tabular-nums text-yellow-200">
+                          {INITIAL_PLAYER_GOLD}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2">
+                        <dt className="text-xs text-slate-500">Combate</dt>
+                        <dd className="font-semibold text-slate-200">
+                          {heroPreview.hasRanged
+                            ? "À distância"
+                            : "Corpo a corpo"}
+                        </dd>
+                      </div>
+                      <div className="col-span-2 rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2 sm:col-span-2">
+                        <dt className="text-xs text-slate-500">Iniciativa</dt>
+                        <dd className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className="text-xs tabular-nums text-slate-400">
+                            Soma típica {heroPreview.initiativeRange}
+                          </span>
+                          <span className="flex flex-wrap items-center gap-1">
+                            {heroPreview.initiativeDice.map((faces, i) => (
+                              <DiceIcon key={i} faces={faces} size="sm" />
+                            ))}
+                          </span>
+                        </dd>
+                      </div>
+                    </dl>
+
+                    {heroPreview.def.innateAbilities.length > 0 && (
+                      <div className="rounded-lg border border-amber-500/25 bg-slate-950/40 px-3 py-2">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-amber-400/90">
+                          Habilidades inatas
+                        </div>
+                        <ul className="mt-2 space-y-2">
+                          {heroPreview.def.innateAbilities.map((a, idx) => (
+                            <li
+                              key={idx}
+                              className="flex gap-2 text-xs text-slate-300"
+                            >
+                              <span aria-hidden>{a.emoji}</span>
+                              <span>
+                                <span className="font-medium text-amber-200/90">
+                                  {a.name}
+                                </span>
+                                <span className="text-slate-500"> — </span>
+                                <span className="text-slate-400">
+                                  {a.description}
+                                </span>
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="rounded-lg border border-dashed border-slate-600/70 bg-slate-950/30 px-3 py-2">
+                      <div className="text-xs font-medium text-slate-500">
+                        Informações adicionais
+                      </div>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                        Espaço reservado para estatísticas de corrida, progresso
+                        e outros detalhes em atualizações futuras.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleStartRun}
+                  className="mt-4 w-full rounded-xl border border-emerald-400/70 bg-emerald-600/80 px-5 py-2.5 text-sm font-semibold text-emerald-50 transition-colors hover:bg-emerald-500/80 sm:w-auto"
+                >
+                  Entrar na masmorra
+                </button>
+              </section>
+            </div>
           </main>
         )}
 
