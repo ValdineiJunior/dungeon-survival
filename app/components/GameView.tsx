@@ -46,6 +46,7 @@ export default function GameView(props: GameViewProps = {}) {
   const { onExitToHub } = props;
   const router = useRouter();
   const [showAbandonModal, setShowAbandonModal] = useState(false);
+  const [showFloorQuitConfirm, setShowFloorQuitConfirm] = useState(false);
   const [showDeckModal, setShowDeckModal] = useState(false);
   const [showDrawPileModal, setShowDrawPileModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
@@ -139,6 +140,11 @@ export default function GameView(props: GameViewProps = {}) {
 
   const handleRestart = () => {
     resetGame();
+  };
+
+  const handleConfirmQuitFromFloorComplete = () => {
+    setShowFloorQuitConfirm(false);
+    handleRestart();
   };
 
   const handleAbandonQuest = () => {
@@ -426,19 +432,23 @@ export default function GameView(props: GameViewProps = {}) {
                     moedas de ouro ao limpar esta sala.
                   </p>
                   <p className="text-amber-400 mb-6">
-                    Escolha o próximo nó no mapa da corrida.
+                    Em seguida você escolherá uma carta de recompensa; depois, o
+                    mapa da corrida para o próximo nó.
                   </p>
                   <div className="flex gap-4 justify-center">
                     <button
                       type="button"
-                      onClick={handleRestart}
+                      onClick={() => setShowFloorQuitConfirm(true)}
                       className="px-4 py-2 md:px-4 md:py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
                     >
                       Desistir
                     </button>
                     <button
                       type="button"
-                      onClick={() => continueAfterMapMonster()}
+                      onClick={() => {
+                        setShowFloorQuitConfirm(false);
+                        continueAfterMapMonster();
+                      }}
                       className="px-4 py-2.5 md:px-6 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
                     >
                       Continuar
@@ -451,7 +461,9 @@ export default function GameView(props: GameViewProps = {}) {
                     Preparado para o próximo desafio?
                   </p>
                   <div className="bg-slate-900/50 rounded-xl p-4 md:p-4 mb-6">
-                    <p className="text-slate-400 text-sm mb-2">Próximo andar:</p>
+                    <p className="text-slate-400 text-sm mb-2">
+                      Próximo andar:
+                    </p>
                     <p className="text-lg font-bold text-amber-300">
                       {getFloorConfig(floor + 1).name}
                     </p>
@@ -462,14 +474,17 @@ export default function GameView(props: GameViewProps = {}) {
                   <div className="flex gap-4 justify-center">
                     <button
                       type="button"
-                      onClick={handleRestart}
+                      onClick={() => setShowFloorQuitConfirm(true)}
                       className="px-4 py-2 md:px-4 md:py-2 bg-slate-600 hover:bg-slate-500 text-white font-medium rounded-lg transition-colors"
                     >
                       Desistir
                     </button>
                     <button
                       type="button"
-                      onClick={() => advanceFloor()}
+                      onClick={() => {
+                        setShowFloorQuitConfirm(false);
+                        advanceFloor();
+                      }}
                       className="px-4 py-2.5 md:px-6 md:py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors"
                     >
                       Avançar ao Andar {floor + 1} →
@@ -478,6 +493,47 @@ export default function GameView(props: GameViewProps = {}) {
                 </>
               )}
             </div>
+
+            {showFloorQuitConfirm && (
+              <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="floor-quit-confirm-title"
+                  className="mx-4 max-w-sm rounded-2xl border-2 border-slate-500 bg-slate-800 p-5 text-center shadow-2xl md:p-6"
+                >
+                  <div className="mb-3 text-4xl" aria-hidden>
+                    ⚠️
+                  </div>
+                  <h2
+                    id="floor-quit-confirm-title"
+                    className="mb-3 text-lg font-bold text-amber-400 md:text-xl"
+                  >
+                    Você tem certeza que quer desistir?
+                  </h2>
+                  <p className="mb-6 text-sm text-slate-400">
+                    O progresso desta corrida será perdido e você voltará à
+                    seleção de personagem.
+                  </p>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:justify-center sm:gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowFloorQuitConfirm(false)}
+                      className="rounded-lg bg-slate-600 px-4 py-2.5 font-bold text-white transition-colors hover:bg-slate-500 sm:min-w-[8rem]"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleConfirmQuitFromFloorComplete}
+                      className="rounded-lg bg-red-600 px-4 py-2.5 font-bold text-white transition-colors hover:bg-red-500 sm:min-w-[8rem]"
+                    >
+                      Sim, desistir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -742,7 +798,8 @@ export default function GameView(props: GameViewProps = {}) {
               <div className="flex min-h-[4.5rem] w-full items-center justify-center px-2 text-center text-sm text-slate-400 md:min-h-11 md:text-base">
                 {phase === "selectingMapNode" &&
                   "Escolha o próximo destino na janela do mapa."}
-                {phase === "restSite" && "Confirme o descanso na janela aberta."}
+                {phase === "restSite" &&
+                  "Confirme o descanso na janela aberta."}
                 {phase === "bossRoomIntro" &&
                   "Confirme o combate contra o chefe na janela aberta."}
               </div>

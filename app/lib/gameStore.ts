@@ -516,7 +516,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     } as GameState, HAND_SIZE + bonusDraw);
 
     const mapMonsterCombatsCompleted = state.mapMonsterCombatsCompleted + 1;
-    const mapRoomsCompleted = state.mapRoomsCompleted + 1;
     const nextFloorDisplay = Math.min(MAX_FLOOR, mapMonsterCombatsCompleted + 1);
 
     if (energyRegen > 0) {
@@ -524,13 +523,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
         `✨ Canalização Arcana: +${energyRegen} energia extra`));
     }
 
-    const nextPhase: GamePhase =
-      mapRoomsCompleted >= MAP_ROOMS_BEFORE_BOSS ? 'bossRoomIntro' : 'selectingMapNode';
+    const [card1, card2] = pickRewardCards(player.characterClass);
+    newLog.push(createLogEntry(state.turn, nextFloorDisplay, 'rewardStart',
+      '🎁 Escolha uma carta como recompensa pela vitória na sala.'));
 
     set({
       floor: nextFloorDisplay,
       mapMonsterCombatsCompleted,
-      mapRoomsCompleted,
       player,
       enemies: [],
       hand: cardState.hand,
@@ -538,7 +537,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       discardPile: cardState.discardPile,
       burnedPile: [],
       gameLog: newLog,
-      phase: nextPhase,
+      phase: 'selectingReward',
       turn: 1,
       runCombatKind: 'none',
       selectedCard: null,
@@ -546,7 +545,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
-      rewardCards: [],
+      rewardCards: [card1, card2],
       merchantOffers: [],
       turnOrder: [],
       activeTurnIndex: 0,
