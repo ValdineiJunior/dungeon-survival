@@ -18,6 +18,7 @@ import { RunMapModal } from "@/app/components/RunMapModal";
 import { MapNodeChoiceModal } from "@/app/components/MapNodeChoiceModal";
 import { RestSiteModal } from "@/app/components/RestSiteModal";
 import { BossRoomModal } from "@/app/components/BossRoomModal";
+import { RunStartBonusModal } from "@/app/components/RunStartBonusModal";
 import { SmallDefaultCard } from "@/app/components/SmallDefaultCard";
 import { BurnCardModal } from "@/app/components/BurnCardModal";
 import {
@@ -104,6 +105,7 @@ export default function GameView(props: GameViewProps = {}) {
     confirmRestSite,
     startBossFightFromIntro,
     continueAfterMapMonster,
+    confirmRunStartGoldBonus,
     buyMerchantCard,
     leaveMerchant,
     resetGame,
@@ -165,6 +167,7 @@ export default function GameView(props: GameViewProps = {}) {
   const classDef = CHARACTER_CLASSES[player.characterClass];
   const floorConfig = getFloorConfig(floor);
   const isMapRoomPhase =
+    phase === "selectingRunStartBonus" ||
     phase === "selectingMapNode" ||
     phase === "restSite" ||
     phase === "bossRoomIntro";
@@ -194,6 +197,8 @@ export default function GameView(props: GameViewProps = {}) {
         return "🛒 Mercador";
       case "selectingMapNode":
         return "Mapa — próximo nó";
+      case "selectingRunStartBonus":
+        return "✨ Recompensa de partida";
       case "restSite":
         return "Descanso";
       case "bossRoomIntro":
@@ -227,6 +232,8 @@ export default function GameView(props: GameViewProps = {}) {
         return "bg-amber-800 text-white";
       case "selectingMapNode":
         return "bg-teal-600 text-white";
+      case "selectingRunStartBonus":
+        return "bg-violet-600 text-white";
       case "restSite":
         return "bg-emerald-700 text-white";
       case "bossRoomIntro":
@@ -796,6 +803,8 @@ export default function GameView(props: GameViewProps = {}) {
               />
             ) : isMapRoomPhase ? (
               <div className="flex min-h-[4.5rem] w-full items-center justify-center px-2 text-center text-sm text-slate-400 md:min-h-11 md:text-base">
+                {phase === "selectingRunStartBonus" &&
+                  "Escolha uma recompensa na janela aberta."}
                 {phase === "selectingMapNode" &&
                   "Escolha o próximo destino na janela do mapa."}
                 {phase === "restSite" &&
@@ -1077,6 +1086,10 @@ export default function GameView(props: GameViewProps = {}) {
 
       {showMapModal && runMap && (
         <RunMapModal runMap={runMap} onClose={() => setShowMapModal(false)} />
+      )}
+
+      {phase === "selectingRunStartBonus" && (
+        <RunStartBonusModal onPick={(amount) => confirmRunStartGoldBonus(amount)} />
       )}
 
       {phase === "selectingMapNode" && runMap && (

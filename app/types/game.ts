@@ -181,6 +181,7 @@ export type GamePhase =
   | 'selectingReward'  // Selecting reward card
   | 'selectingMerchant' // Merchant shop (priced offers)
   | 'selectingMapNode' // Pick next node on run map
+  | 'selectingRunStartBonus' // One-time gold pick at run start (before first map choice)
   | 'restSite'         // Confirm rest (+HP, capped)
   | 'bossRoomIntro';   // Pre-boss modal before rolling initiative
 

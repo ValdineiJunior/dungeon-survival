@@ -183,6 +183,7 @@ interface GameActions {
   confirmRestSite: () => void;
   startBossFightFromIntro: () => void;
   continueAfterMapMonster: () => void;
+  confirmRunStartGoldBonus: (bonusGold: 25 | 50 | 75) => void;
   buyMerchantCard: (offerIndex: number) => void;
   leaveMerchant: () => void;
   resetGame: () => void;
@@ -279,7 +280,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     logIdCounter = 0;
 
     gameLog.push(createLogEntry(1, 1, 'floorStart',
-      `🏰 ${classDef.emoji} ${classDef.name} entra na masmorra — escolha o próximo nó no mapa.`));
+      `🏰 ${classDef.emoji} ${classDef.name} entra na masmorra — escolha uma recompensa para começar.`));
 
     set({
       player,
@@ -296,7 +297,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       mapMonsterCombatsCompleted: 0,
       runCombatKind: 'none',
       gameLog,
-      phase: 'selectingMapNode',
+      phase: 'selectingRunStartBonus',
       turn: 1,
       floor: 1,
       turnOrder: [],
@@ -314,6 +315,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
         card: { ...c },
         usedThisTurn: false,
       })),
+    });
+  },
+
+  confirmRunStartGoldBonus: (bonusGold: 25 | 50 | 75) => {
+    const state = get();
+    if (state.phase !== 'selectingRunStartBonus') return;
+
+    const player = { ...state.player, gold: state.player.gold + bonusGold };
+    const newLog = [...state.gameLog];
+    newLog.push(createLogEntry(state.turn, state.floor, 'rewardStart',
+      `💰 Recompensa de partida: +${bonusGold} ouro.`));
+    newLog.push(createLogEntry(state.turn, state.floor, 'floorStart',
+      '🗺️ Escolha o próximo nó no mapa da corrida.'));
+
+    set({
+      player,
+      phase: 'selectingMapNode',
+      gameLog: newLog,
     });
   },
 
