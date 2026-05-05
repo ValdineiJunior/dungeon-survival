@@ -16,7 +16,7 @@ import { INITIAL_PLAYER_GOLD } from "../lib/goldEconomy";
 
 interface CharacterSelectProps {
   onSelect: (characterClass: CharacterClass) => void;
-  /** `embedded`: dentro do hub (scroll, sem fundo full-screen). `fullscreen`: rota /game ou legado. */
+  /** `embedded`: dentro do hub (scroll, sem fundo full-screen). `fullscreen`: tela cheia standalone (ex.: fluxo legado). */
   variant?: "fullscreen" | "embedded";
 }
 
