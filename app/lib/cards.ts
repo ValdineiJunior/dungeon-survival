@@ -82,24 +82,6 @@ export const WARRIOR_CARDS: Card[] = [
     description: 'Causa 8 de dano. Alcance: 1',
   },
   {
-    id: 'sword_slash_3',
-    name: 'Corte de Espada',
-    cost: 1,
-    type: 'attack',
-    damage: 8,
-    range: 1,
-    description: 'Causa 8 de dano. Alcance: 1',
-  },
-  {
-    id: 'sword_slash_4',
-    name: 'Corte de Espada',
-    cost: 1,
-    type: 'attack',
-    damage: 8,
-    range: 1,
-    description: 'Causa 8 de dano. Alcance: 1',
-  },
-  {
     id: 'heavy_strike_1',
     name: 'Golpe Pesado',
     cost: 2,
@@ -117,31 +99,7 @@ export const WARRIOR_CARDS: Card[] = [
     description: 'Ganha 7 de bloqueio.',
   },
   {
-    id: 'warrior_defend_2',
-    name: 'Defesa Firme',
-    cost: 1,
-    type: 'skill',
-    block: 7,
-    description: 'Ganha 7 de bloqueio.',
-  },
-  {
-    id: 'warrior_defend_3',
-    name: 'Defesa Firme',
-    cost: 1,
-    type: 'skill',
-    block: 7,
-    description: 'Ganha 7 de bloqueio.',
-  },
-  {
     id: 'warrior_charge_1',
-    name: 'Investida',
-    cost: 1,
-    type: 'movement',
-    movement: 3,
-    description: 'Mova até 3 espaços.',
-  },
-  {
-    id: 'warrior_charge_2',
     name: 'Investida',
     cost: 1,
     type: 'movement',
@@ -171,24 +129,6 @@ export const ARCHER_CARDS: Card[] = [
     description: 'Causa 6 de dano. Alcance: 3.',
   },
   {
-    id: 'arrow_shot_3',
-    name: 'Tiro de Flecha',
-    cost: 1,
-    type: 'attack',
-    damage: 6,
-    range: 3,
-    description: 'Causa 6 de dano. Alcance: 3.',
-  },
-  {
-    id: 'arrow_shot_4',
-    name: 'Tiro de Flecha',
-    cost: 1,
-    type: 'attack',
-    damage: 6,
-    range: 3,
-    description: 'Causa 6 de dano. Alcance: 3.',
-  },
-  {
     id: 'piercing_arrow_1',
     name: 'Flecha Perfurante',
     cost: 2,
@@ -206,31 +146,7 @@ export const ARCHER_CARDS: Card[] = [
     description: 'Ganha 5 de bloqueio.',
   },
   {
-    id: 'archer_dodge_2',
-    name: 'Esquiva',
-    cost: 1,
-    type: 'skill',
-    block: 5,
-    description: 'Ganha 5 de bloqueio.',
-  },
-  {
-    id: 'archer_dodge_3',
-    name: 'Esquiva',
-    cost: 1,
-    type: 'skill',
-    block: 5,
-    description: 'Ganha 5 de bloqueio.',
-  },
-  {
     id: 'archer_sprint_1',
-    name: 'Correr',
-    cost: 1,
-    type: 'movement',
-    movement: 4,
-    description: 'Mova até 4 espaços.',
-  },
-  {
-    id: 'archer_sprint_2',
     name: 'Correr',
     cost: 1,
     type: 'movement',
@@ -260,24 +176,6 @@ export const MAGE_CARDS: Card[] = [
     description: 'Causa 7 de dano. Alcance: 3.',
   },
   {
-    id: 'fireball_3',
-    name: 'Bola de Fogo',
-    cost: 1,
-    type: 'attack',
-    damage: 7,
-    range: 3,
-    description: 'Causa 7 de dano. Alcance: 3.',
-  },
-  {
-    id: 'fireball_4',
-    name: 'Bola de Fogo',
-    cost: 1,
-    type: 'attack',
-    damage: 7,
-    range: 3,
-    description: 'Causa 7 de dano. Alcance: 3.',
-  },
-  {
     id: 'lightning_bolt_1',
     name: 'Relâmpago',
     cost: 2,
@@ -295,31 +193,7 @@ export const MAGE_CARDS: Card[] = [
     description: 'Ganha 6 de bloqueio.',
   },
   {
-    id: 'mage_barrier_2',
-    name: 'Barreira Mágica',
-    cost: 1,
-    type: 'skill',
-    block: 6,
-    description: 'Ganha 6 de bloqueio.',
-  },
-  {
-    id: 'mage_barrier_3',
-    name: 'Barreira Mágica',
-    cost: 1,
-    type: 'skill',
-    block: 6,
-    description: 'Ganha 6 de bloqueio.',
-  },
-  {
     id: 'mage_blink_1',
-    name: 'Piscar',
-    cost: 1,
-    type: 'movement',
-    movement: 4,
-    description: 'Move até 4 espaços.',
-  },
-  {
-    id: 'mage_blink_2',
     name: 'Piscar',
     cost: 1,
     type: 'movement',
@@ -436,7 +310,7 @@ export function createClassDeck(characterClass: CharacterClass): Card[] {
 
 // Legacy starter cards (kept for compatibility)
 export const STARTER_CARDS: Card[] = [
-  // 4 ataques básicos (com alcance)
+  // 2 ataques básicos (corpo a corpo)
   {
     id: 'strike_1',
     name: 'Golpe',
@@ -455,25 +329,7 @@ export const STARTER_CARDS: Card[] = [
     range: 1,
     description: 'Causa 6 de dano. Alcance: 1',
   },
-  {
-    id: 'strike_3',
-    name: 'Golpe',
-    cost: 1,
-    type: 'attack',
-    damage: 6,
-    range: 1,
-    description: 'Causa 6 de dano. Alcance: 1',
-  },
-  {
-    id: 'strike_4',
-    name: 'Golpe',
-    cost: 1,
-    type: 'attack',
-    damage: 6,
-    range: 1,
-    description: 'Causa 6 de dano. Alcance: 1',
-  },
-  // 3 defesas básicas
+  // 1 defesas básicas
   {
     id: 'defend_1',
     name: 'Defender',
@@ -482,23 +338,7 @@ export const STARTER_CARDS: Card[] = [
     block: 5,
     description: 'Ganha 5 de bloqueio.',
   },
-  {
-    id: 'defend_2',
-    name: 'Defender',
-    cost: 1,
-    type: 'skill',
-    block: 5,
-    description: 'Ganha 5 de bloqueio.',
-  },
-  {
-    id: 'defend_3',
-    name: 'Defender',
-    cost: 1,
-    type: 'skill',
-    block: 5,
-    description: 'Ganha 5 de bloqueio.',
-  },
-  // 3 cartas de movimento
+  // 1 carta de movimento
   {
     id: 'move_1',
     name: 'Andar',
@@ -506,31 +346,6 @@ export const STARTER_CARDS: Card[] = [
     type: 'movement',
     movement: 2,
     description: 'Mova até 2 espaços.',
-  },
-  {
-    id: 'move_2',
-    name: 'Andar',
-    cost: 1,
-    type: 'movement',
-    movement: 2,
-    description: 'Mova até 2 espaços.',
-  },
-  {
-    id: 'move_3',
-    name: 'Andar',
-    cost: 1,
-    type: 'movement',
-    movement: 2,
-    description: 'Mova até 2 espaços.',
-  },
-  // 1 carta de movimento rápido
-  {
-    id: 'dash_1',
-    name: 'Correr',
-    cost: 1,
-    type: 'movement',
-    movement: 4,
-    description: 'Mova até 4 espaços.',
   },
   // 1 ataque à distância
   {
