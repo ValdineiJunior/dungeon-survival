@@ -173,6 +173,12 @@ export function CharacterSelect({
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span className="text-slate-400">🃏 Mão base</span>
+                  <span className="text-white font-bold">
+                    {classDef.baseHand}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
                   <span className="text-slate-400">🏹 Alcance</span>
                   <span className="text-white font-bold">
                     {hasRanged ? "Distância" : "Corpo a corpo"}

@@ -26,6 +26,8 @@ export interface CharacterClassDefinition {
   imageUrl: string;
   baseHp: number;
   baseEnergy: number;
+  /** Cards drawn when the hand is refilled (empty hand at turn start), before floor modifiers and bonusDraw. Resets each floor / encounter. */
+  baseHand: number;
   /** Initiative: array of die face counts (1+ dice), e.g. [4, 6, 8]. Defaults to [6, 6, 6]. */
   initiativeDice?: number[];
   innateAbilities: InnateAbility[];
@@ -56,6 +58,8 @@ export interface Card {
   movement?: number;   // Quantidade de movimento (em hexes)
   burnsCards?: number; // Quantidade de cartas para descartar definitivamente
   drawCards?: number;  // Quantidade de cartas para comprar
+  /** Ao jogar: aumenta quantas cartas você compra ao esvaziar a mão neste andar (até mudar de andar). */
+  floorHandDrawBonus?: number;
   energy?: number;    // Ganho de energia ao jogar (ex.: +2)
   exhaust?: boolean;  // Se true, a carta vai para a pilha de queimadas (não volta ao deck neste combate)
   loseHp?: number;    // Perde este tanto de HP ao jogar (ex.: 6)
@@ -331,6 +335,9 @@ export interface GameState {
 
   /** Deltas applied to class default-hand templates for this run (cleared on resetGame). */
   runDefaultCardEnhancementDeltas: RunDefaultCardEnhancementDeltas;
+
+  /** Extra cards drawn per hand refill on the current floor; from cards with floorHandDrawBonus. Cleared when advancing floor or starting a new map encounter. */
+  floorHandSizeBonus: number;
 }
 
 export interface DefaultHandCard {

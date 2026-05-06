@@ -10,6 +10,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     imageUrl: '/heroes/warrior.png',
     baseHp: 90,
     baseEnergy: 3,
+    baseHand: 4,
     initiativeDice: [6, 8, 10],
     innateAbilities: [
       {
@@ -29,16 +30,9 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     imageUrl: '/heroes/archer.png',
     baseHp: 70,
     baseEnergy: 3,
+    baseHand: 5,
     initiativeDice: [4, 6, 8],
-    innateAbilities: [
-      {
-        type: 'bonusDraw',
-        value: 1,
-        name: 'Agilidade',
-        description: 'Compra 1 carta extra no início de cada turno',
-        emoji: '🃏',
-      },
-    ],
+    innateAbilities: [],
   },
   mage: {
     id: 'mage',
@@ -48,6 +42,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     imageUrl: '/heroes/mage.png',
     baseHp: 60,
     baseEnergy: 4,
+    baseHand: 3,
     initiativeDice: [6, 12, 20],
     innateAbilities: [
       {

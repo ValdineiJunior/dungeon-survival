@@ -81,6 +81,14 @@ const WARRIOR_NORMAL_REWARDS: Card[] = [
     movement: 4,
     description: 'Mova até 4 espaços.',
   },
+  {
+    id: 'warrior_open_hand_1',
+    name: 'Abrir o Jogo',
+    cost: 1,
+    type: 'skill',
+    floorHandDrawBonus: 1,
+    description: 'Aumente a Mão em 1',
+  },
 ];
 
 const WARRIOR_RARE_REWARDS: Card[] = [
@@ -137,6 +145,14 @@ const ARCHER_NORMAL_REWARDS: Card[] = [
     movement: 5,
     description: 'Mova até 5 espaços.',
   },
+  {
+    id: 'archer_open_hand_1',
+    name: 'Aljava Cheia',
+    cost: 1,
+    type: 'skill',
+    floorHandDrawBonus: 1,
+    description: 'Aumente a Mão em 1',
+  },
 ];
 
 const ARCHER_RARE_REWARDS: Card[] = [
@@ -183,6 +199,14 @@ const MAGE_NORMAL_REWARDS: Card[] = [
     type: 'movement',
     movement: 6,
     description: 'Mova até 6 espaços.',
+  },
+  {
+    id: 'mage_open_hand_1',
+    name: 'Amplificar Mão',
+    cost: 1,
+    type: 'skill',
+    floorHandDrawBonus: 1,
+    description: 'Aumente a Mão em 1',
   },
 ];
 

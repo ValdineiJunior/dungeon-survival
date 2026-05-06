@@ -177,6 +177,12 @@ export default function HomePage() {
                         </dd>
                       </div>
                       <div className="rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2">
+                        <dt className="text-xs text-slate-500">Mão base</dt>
+                        <dd className="font-semibold tabular-nums text-sky-200">
+                          {heroPreview.def.baseHand}
+                        </dd>
+                      </div>
+                      <div className="rounded-lg border border-slate-600/60 bg-slate-800/50 px-3 py-2">
                         <dt className="text-xs text-slate-500">Ouro inicial</dt>
                         <dd className="font-semibold tabular-nums text-yellow-200">
                           {INITIAL_PLAYER_GOLD}

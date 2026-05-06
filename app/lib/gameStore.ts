@@ -25,6 +25,12 @@ function getInnateAbilityValue(characterClass: CharacterClass, abilityType: Inna
   return ability?.value ?? 0;
 }
 
+function getPlayerHandDrawCount(state: GameState): number {
+  const classDef = CHARACTER_CLASSES[state.player.characterClass];
+  const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
+  return classDef.baseHand + bonusDraw + state.floorHandSizeBonus;
+}
+
 // Helper to create log entries
 let logIdCounter = 0;
 function createLogEntry(
@@ -74,8 +80,6 @@ const INITIAL_PLAYER: Player = {
   position: { q: -2, r: 0 },
   gold: INITIAL_PLAYER_GOLD,
 };
-
-const HAND_SIZE = 5;
 
 // Verificar se uma posição está ocupada
 function isPositionOccupied(position: HexPosition, player: Player, enemies: Enemy[]): boolean {
@@ -260,6 +264,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   rewardCards: [],
   merchantOffers: [],
   runDefaultCardEnhancementDeltas: {},
+  floorHandSizeBonus: 0,
 
   selectCharacter: (characterClass: CharacterClass) => {
     const player = createInitialPlayer(characterClass);
@@ -426,6 +431,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         rewardCards: [],
         merchantOffers: [],
         gameLog: newLog,
+        floorHandSizeBonus: 0,
       });
       return;
     }
@@ -537,6 +543,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       rewardCards: [],
       merchantOffers: [],
       gameLog: newLog,
+      floorHandSizeBonus: 0,
     });
   },
 
@@ -557,18 +564,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     player.position = { q: -2, r: 0 };
     const energyRegen = getInnateAbilityValue(player.characterClass, 'energyRegen');
-    const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
     player.block = 0;
     player.energy = player.maxEnergy + energyRegen;
 
     const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, ...state.burnedPile];
     const drawPile = shuffleArray(allCards);
-    const cardState = drawCards({
-      ...state,
-      hand: [],
-      drawPile,
-      discardPile: [],
-    } as GameState, HAND_SIZE + bonusDraw);
+    const drawState = { ...state, player, hand: [], drawPile, discardPile: [], floorHandSizeBonus: 0 } as GameState;
+    const cardState = drawCards(drawState, getPlayerHandDrawCount(drawState));
 
     const mapMonsterCombatsCompleted = state.mapMonsterCombatsCompleted + 1;
     const nextFloorDisplay = Math.min(MAX_FLOOR, mapMonsterCombatsCompleted + 1);
@@ -604,6 +606,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       merchantOffers: [],
       turnOrder: [],
       activeTurnIndex: 0,
+      floorHandSizeBonus: 0,
       defaultHand: buildDefaultHandFromClass(
         player.characterClass,
         state.runDefaultCardEnhancementDeltas,
@@ -736,8 +739,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (current.entityType === 'player') {
       // Is this player's entity still valid? (always yes)
       // Apply player turn-start effects
-      const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
-
       const updatedPlayer = {
         ...state.player,
         block: 0,
@@ -748,11 +749,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       // When we already have cards (e.g. after reward or after advancing floor), keep the hand.
       const shouldRedraw = state.hand.length === 0;
       const discardPile = shouldRedraw ? [...state.discardPile, ...state.hand] : state.discardPile;
+      const redrawState = { ...state, player: updatedPlayer, discardPile, hand: [] } as GameState;
       const cardState = shouldRedraw
-        ? drawCards(
-            { ...state, discardPile, hand: [] } as GameState,
-            HAND_SIZE + bonusDraw
-          )
+        ? drawCards(redrawState, getPlayerHandDrawCount(redrawState))
         : { hand: state.hand, drawPile: state.drawPile, discardPile: state.discardPile };
 
       const newLog = [...state.gameLog];
@@ -1448,6 +1447,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
       }));
     }
 
+    let nextFloorHandSizeBonus = state.floorHandSizeBonus;
+    if (card.floorHandDrawBonus) {
+      nextFloorHandSizeBonus += card.floorHandDrawBonus;
+      newLog.push(createLogEntry(state.turn, state.floor, 'playerDraw',
+        `${classDef.emoji} ${classDef.name} usa ${card.name}: +${card.floorHandDrawBonus} carta(s) ao repor a mão neste andar (acumula).`, {
+        cards: card.floorHandDrawBonus,
+      }));
+    }
+
     if (card.exhaust) {
       newBurnedPile = [...newBurnedPile, card];
     } else {
@@ -1478,6 +1486,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
+      floorHandSizeBonus: nextFloorHandSizeBonus,
     });
   },
 
@@ -1779,7 +1788,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     // Apply innate abilities for turn 1 of new floor
     const energyRegen = getInnateAbilityValue(player.characterClass, 'energyRegen');
-    const bonusDraw = getInnateAbilityValue(player.characterClass, 'bonusDraw');
 
     player.block = 0;
     player.energy = player.maxEnergy + energyRegen; // Extra energy on first turn
@@ -1801,13 +1809,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, ...state.burnedPile];
     const drawPile = shuffleArray(allCards);
 
-    // Draw new hand with bonus draw
-    const cardState = drawCards({
+    const nextFloorHandBonus = 0;
+    const drawState = {
       ...state,
+      player,
       hand: [],
       drawPile,
       discardPile: [],
-    } as GameState, HAND_SIZE + bonusDraw);
+      floorHandSizeBonus: nextFloorHandBonus,
+    } as GameState;
+    const cardState = drawCards(drawState, getPlayerHandDrawCount(drawState));
 
     // Generate reward cards for all floors except after the final floor
     let rewardCards: Card[] = [];
@@ -1835,6 +1846,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       targetableEnemyIds: [],
       movementPath: [],
       remainingMovement: 0,
+      floorHandSizeBonus: nextFloorHandBonus,
       defaultHand: buildDefaultHandFromClass(
         player.characterClass,
         state.runDefaultCardEnhancementDeltas,
@@ -1859,13 +1871,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, newCard];
     const shuffledDrawPile = shuffleArray(allCards);
 
-    const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
     const cardState = drawCards({
       ...state,
       hand: [],
       drawPile: shuffledDrawPile,
       discardPile: [],
-    } as GameState, HAND_SIZE + bonusDraw);
+    } as GameState, getPlayerHandDrawCount(state));
 
     newLog.push(createLogEntry(state.turn, state.floor, 'cardReward',
       `✨ ${card.name} adicionado ao baralho`));
@@ -1918,13 +1929,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const allCards = [...state.hand, ...state.drawPile, ...state.discardPile, newCard];
     const shuffledDrawPile = shuffleArray(allCards);
 
-    const bonusDraw = getInnateAbilityValue(state.player.characterClass, 'bonusDraw');
     const cardState = drawCards({
       ...state,
       hand: [],
       drawPile: shuffledDrawPile,
       discardPile: [],
-    } as GameState, HAND_SIZE + bonusDraw);
+    } as GameState, getPlayerHandDrawCount(state));
 
     const merchantOffers = state.merchantOffers.filter((_, i) => i !== offerIndex);
 
@@ -2025,6 +2035,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       cardsToBurn: 0,
       merchantOffers: [],
       runDefaultCardEnhancementDeltas: {},
+      floorHandSizeBonus: 0,
     });
   },
 }));
