@@ -15,6 +15,8 @@ interface PlayerStatusProps {
   deckCount: number;
   discardCount: number;
   classDef: CharacterClassDefinition;
+  /** Extra cards per hand refill on current floor (from cards like “Aumente a Mão”). */
+  floorHandSizeBonus?: number;
   initiativeTotal?: number;
   onViewDeck: () => void;
   onViewDiscard: () => void;
@@ -25,12 +27,23 @@ export function PlayerStatus({
   deckCount,
   discardCount,
   classDef,
+  floorHandSizeBonus = 0,
   initiativeTotal,
   onViewDeck,
   onViewDiscard,
 }: PlayerStatusProps) {
   const [innateDetail, setInnateDetail] = useState<InnateAbility | null>(null);
   const initiativeDicePool = classDef.initiativeDice ?? [6, 6, 6];
+  const bonusDraw =
+    classDef.innateAbilities.find((a) => a.type === "bonusDraw")?.value ?? 0;
+  const handRefillDrawCount =
+    classDef.baseHand + bonusDraw + floorHandSizeBonus;
+  const handRefillTitleParts = [
+    `Base: ${classDef.baseHand}`,
+    bonusDraw > 0 ? `Inata: +${bonusDraw}` : null,
+    floorHandSizeBonus > 0 ? `Cartas: +${floorHandSizeBonus}` : null,
+  ].filter(Boolean);
+  const handRefillTitle = `Cartas ao repor a mão neste andar (${handRefillTitleParts.join(", ")})`;
 
   return (
     <div className="relative flex h-full min-w-0 max-w-full flex-col gap-3 rounded-xl border border-slate-600 bg-slate-800/80 p-3 pt-4 backdrop-blur-sm lg:p-4 lg:pt-5">
@@ -77,6 +90,16 @@ export function PlayerStatus({
             maxEnergy={player.maxEnergy}
             shrink
           />
+        </div>
+
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="shrink-0 text-sky-400">🃏 Mão</span>
+          <span
+            className={`${gamePillBaseClasses} shrink-0 rounded-full border-sky-500 bg-sky-800 text-white shadow-md shadow-sky-600/35`}
+            title={handRefillTitle}
+          >
+            {handRefillDrawCount}
+          </span>
         </div>
 
         {/* Iniciativa */}

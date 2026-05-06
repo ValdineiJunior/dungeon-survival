@@ -113,6 +113,7 @@ export default function GameView(props: GameViewProps = {}) {
     confirmInitiativeModal,
     turnOrder,
     activeTurnIndex,
+    floorHandSizeBonus,
   } = useGameStore();
 
   const handleCharacterSelect = (characterClass: CharacterClass) => {
@@ -305,6 +306,7 @@ export default function GameView(props: GameViewProps = {}) {
                 deckCount={deck.length}
                 discardCount={discardPile.length}
                 classDef={classDef}
+                floorHandSizeBonus={floorHandSizeBonus}
                 initiativeTotal={playerInitiativeEntry?.total}
                 onViewDeck={() => setShowDeckModal(true)}
                 onViewDiscard={() => setShowDiscardModal(true)}
