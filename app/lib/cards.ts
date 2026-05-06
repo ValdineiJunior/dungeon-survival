@@ -44,15 +44,7 @@ export const CHARACTER_CLASSES: Record<CharacterClass, CharacterClassDefinition>
     baseEnergy: 4,
     baseHand: 3,
     initiativeDice: [6, 12, 20],
-    innateAbilities: [
-      {
-        type: 'energyRegen',
-        value: 1,
-        name: 'Canalização Arcana',
-        description: 'Ganha 1 energia extra no primeiro turno de cada sala',
-        emoji: '✨',
-      },
-    ],
+    innateAbilities: [],
   },
 };
 
