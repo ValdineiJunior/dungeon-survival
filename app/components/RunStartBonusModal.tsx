@@ -1,6 +1,12 @@
 "use client";
 
+import { useState } from "react";
+
 import type { RunStartRewardPick } from "@/app/types/game";
+
+function pickRandom<T>(items: readonly T[]): T {
+  return items[Math.floor(Math.random() * items.length)]!;
+}
 
 export const RUN_START_GOLD_OPTIONS = [25, 50, 75] as const;
 
@@ -83,6 +89,12 @@ interface RunStartBonusModalProps {
 }
 
 export function RunStartBonusModal({ onPick }: RunStartBonusModalProps) {
+  const [{ goldAmount, boostEntry, costEntry }] = useState(() => ({
+    goldAmount: pickRandom(RUN_START_GOLD_OPTIONS),
+    boostEntry: pickRandom(DEFAULT_CARD_BOOSTS),
+    costEntry: pickRandom(DEFAULT_CARD_COST_REDUCTIONS),
+  }));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm">
       <div
@@ -108,21 +120,18 @@ export function RunStartBonusModal({ onPick }: RunStartBonusModalProps) {
           Ouro
         </p>
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
-          {RUN_START_GOLD_OPTIONS.map((amount) => (
-            <button
-              key={amount}
-              type="button"
-              onClick={() => onPick({ kind: "gold", amount })}
-              className="flex flex-1 cursor-pointer flex-col items-center rounded-xl border-2 border-yellow-600/60 bg-linear-to-b from-yellow-900/40 to-amber-950/60 px-4 py-4 text-center transition-colors hover:border-amber-400 hover:from-yellow-800/50 hover:to-amber-900/70 sm:min-w-[6.5rem]"
-            >
-              <span className="text-2xl font-bold tabular-nums text-yellow-200">
-                {amount}
-              </span>
-              <span className="text-xs font-medium text-yellow-100/80">
-                ouro
-              </span>
-            </button>
-          ))}
+          <button
+            type="button"
+            onClick={() => onPick({ kind: "gold", amount: goldAmount })}
+            className="flex flex-1 cursor-pointer flex-col items-center rounded-xl border-2 border-yellow-600/60 bg-linear-to-b from-yellow-900/40 to-amber-950/60 px-4 py-4 text-center transition-colors hover:border-amber-400 hover:from-yellow-800/50 hover:to-amber-900/70 sm:min-w-[6.5rem]"
+          >
+            <span className="text-lg font-bold tabular-nums text-yellow-200 md:text-xl">
+              {goldAmount}
+            </span>
+            <span className="mt-1 text-xs font-medium text-yellow-100/80">
+              ouro
+            </span>
+          </button>
         </div>
 
         <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -132,17 +141,19 @@ export function RunStartBonusModal({ onPick }: RunStartBonusModalProps) {
           Bônus nesta corrida apenas (até o fim da partida).
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
-          {DEFAULT_CARD_BOOSTS.map(({ pick, label, hint }) => (
-            <button
-              key={`${pick.role}-${pick.field}-up`}
-              type="button"
-              onClick={() => onPick(pick)}
-              className="flex flex-1 cursor-pointer flex-col items-center rounded-xl border-2 border-violet-600/60 bg-linear-to-b from-violet-950/50 to-slate-900/80 px-3 py-4 text-center transition-colors hover:border-violet-400 hover:from-violet-900/50 sm:min-w-[6.5rem]"
-            >
-              <span className="text-lg font-bold text-violet-200">{label}</span>
-              <span className="mt-1 text-[11px] text-violet-200/70">{hint}</span>
-            </button>
-          ))}
+          <button
+            key={`${boostEntry.pick.role}-${boostEntry.pick.field}-up`}
+            type="button"
+            onClick={() => onPick(boostEntry.pick)}
+            className="flex flex-1 cursor-pointer flex-col items-center rounded-xl border-2 border-violet-600/60 bg-linear-to-b from-violet-950/50 to-slate-900/80 px-3 py-4 text-center transition-colors hover:border-violet-400 hover:from-violet-900/50 sm:min-w-[6.5rem]"
+          >
+            <span className="text-lg font-bold text-violet-200 md:text-xl">
+              {boostEntry.label}
+            </span>
+            <span className="mt-1 text-xs font-medium text-violet-200/70">
+              {boostEntry.hint}
+            </span>
+          </button>
         </div>
 
         <p className="mb-2 mt-8 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -152,17 +163,19 @@ export function RunStartBonusModal({ onPick }: RunStartBonusModalProps) {
           −1 de custo na carta indicada (mínimo 0 nesta corrida).
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
-          {DEFAULT_CARD_COST_REDUCTIONS.map(({ pick, label, hint }) => (
-            <button
-              key={`${pick.role}-${pick.field}-down`}
-              type="button"
-              onClick={() => onPick(pick)}
-              className="flex flex-1 cursor-pointer flex-col items-center rounded-xl border-2 border-emerald-700/60 bg-linear-to-b from-emerald-950/50 to-slate-900/80 px-3 py-4 text-center transition-colors hover:border-emerald-400 hover:from-emerald-900/45 sm:min-w-[6.5rem]"
-            >
-              <span className="text-lg font-bold text-emerald-200">{label}</span>
-              <span className="mt-1 text-[11px] text-emerald-200/75">{hint}</span>
-            </button>
-          ))}
+          <button
+            key={`${costEntry.pick.role}-${costEntry.pick.field}-down`}
+            type="button"
+            onClick={() => onPick(costEntry.pick)}
+            className="flex flex-1 cursor-pointer flex-col items-center rounded-xl border-2 border-emerald-700/60 bg-linear-to-b from-emerald-950/50 to-slate-900/80 px-3 py-4 text-center transition-colors hover:border-emerald-400 hover:from-emerald-900/45 sm:min-w-[6.5rem]"
+          >
+            <span className="text-lg font-bold text-emerald-200 md:text-xl">
+              {costEntry.label}
+            </span>
+            <span className="mt-1 text-xs font-medium text-emerald-200/75">
+              {costEntry.hint}
+            </span>
+          </button>
         </div>
       </div>
     </div>
