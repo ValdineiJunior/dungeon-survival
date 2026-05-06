@@ -117,6 +117,15 @@ const WARRIOR_RARE_REWARDS: Card[] = [
     movement: 5,
     description: 'Mova até 5 espaços.',
   },
+  {
+    id: 'warrior_open_hand_rare_1',
+    name: 'Surto de Mão',
+    cost: 0,
+    type: 'skill',
+    floorHandDrawBonus: 2,
+    exhaust: true,
+    description: 'Aumente a Mão em 2. Esgota.',
+  },
 ];
 
 const ARCHER_NORMAL_REWARDS: Card[] = [
@@ -171,6 +180,15 @@ const ARCHER_RARE_REWARDS: Card[] = [
     type: 'movement',
     movement: 6,
     description: 'Mova até 6 espaços.',
+  },
+  {
+    id: 'archer_open_hand_rare_1',
+    name: 'Surto da Aljava',
+    cost: 0,
+    type: 'skill',
+    floorHandDrawBonus: 2,
+    exhaust: true,
+    description: 'Aumente a Mão em 2. Esgota.',
   },
 ];
 
@@ -235,6 +253,15 @@ const MAGE_RARE_REWARDS: Card[] = [
     type: 'movement',
     movement: 7,
     description: 'Mova até 7 espaços.',
+  },
+  {
+    id: 'mage_open_hand_rare_1',
+    name: 'Surto Arcano',
+    cost: 0,
+    type: 'skill',
+    floorHandDrawBonus: 2,
+    exhaust: true,
+    description: 'Aumente a Mão em 2. Esgota.',
   },
 ];
 
